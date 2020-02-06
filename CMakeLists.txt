@@ -77,3 +77,7 @@ include_directories(lifx ${CMAKE_CURRENT_SOURCE_DIR}/include)
 #add_dependencies(lifx generate_sources)
 #add_dependencies(generate_sources lifx_yaml_file)
 ########################################################
+
+add_executable(findbulbs examples/findbulbs.c)
+add_dependencies(findbulbs lifx)
+target_link_libraries(findbulbs lifx)
