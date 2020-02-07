@@ -1,10 +1,11 @@
-#!/usr/bin/python3
+#!/usr/local/bin/python3
 
 import os
 import yaml
 import re
 import sys
 import getopt
+import datetime
 
 class Options(object):
   pass
@@ -27,6 +28,12 @@ class CodeGenerator:
   def write(self, str):
     self.out.write(" " * self.space)
     self.out.write(str)
+
+  def open_file(self, name):
+    self.out = open(name, "w")
+    self.write("//\n")
+    self.write("// DO NOT EDIT - AUTO-GENERATE:%s\n" % (datetime.datetime.now()))
+    self.write("//\n")
 
   def gen_enum_name(self, idx, name, key):
     s = "kLifx"
@@ -60,9 +67,9 @@ class CodeGenerator:
     self.write("#endif\n")
 
   def gen_enums(self, enums):
-    self.out = open("lifx_enums.h", "w")
+    # self.out = open("lifx_enums.h", "w")
+    self.open_file("lifx_enums.h")
     self.emit_guard_prefix("__LIFX_ENUMS_H__")
-    self.write("\n")
     self.write("#include <stdint.h>\n")
     self.write("\n")
     for key, value in enums.items():
@@ -139,7 +146,8 @@ class CodeGenerator:
     self.write("} %s%s_t;\n" % (self.prefix, pktname))
 
   def gen_fields(self, doc, fields):
-    self.out = open("lifx_fields.h", "w")
+    #self.out = open("lifx_fields.h", "w")
+    self.open_file("lifx_fields.h")
     self.emit_guard_prefix("__LIFX_FIELDS_H__")
     self.write("#include <stdbool.h>\n")
     self.write("#include <lifx_enums.h>\n\n")
@@ -160,8 +168,75 @@ class CodeGenerator:
     self.emit_guard_suffix()
     self.out.close()
 
+  def gen_encoders(self, pkts):
+    #self.out = open("lifx_encoders.h", "w")
+    self.open_file("lifx_encoders.h")
+    self.emit_guard_prefix("__LIFX_ENCODERS_H__")
+    self.write("#include <lifx_packets.h>\n")
+    self.write("\n")
+    for s in ["device", "light", "tile", "multi_zone"]:
+      for key, val in pkts[s].items():
+        struct_name =  "%s%s" % (self.prefix, key)
+        self.write("int %sEncode(%s const* pkt, lifxBuffer_t* buff);\n" % (struct_name, struct_name))
+        self.write("int %sDecode(%s* pkt, lifxBuffer_t const* buff);\n" % (struct_name, struct_name))
+        self.write("\n")
+    self.write("\n")
+    self.emit_guard_suffix()
+    self.out.close()
+
+    self.open_file("lifx_encoders.c")
+    self.write("#include \"lifx.h\"\n\n")
+    for s in ["device", "light", "tile", "multi_zone"]:
+      for key, pktdef in pkts[s].items():
+        struct_name =  "%s%s_t" % (self.prefix, key)
+        self.write("int %sEncode(%s const* pkt, lifxBuffer_t* buff)\n" % (struct_name, struct_name))
+        self.write("{\n")
+        self.indent()
+        self.write("lifxBufferInit(buff, %d);\n" % (pktdef["size_bytes"]))
+        offset = 0
+        if len(pktdef["fields"]) > 0:
+          for idx, field in enumerate(pktdef["fields"]):
+            if "name" in field:
+              name = field["name"]
+            else:
+              name = "pad%d" % (idx)
+              type = "uint8"
+              continue
+            type = field["type"]
+            size = field["size_bytes"]
+            if type == "reserved":
+              self.write("// skip %s\n" % (field))
+            self.write("// %s\n" % (field))
+            is_array = re.search("\[(\d+)\]byte", type)
+            if is_array:
+              self.write("lifxBufferWrite(buff, %d, pkt->%s, %d);\n" %
+                (offset, name, int(is_array.group(1))))
+              continue
+
+            # TODO: need to handle embedded packets
+
+            is_enum = re.search("\<([^>]+)\>", type)
+            if is_enum:
+              self.write("lifxBufferWriteUInt8(buff, %d, (uint8_t) pkt->%s);\n" %
+                (offset, name))
+            else:
+              try:
+                self.write("%s(buff, %d, pkt->%s);\n" %
+                  (self.gen_typed_function_name("lifxBufferWrite", type), offset, name))
+              except Exception:
+                print(pktdef)
+                raise
+            offset += int(field["size_bytes"])
+        self.write("return 0;\n")
+        self.outdent()
+        self.write("}\n")
+        self.write("\n")
+    self.out.close()
+    pass
+
   def gen_pkts(self, pkts):
-    self.out = open("lifx_packets.h", "w")
+    #self.out = open("lifx_packets.h", "w")
+    self.open_file("lifx_packets.h")
     self.emit_guard_prefix("__LIFX_PACKETS_H__")
     self.write("#include <stdbool.h>\n")
     self.write("#include <lifx_enums.h>\n")
@@ -189,6 +264,23 @@ class CodeGenerator:
       self.gen_pkt_defs(key, val)
     self.write("\n")
     self.emit_guard_suffix()
+
+  def gen_typed_function_name(self, func, type):
+    if type == "uint32":
+      return func + "UInt32"
+    if type == "float32":
+      return func + "Float";
+    if type == "uint64":
+      return func + "UInt64"
+    if type == "uint16":
+      return func + "UInt16"
+    if type == "bool":
+      return func + "UInt8"
+    if type == "int16":
+      return func + "Int16"
+    if type == "uint8":
+      return func + "UInt8"
+    raise Exception("unsupported type %s" % (type))
 
   def gen_type_name(self, name, type, size):
     if type == "reserved":
@@ -245,6 +337,7 @@ def main(argv):
       code_generator.gen_enums(doc["enums"])
       code_generator.gen_fields(doc, doc["fields"])
       code_generator.gen_pkts(doc["packets"])
+      code_generator.gen_encoders(doc["packets"])
   except yaml.YAMLError as err:
     print(err)
 
