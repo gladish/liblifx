@@ -313,6 +313,22 @@ class CodeGenerator:
 
     raise Exception("unsupported type %s" % (type))
 
+  def load_types(self, doc):
+    self.enums = doc["enums"].keys()
+    self.fields = doc["fields"].keys()
+    self.packets = []
+    for key, val in doc["packets"].items():
+      self.packets.append(doc["packets"][key].keys())
+
+  def is_field(self, name):
+    return name in self.fields
+
+  def is_enum(self, name):
+    return name in self.enums
+
+  def is_packet(self, name):
+    return name in self.packets
+
 def main(argv):
   infile = ''
   outfile = ''
@@ -334,6 +350,7 @@ def main(argv):
   try:
     code_generator = CodeGenerator(opts)
     for doc in yaml.load_all(opts.infile):
+      code_generator.load_types(doc);
       code_generator.gen_enums(doc["enums"])
       code_generator.gen_fields(doc, doc["fields"])
       code_generator.gen_pkts(doc["packets"])
