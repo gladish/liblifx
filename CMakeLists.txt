@@ -71,7 +71,9 @@ ExternalProject_Add(
 add_library(
   lifx
   SHARED
-  src/lifx.c)
+  src/lifx.c
+  src/lifx_buffer.c
+  src/lifx_encoders.c)
 include_directories(lifx ${CMAKE_CURRENT_BINARY_DIR}/deps/src)
 include_directories(lifx ${CMAKE_CURRENT_SOURCE_DIR}/include)
 #add_dependencies(lifx generate_sources)

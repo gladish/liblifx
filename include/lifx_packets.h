@@ -1,3 +1,6 @@
+//
+// DO NOT EDIT - AUTO-GENERATE:2020-02-07 15:15:32.047157
+//
 #ifndef __LIFX_PACKETS_H__
 #define __LIFX_PACKETS_H__
 
@@ -104,6 +107,8 @@ typedef struct {
 typedef struct {
 } lifxDeviceGetHostFirmware_t;
 
+// HACK: DeviceStateHostFirmware is in lifx_fields.h
+
 // {'pkt_type': 16, 'size_bytes': 0}
 typedef struct {
 } lifxDeviceGetWifiInfo_t;
@@ -171,6 +176,8 @@ typedef struct {
 // {'pkt_type': 32, 'size_bytes': 0}
 typedef struct {
 } lifxDeviceGetVersion_t;
+
+// HACK: DeviceStateVersion is in lifx_fields.h
 
 // {'pkt_type': 34, 'size_bytes': 0}
 typedef struct {

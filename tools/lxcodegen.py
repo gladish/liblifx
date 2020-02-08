@@ -168,69 +168,87 @@ class CodeGenerator:
     self.emit_guard_suffix()
     self.out.close()
 
-  def gen_encoders(self, pkts):
-    #self.out = open("lifx_encoders.h", "w")
+  def gen_encoder(self, key, pktdef):
+    struct_name =  "%s%s" % (self.prefix, key)
+    self.write("int lifxEncoder_Encode%s(%s_t const* pkt, lifxBuffer_t* buff)\n" % (key, struct_name))
+    self.write("{\n")
+    self.indent()
+    self.write("// %s\n" % (pktdef))
+    self.write("lifxBufferInit(buff, %d);\n" % (pktdef["size_bytes"]))
+    if len(pktdef["fields"]) > 0:
+      for idx, field in enumerate(pktdef["fields"]):
+        if "name" in field:
+          name = field["name"]
+        else:
+          name = "pad%d" % (idx)
+          type = "uint8"
+        type = field["type"]
+        size = field["size_bytes"]
+        if type == "reserved":
+          self.write("// %s\n" % (field))
+          self.write("lifxBufferSeek(buff, %d, kLifxBufferWhenceCurrent);\n" % (int(field["size_bytes"])))
+          continue
+        self.write("// %s\n" % (field))
+        is_array = re.search("\[(\d+)\]byte", type)
+        if is_array:
+          self.write("lifxBufferWrite(buff, pkt->%s, %d);\n" % (name, int(is_array.group(1))))
+          continue
+        user_defined_type = re.search("\<([^>]+)\>", type)
+        if user_defined_type:
+          user_defined_type_name = user_defined_type.group(1)
+          if self.is_enum(user_defined_type_name):
+            self.write("lifxBufferWriteUInt8(buff, (uint8_t) pkt->%s);\n" % ( name))
+          elif self.is_packet(user_defined_type_name):
+            self.write("lifxEncoder_Encode%s(&pkt->%s, buff);\n" % (user_defined_type_name, name))
+          elif self.is_field(user_defined_type_name):
+            self.write("lifxEncoder_Encode%s(&pkt->%s, buff);\n" % (user_defined_type_name, name))
+          else:
+            raise Exception("unsupported type %s/%s" % (type, user_defined_type_name))
+        else:
+          try:
+            self.write("%s(buff, pkt->%s);\n" % (self.gen_typed_function_name("lifxBufferWrite", type),  name))
+          except Exception:
+            print(pktdef)
+            raise
+    self.write("return 0;\n")
+    self.outdent()
+    self.write("}\n")
+
+  def gen_encoders(self, pkts, fields):
     self.open_file("lifx_encoders.h")
     self.emit_guard_prefix("__LIFX_ENCODERS_H__")
+    self.write("#include <lifx.h>\n")
+    self.write("#include <lifx_fields.h>\n")
     self.write("#include <lifx_packets.h>\n")
     self.write("\n")
     for s in ["device", "light", "tile", "multi_zone"]:
       for key, val in pkts[s].items():
         struct_name =  "%s%s" % (self.prefix, key)
-        self.write("int %sEncode(%s const* pkt, lifxBuffer_t* buff);\n" % (struct_name, struct_name))
-        self.write("int %sDecode(%s* pkt, lifxBuffer_t const* buff);\n" % (struct_name, struct_name))
-        self.write("\n")
+        self.write("int lifxEncoder_Encode%s(%s_t const* pkt, lifxBuffer_t* buff);\n" % (key, struct_name))
+    self.write("\n")
+    for s in ["device", "light", "tile", "multi_zone"]:
+      for key, val in pkts[s].items():
+        struct_name =  "%s%s" % (self.prefix, key)
+        self.write("int lifxDecoder_Decode%s(%s_t* pkt, lifxBuffer_t const* buff);\n" % (key, struct_name))
+    self.write("\n")
+    for key, val in fields.items():
+      struct_name =  "%s%s" % (self.prefix, key)
+      self.write("int lifxEncoder_Encode%s(%s_t const* pkt, lifxBuffer_t* buff);\n" % (key, struct_name))
+      self.write("int lifxDecoder_Decoder%s(%s_t* pkt, lifxBuffer_t const* buff);\n" % (key, struct_name))
     self.write("\n")
     self.emit_guard_suffix()
     self.out.close()
 
     self.open_file("lifx_encoders.c")
-    self.write("#include \"lifx.h\"\n\n")
+    self.write("#include \"lifx.h\"\n")
+    self.write("#include \"lifx_encoders.h\"\n\n")
     for s in ["device", "light", "tile", "multi_zone"]:
       for key, pktdef in pkts[s].items():
-        struct_name =  "%s%s_t" % (self.prefix, key)
-        self.write("int %sEncode(%s const* pkt, lifxBuffer_t* buff)\n" % (struct_name, struct_name))
-        self.write("{\n")
-        self.indent()
-        self.write("lifxBufferInit(buff, %d);\n" % (pktdef["size_bytes"]))
-        offset = 0
-        if len(pktdef["fields"]) > 0:
-          for idx, field in enumerate(pktdef["fields"]):
-            if "name" in field:
-              name = field["name"]
-            else:
-              name = "pad%d" % (idx)
-              type = "uint8"
-              continue
-            type = field["type"]
-            size = field["size_bytes"]
-            if type == "reserved":
-              self.write("// skip %s\n" % (field))
-            self.write("// %s\n" % (field))
-            is_array = re.search("\[(\d+)\]byte", type)
-            if is_array:
-              self.write("lifxBufferWrite(buff, %d, pkt->%s, %d);\n" %
-                (offset, name, int(is_array.group(1))))
-              continue
-
-            # TODO: need to handle embedded packets
-
-            is_enum = re.search("\<([^>]+)\>", type)
-            if is_enum:
-              self.write("lifxBufferWriteUInt8(buff, %d, (uint8_t) pkt->%s);\n" %
-                (offset, name))
-            else:
-              try:
-                self.write("%s(buff, %d, pkt->%s);\n" %
-                  (self.gen_typed_function_name("lifxBufferWrite", type), offset, name))
-              except Exception:
-                print(pktdef)
-                raise
-            offset += int(field["size_bytes"])
-        self.write("return 0;\n")
-        self.outdent()
-        self.write("}\n")
+        self.gen_encoder(key, pktdef)
         self.write("\n")
+    for key, pktdef in fields.items():
+      self.gen_encoder(key, pktdef)
+      self.write("\n")
     self.out.close()
     pass
 
@@ -318,7 +336,8 @@ class CodeGenerator:
     self.fields = doc["fields"].keys()
     self.packets = []
     for key, val in doc["packets"].items():
-      self.packets.append(doc["packets"][key].keys())
+      for name in doc["packets"][key].keys():
+        self.packets.append(name)
 
   def is_field(self, name):
     return name in self.fields
@@ -354,7 +373,7 @@ def main(argv):
       code_generator.gen_enums(doc["enums"])
       code_generator.gen_fields(doc, doc["fields"])
       code_generator.gen_pkts(doc["packets"])
-      code_generator.gen_encoders(doc["packets"])
+      code_generator.gen_encoders(doc["packets"], doc["fields"])
   except yaml.YAMLError as err:
     print(err)
 

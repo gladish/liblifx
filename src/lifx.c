@@ -17,6 +17,8 @@
 
 #include <errno.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <unistd.h>
@@ -47,68 +49,81 @@ typedef struct
 } lifxProtocolHeader_t;
 #pragma pack(pop)
 
-struct lifxHandle
+struct lifxSession
 {
-  int       socfd;
+  int       udpsoc;
+  uint32_t  source_id;
 };
 
-int
-lifxLibInit(lifxHandle_t** handle)
+static void lifxDumpBuffer(uint8_t* p, int n)
+{
+  int i;
+  for (i = 0; i < n; ++i)
+  {
+    if ((i > 0) && (i % 8) == 0)
+      printf("\n");
+    printf("0x%02x ", p[i]);
+  }
+}
+
+lifxSession_t*
+lifxSession_Create(lifxSessionConfig_t const* conf)
 {
   int           ret;
   int           flag;
-  lifxHandle_t* temp_handle;
+  struct lifxSession* lifx;
 
-  temp_handle = malloc(sizeof(lifxHandle_t));
-  if (!temp_handle)
-    return ENOMEM;
+  (void) conf;
 
-  temp_handle->socfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-  if (temp_handle->socfd == -1)
+  lifx = malloc(sizeof(struct lifxSession));
+  if (!lifx)
+    return NULL;
+
+  lifx->udpsoc = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+  if (lifx->udpsoc == -1)
   {
-    free(temp_handle);
-    return temp_handle->socfd;
+    free(lifx);
+    return NULL;
   }
+
+  lifx->source_id = getpid();
 
   flag = 1;
-  ret = setsockopt(temp_handle->socfd, SOL_SOCKET, SO_BROADCAST, &flag, sizeof(flag));
+  ret = setsockopt(lifx->udpsoc, SOL_SOCKET, SO_BROADCAST, &flag, sizeof(flag));
   if (ret == -1)
   {
-    // TODO:
-    return errno;
+    free(lifx);
+    return NULL;
   }
 
-  *handle = temp_handle;
+  return lifx;
+}
+
+int
+lifxSession_Close(lifxSession_t* session)
+{
+  struct lifxSession* lifx = (struct lifxSession *) session;
+
+  if (!lifx)
+    return EINVAL;
+
+  if (lifx->udpsoc != -1)
+    close(lifx->udpsoc);
+  free(lifx);
+
   return 0;
 }
 
 int
-lifxLibShutdown(lifxHandle_t* handle)
+lifxSession_SendTo(
+  lifxSession_t*    lifx,
+  lifxDevice_t*     device,
+  void*             packet,
+  lifxPacketType_t  packet_type)
 {
-  if (!handle)
-    return EINVAL;
-
-  if (handle)
-  {
-    if (handle->socfd != -1)
-      close(handle->socfd);
-    free(handle);
-  }
-
-  return 0;
-}
-
-// This will actually send out a GetService (payload size is zero!)
-#if 0
-  int flag;
-  int soc;
   lifxProtocolHeader_t header;
   struct sockaddr_in dest;
   uint8_t* buff;
-
-  flag = 1;
-  soc = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-  setsockopt(soc, SOL_SOCKET, SO_BROADCAST, &flag, sizeof(flag));
 
   memset(&header, 0, sizeof(lifxProtocolHeader_t));
   memset(&dest, 0, sizeof(struct sockaddr_in));
@@ -134,20 +149,14 @@ lifxLibShutdown(lifxHandle_t* handle)
 
   buff = malloc(1024);
 
-  printf("size:%d\n", (int) sizeof(lifxDeviceGetService_t));
-  return 0;
-
-
   while (1)
   {
-    int i;
     int n;
     fd_set fds;
     struct timeval timeout;
-    uint8_t* p;
 
     FD_ZERO(&fds);
-    FD_SET(soc, &fds);
+    FD_SET(lifx->udpsoc, &fds);
 
     memset(&dest, 0, sizeof(struct sockaddr_in));
     dest.sin_family = AF_INET;
@@ -158,19 +167,22 @@ lifxLibShutdown(lifxHandle_t* handle)
     lifxDumpBuffer((uint8_t *)&header, (int) sizeof(lifxProtocolHeader_t));
     printf("\n\n");
 
-    n = sendto(soc, &header, sizeof(lifxProtocolHeader_t), 0, (struct sockaddr *)&dest,
+    n = sendto(lifx->udpsoc, &header, sizeof(lifxProtocolHeader_t), 0, (struct sockaddr *)&dest,
       sizeof(struct sockaddr_in));
 
     timeout.tv_sec = 2;
     timeout.tv_usec = 0;
-    select(soc + 1, &fds, NULL, NULL, &timeout);
+    select(lifx->udpsoc  + 1, &fds, NULL, NULL, &timeout);
 
-    if (FD_ISSET(soc, &fds))
+    if (FD_ISSET(lifx->udpsoc, &fds))
     {
       // data to read
       struct sockaddr_storage source;
       socklen_t source_size;
-      n = recvfrom(soc, buff, 1024, 0, (struct sockaddr *)&source, &source_size);
+      n = recvfrom(lifx->udpsoc, buff, 1024, 0, (struct sockaddr *)&source, &source_size);
+
+      memset(&header, 0, sizeof(header));
+      memcpy(&header, buff, sizeof(header));
 
       printf("receive:\n");
       lifxDumpBuffer(buff, n);
@@ -181,4 +193,6 @@ lifxLibShutdown(lifxHandle_t* handle)
       printf("timeout\n");
     }
   }
-#endif
+
+  return 0;
+}

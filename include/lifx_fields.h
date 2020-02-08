@@ -1,3 +1,6 @@
+//
+// DO NOT EDIT - AUTO-GENERATE:2020-02-07 15:15:32.046296
+//
 #ifndef __LIFX_FIELDS_H__
 #define __LIFX_FIELDS_H__
 

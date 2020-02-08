@@ -1,10 +1,12 @@
+//
+// DO NOT EDIT - AUTO-GENERATE:2020-02-07 15:15:32.045930
+//
 #ifndef __LIFX_ENUMS_H__
 #define __LIFX_ENUMS_H__
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 #include <stdint.h>
 
