@@ -155,3 +155,57 @@ lifxBufferWriteFloat(lifxBuffer_t* buff, float n)
   buff->pos += 4;
   return 0;
 }
+
+int
+lifxBufferReadUInt16(lifxBuffer_t* buff, uint16_t* n)
+{
+  return 0;
+}
+
+int
+lifxBufferReadFloat(lifxBuffer_t* buff, float* f)
+{
+  return 0;
+}
+
+int
+lifxBufferRead(lifxBuffer_t* buff, uint8_t* data, int n)
+{
+  return 0;
+}
+
+int
+lifxBufferWriteBool(lifxBuffer_t* buff, bool b)
+{
+  return 0;
+}
+
+int
+lifxBufferReadUInt64(lifxBuffer_t* buff, uint64_t* n)
+{
+  return 0;
+}
+
+int
+lifxBufferReadUInt32(lifxBuffer_t* buff, uint32_t* n)
+{
+  return 0;
+}
+
+int
+lifxBufferReadInt16(lifxBuffer_t* buff, int16_t* n)
+{
+  return 0;
+}
+
+int
+lifxBufferReadUInt8(lifxBuffer_t* buff, uint8_t* n)
+{
+  return 0;
+}
+
+int
+lifxBufferReadBool(lifxBuffer_t* buff, bool* b)
+{
+  return 0;
+}

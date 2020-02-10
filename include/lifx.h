@@ -82,12 +82,22 @@ int lifxBufferDestroy(lifxBuffer_t* buff);
 int lifxBufferSeek(lifxBuffer_t* buff, int offset, lifxBufferWhence whence);
 int lifxBufferWrite(lifxBuffer_t* buff, uint8_t const* data, int len);
 int lifxBufferWriteUInt8(lifxBuffer_t* buff, uint8_t n);
+int lifxBufferWriteBool(lifxBuffer_t* buff, bool b);
 int lifxBufferWriteInt16(lifxBuffer_t* buff, int16_t n);
 int lifxBufferWriteUInt16(lifxBuffer_t* buff, uint16_t n);
 int lifxBufferWriteInt32(lifxBuffer_t* buff, int32_t n);
 int lifxBufferWriteUInt32(lifxBuffer_t* buff, uint32_t n);
 int lifxBufferWriteUInt64(lifxBuffer_t* buff, uint64_t n);
 int lifxBufferWriteFloat(lifxBuffer_t* buff, float n);
+int lifxBufferRead(lifxBuffer_t* buff, uint8_t* data, int len);
+int lifxBufferReadUInt8(lifxBuffer_t* buff, uint8_t* n);
+int lifxBufferReadInt16(lifxBuffer_t* buff, int16_t* n);
+int lifxBufferReadUInt16(lifxBuffer_t* buff, uint16_t* n);
+int lifxBufferReadInt32(lifxBuffer_t* buff, int32_t* n);
+int lifxBufferReadUInt32(lifxBuffer_t* buff, uint32_t* n);
+int lifxBufferReadUInt64(lifxBuffer_t* buff, uint64_t* n);
+int lifxBufferReadFloat(lifxBuffer_t* buff, float* f);
+int lifxBufferReadBool(lifxBuffer_t* buff, bool* b);
 
 
 

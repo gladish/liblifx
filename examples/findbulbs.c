@@ -12,7 +12,7 @@ int main(int argc, char* argv[])
 
   // TODO: trying out different style API
   lifxSession_t* lifx = lifxSession_Create(NULL);
-  lifxSession_SendTo(lifx, device, &get_service, kLifxPacketTypeDeviceGetService);
+  lifxSession_SendTo(lifx, NULL, &get_service, kLifxPacketTypeDeviceGetService);
 
   //printf("size:%d\n", (int) sizeof(lifxLightSetWaveformOptional_t));
   //printf("size:%d\n", (int) sizeof(lifxLightHsbk_t));

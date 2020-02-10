@@ -134,14 +134,17 @@ lifxSession_SendTo(
   header.tagged = 1;
   header.origin = 0;
   header.source = 0xdeadbeef;
-  header.target[0] = 0;
-  header.target[1] = 0;
-  header.target[2] = 0;
-  header.target[3] = 0;
-  header.target[4] = 0;
-  header.target[5] = 0;
-  header.target[6] = 0;
-  header.target[7] = 0;
+  if (device)
+  {
+    header.target[0] = 0;
+    header.target[1] = 0;
+    header.target[2] = 0;
+    header.target[3] = 0;
+    header.target[4] = 0;
+    header.target[5] = 0;
+    header.target[6] = 0;
+    header.target[7] = 0;
+  }
   header.res_required = 0;
   header.ack_required = 0;
   header.sequence = 2;

@@ -168,6 +168,51 @@ class CodeGenerator:
     self.emit_guard_suffix()
     self.out.close()
 
+  def gen_decoder(self, key, pktdef):
+    struct_name =  "%s%s" % (self.prefix, key)
+    self.write("int lifxDecoder_Decode%s(%s_t* pkt, lifxBuffer_t* buff)\n" % (key, struct_name))
+    self.write("{\n")
+    self.indent()
+    self.write("// %s\n" % (pktdef))
+    if len(pktdef["fields"]) > 0:
+      for idx, field in enumerate(pktdef["fields"]):
+        if "name" in field:
+          name = field["name"]
+        else:
+          name = "pad%d" % (idx)
+          type = "uint8"
+        type = field["type"]
+        size = field["size_bytes"]
+        if type == "reserved":
+          self.write("// %s\n" % (field))
+          self.write("lifxBufferSeek(buff, %d, kLifxBufferWhenceCurrent);\n" % (int(field["size_bytes"])))
+          continue
+        self.write("// %s\n" % (field))
+        is_array = re.search("\[(\d+)\]byte", type)
+        if is_array:
+          self.write("lifxBufferRead(buff, pkt->%s, %d);\n" % (name, int(is_array.group(1))))
+          continue
+        user_defined_type = re.search("\<([^>]+)\>", type)
+        if user_defined_type:
+          user_defined_type_name = user_defined_type.group(1)
+          if self.is_enum(user_defined_type_name):
+            self.write("lifxBufferReadUInt8(buff, (uint8_t *) &pkt->%s);\n" % ( name))
+          elif self.is_packet(user_defined_type_name):
+            self.write("lifxDecoder_Decode%s(&pkt->%s, buff);\n" % (user_defined_type_name, name))
+          elif self.is_field(user_defined_type_name):
+            self.write("lifxDecoder_Decode%s(&pkt->%s, buff);\n" % (user_defined_type_name, name))
+          else:
+            raise Exception("unsupported type %s/%s" % (type, user_defined_type_name))
+        else:
+          try:
+            self.write("%s(buff, &pkt->%s);\n" % (self.gen_typed_function_name("lifxBufferRead", type),  name))
+          except Exception:
+            print(pktdef)
+            raise
+    self.write("return 0;\n")
+    self.outdent()
+    self.write("}\n")
+
   def gen_encoder(self, key, pktdef):
     struct_name =  "%s%s" % (self.prefix, key)
     self.write("int lifxEncoder_Encode%s(%s_t const* pkt, lifxBuffer_t* buff)\n" % (key, struct_name))
@@ -229,12 +274,12 @@ class CodeGenerator:
     for s in ["device", "light", "tile", "multi_zone"]:
       for key, val in pkts[s].items():
         struct_name =  "%s%s" % (self.prefix, key)
-        self.write("int lifxDecoder_Decode%s(%s_t* pkt, lifxBuffer_t const* buff);\n" % (key, struct_name))
+        self.write("int lifxDecoder_Decode%s(%s_t* pkt, lifxBuffer_t* buff);\n" % (key, struct_name))
     self.write("\n")
     for key, val in fields.items():
       struct_name =  "%s%s" % (self.prefix, key)
       self.write("int lifxEncoder_Encode%s(%s_t const* pkt, lifxBuffer_t* buff);\n" % (key, struct_name))
-      self.write("int lifxDecoder_Decoder%s(%s_t* pkt, lifxBuffer_t const* buff);\n" % (key, struct_name))
+      self.write("int lifxDecoder_Decode%s(%s_t* pkt, lifxBuffer_t* buff);\n" % (key, struct_name))
     self.write("\n")
     self.emit_guard_suffix()
     self.out.close()
@@ -246,8 +291,12 @@ class CodeGenerator:
       for key, pktdef in pkts[s].items():
         self.gen_encoder(key, pktdef)
         self.write("\n")
+        self.gen_decoder(key, pktdef)
+        self.write("\n")
     for key, pktdef in fields.items():
       self.gen_encoder(key, pktdef)
+      self.write("\n")
+      self.gen_decoder(key, pktdef)
       self.write("\n")
     self.out.close()
     pass
@@ -293,7 +342,7 @@ class CodeGenerator:
     if type == "uint16":
       return func + "UInt16"
     if type == "bool":
-      return func + "UInt8"
+      return func + "Bool"
     if type == "int16":
       return func + "Int16"
     if type == "uint8":
