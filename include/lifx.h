@@ -87,6 +87,7 @@ typedef struct
 
 typedef struct
 {
+  char*     BindInterface;
 } lifxSessionConfig_t;
 
 typedef struct
@@ -132,13 +133,13 @@ lifxMessage_GetDevice(lifxMessage_t const* m);
  *
  */
 lifxSession_t*
-lifxSession_Create(lifxSessionConfig_t const* conf);
+lifxSession_Open(lifxSessionConfig_t const* conf);
 
 /**
  *
  */
-void
-lifxSession_Delete(lifxSession_t* lifx);
+int
+lifxSession_Close(lifxSession_t* lifx);
 
 /**
  *
@@ -149,6 +150,8 @@ lifxSession_SendTo(lifxSession_t*     lifx,
                    void*              packet,
                    lifxPacketType_t   packet_type);
 
+/**
+ */
 int
 lifxSession_RecvFrom(lifxSession_t*   lifx,
                      lifxMessage_t*   message,

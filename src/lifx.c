@@ -41,7 +41,7 @@ static void lifxDumpBuffer(lifxSession_t* lifx, uint8_t* p, int n)
 }
 
 lifxSession_t*
-lifxSession_Create(lifxSessionConfig_t const* conf)
+lifxSession_Open(lifxSessionConfig_t const* conf)
 {
   int                 n;
   int                 ret;
@@ -53,6 +53,9 @@ lifxSession_Create(lifxSessionConfig_t const* conf)
   lifx = malloc(sizeof(struct lifxSession));
   if (!lifx)
     return NULL;
+
+  // set this as early as possible to avoid uninitialized reads
+  lifx->LogLevel = kLifxLogLevelDebug;
 
   lifx->Socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
   if (lifx->Socket == -1)
@@ -67,7 +70,6 @@ lifxSession_Create(lifxSessionConfig_t const* conf)
   lifxBuffer_Init(&lifx->ReadBuffer, n);
   lifx->SourceId = getpid();
   lifx->SequenceNumber = 0;
-  lifx->LogLevel = kLifxLogLevelDebug;
 
   flag = 1;
   ret = setsockopt(lifx->Socket, SOL_SOCKET, SO_BROADCAST, &flag, sizeof(flag));
@@ -77,19 +79,42 @@ lifxSession_Create(lifxSessionConfig_t const* conf)
     return NULL;
   }
 
+  if (conf)
+  {
+    if (conf->BindInterface)
+    {
+      struct sockaddr_in bind_addr;
+      socklen_t bind_addr_length;
+
+      bind_addr_length = sizeof(struct sockaddr_in);
+      memset(&bind_addr, 0, sizeof(struct sockaddr_in));
+      inet_pton(AF_INET, conf->BindInterface, &bind_addr);
+
+      lxLog_Info(lifx, "binding to %s", conf->BindInterface);
+
+      ret = bind(lifx->Socket, (struct sockaddr *) &bind_addr, bind_addr_length);
+      if (ret != 0)
+      {
+        int err = errno;
+        lxLog_Warn(lifx, "bind:%d", err);
+      }
+    }
+  }
+
   return lifx;
 }
 
 int
-lifxSession_Close(lifxSession_t* session)
+lifxSession_Close(lifxSession_t* lifx)
 {
-  struct lifxSession* lifx = (struct lifxSession *) session;
-
   if (!lifx)
     return EINVAL;
 
   if (lifx->Socket != -1)
     close(lifx->Socket);
+
+  lifxBuffer_Destroy(&lifx->ReadBuffer);
+
   free(lifx);
 
   return 0;
@@ -171,7 +196,7 @@ lifxSession_SendTo(
 
 int
 lifxSession_RecvFrom(lifxSession_t*   lifx,
-                     lifxMessage_t*  message,
+                     lifxMessage_t*   message,
                      int              timeout)
 {
   int             n;
@@ -180,9 +205,11 @@ lifxSession_RecvFrom(lifxSession_t*   lifx,
   lifxMessage_t*  msg;
 
   n = 0;
-  wait_time.tv_sec = timeout;
-  wait_time.tv_usec = 0;
+  wait_time.tv_sec = timeout / 1000;
+  wait_time.tv_usec = (timeout % 1000) * 1000;
   memset(message, 0, sizeof(lifxMessage_t));
+
+  lxLog_Info(lifx,"timeout:%lus %luus", wait_time.tv_sec, wait_time.tv_usec);
 
   FD_ZERO(&fds);
   FD_SET(lifx->Socket, &fds);

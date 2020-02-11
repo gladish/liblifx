@@ -17,6 +17,7 @@
 
 #include <stdarg.h>
 #include <stdio.h>
+#include <sys/time.h>
 
 #ifdef __linux__
 #include <unistd.h>
@@ -64,13 +65,16 @@ void
 lxLog_Printf(lifxSession_t* lifx, lifxLogLevel_t level, char const* format, ...)
 {
   va_list argp;
+  struct timeval now;
 
   if (level < lifx->LogLevel)
     return;
 
-  // TODO: allow user to insert log callback
+  gettimeofday(&now, NULL);
 
-  printf("%5s -- Thread-%" LIFX_THREADID_FMT ": ", lifxLogLevelToString(level), lifxThreadGetCurrentId());
+  // TODO: allow user to insert log callback
+  printf("%ld.%06ld %5s -- Thread-%" LIFX_THREADID_FMT ": ", now.tv_sec, now.tv_usec,
+    lifxLogLevelToString(level), lifxThreadGetCurrentId());
   va_start(argp, format);
   vprintf(format, argp);
   va_end(argp);
