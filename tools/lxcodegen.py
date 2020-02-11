@@ -185,18 +185,18 @@ class CodeGenerator:
         size = field["size_bytes"]
         if type == "reserved":
           self.write("// %s\n" % (field))
-          self.write("lifxBufferSeek(buff, %d, kLifxBufferWhenceCurrent);\n" % (int(field["size_bytes"])))
+          self.write("lifxBuffer_Seek(buff, %d, kLifxBufferWhenceCurrent);\n" % (int(field["size_bytes"])))
           continue
         self.write("// %s\n" % (field))
         is_array = re.search("\[(\d+)\]byte", type)
         if is_array:
-          self.write("lifxBufferRead(buff, pkt->%s, %d);\n" % (name, int(is_array.group(1))))
+          self.write("lifxBuffer_Read(buff, pkt->%s, %d);\n" % (name, int(is_array.group(1))))
           continue
         user_defined_type = re.search("\<([^>]+)\>", type)
         if user_defined_type:
           user_defined_type_name = user_defined_type.group(1)
           if self.is_enum(user_defined_type_name):
-            self.write("lifxBufferReadUInt8(buff, (uint8_t *) &pkt->%s);\n" % ( name))
+            self.write("lifxBuffer_ReadUInt8(buff, (uint8_t *) &pkt->%s);\n" % ( name))
           elif self.is_packet(user_defined_type_name):
             self.write("lifxDecoder_Decode%s(&pkt->%s, buff);\n" % (user_defined_type_name, name))
           elif self.is_field(user_defined_type_name):
@@ -205,7 +205,7 @@ class CodeGenerator:
             raise Exception("unsupported type %s/%s" % (type, user_defined_type_name))
         else:
           try:
-            self.write("%s(buff, &pkt->%s);\n" % (self.gen_typed_function_name("lifxBufferRead", type),  name))
+            self.write("%s(buff, &pkt->%s);\n" % (self.gen_typed_function_name("lifxBuffer_Read", type),  name))
           except Exception:
             print(pktdef)
             raise
@@ -219,7 +219,7 @@ class CodeGenerator:
     self.write("{\n")
     self.indent()
     self.write("// %s\n" % (pktdef))
-    self.write("lifxBufferInit(buff, %d);\n" % (pktdef["size_bytes"]))
+    self.write("lifxBuffer_Init(buff, %d);\n" % (pktdef["size_bytes"]))
     if len(pktdef["fields"]) > 0:
       for idx, field in enumerate(pktdef["fields"]):
         if "name" in field:
@@ -231,18 +231,18 @@ class CodeGenerator:
         size = field["size_bytes"]
         if type == "reserved":
           self.write("// %s\n" % (field))
-          self.write("lifxBufferSeek(buff, %d, kLifxBufferWhenceCurrent);\n" % (int(field["size_bytes"])))
+          self.write("lifxBuffer_Seek(buff, %d, kLifxBufferWhenceCurrent);\n" % (int(field["size_bytes"])))
           continue
         self.write("// %s\n" % (field))
         is_array = re.search("\[(\d+)\]byte", type)
         if is_array:
-          self.write("lifxBufferWrite(buff, pkt->%s, %d);\n" % (name, int(is_array.group(1))))
+          self.write("lifxBuffer_Write(buff, pkt->%s, %d);\n" % (name, int(is_array.group(1))))
           continue
         user_defined_type = re.search("\<([^>]+)\>", type)
         if user_defined_type:
           user_defined_type_name = user_defined_type.group(1)
           if self.is_enum(user_defined_type_name):
-            self.write("lifxBufferWriteUInt8(buff, (uint8_t) pkt->%s);\n" % ( name))
+            self.write("lifxBuffer_WriteUInt8(buff, (uint8_t) pkt->%s);\n" % ( name))
           elif self.is_packet(user_defined_type_name):
             self.write("lifxEncoder_Encode%s(&pkt->%s, buff);\n" % (user_defined_type_name, name))
           elif self.is_field(user_defined_type_name):
@@ -251,7 +251,7 @@ class CodeGenerator:
             raise Exception("unsupported type %s/%s" % (type, user_defined_type_name))
         else:
           try:
-            self.write("%s(buff, pkt->%s);\n" % (self.gen_typed_function_name("lifxBufferWrite", type),  name))
+            self.write("%s(buff, pkt->%s);\n" % (self.gen_typed_function_name("lifxBuffer_Write", type),  name))
           except Exception:
             print(pktdef)
             raise
@@ -329,6 +329,16 @@ class CodeGenerator:
     for key, val in pkts["multi_zone"].items():
       self.write("\n")
       self.gen_pkt_defs(key, val)
+    self.write("\n")
+
+    self.write("typedef union\n")
+    self.write("{")
+    self.write("\n")
+    self.indent()
+    for pkt in self.packets:
+      self.write("%s%s_t %s;\n" % (self.prefix, pkt, pkt))
+    self.outdent()
+    self.write("} lifxPacket_t;\n")
     self.write("\n")
     self.emit_guard_suffix()
 

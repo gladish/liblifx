@@ -1,5 +1,5 @@
 //
-// DO NOT EDIT - AUTO-GENERATE:2020-02-09 20:04:33.279799
+// DO NOT EDIT - AUTO-GENERATE:2020-02-10 14:58:43.460015
 //
 #ifndef __LIFX_PACKETS_H__
 #define __LIFX_PACKETS_H__
@@ -75,293 +75,301 @@ typedef enum {
 } lifxPacketType_t;
 
 
-// {'pkt_type': 2, 'size_bytes': 0}
+// {'pkt_type': 45, 'size_bytes': 0}
 typedef struct {
-} lifxDeviceGetService_t;
+} lifxDeviceAcknowledgement_t;
 
 // {'pkt_type': 3, 'size_bytes': 5}
 typedef struct {
-  // {'name': 'Service', 'type': '<DeviceService>', 'size_bytes': 1}
+  // {'size_bytes': 1, 'type': '<DeviceService>', 'name': 'Service'}
   lifxDeviceService_t Service;
-  // {'name': 'Port', 'type': 'uint32', 'size_bytes': 4}
+  // {'size_bytes': 4, 'type': 'uint32', 'name': 'Port'}
   uint32_t Port;
 } lifxDeviceStateService_t;
-
-// {'pkt_type': 12, 'size_bytes': 0}
-typedef struct {
-} lifxDeviceGetHostInfo_t;
-
-// {'pkt_type': 13, 'size_bytes': 14}
-typedef struct {
-  // {'name': 'Signal', 'type': 'float32', 'size_bytes': 4}
-  float Signal;
-  // {'name': 'Tx', 'type': 'uint32', 'size_bytes': 4}
-  uint32_t Tx;
-  // {'name': 'Rx', 'type': 'uint32', 'size_bytes': 4}
-  uint32_t Rx;
-  // {'type': 'reserved', 'size_bytes': 2}
-  uint8_t pad3[2];
-} lifxDeviceStateHostInfo_t;
 
 // {'pkt_type': 14, 'size_bytes': 0}
 typedef struct {
 } lifxDeviceGetHostFirmware_t;
 
-// HACK: DeviceStateHostFirmware is in lifx_fields.h
-
-// {'pkt_type': 16, 'size_bytes': 0}
+// {'pkt_type': 13, 'size_bytes': 14}
 typedef struct {
-} lifxDeviceGetWifiInfo_t;
-
-// {'pkt_type': 17, 'size_bytes': 14}
-typedef struct {
-  // {'name': 'Signal', 'type': 'float32', 'size_bytes': 4}
+  // {'size_bytes': 4, 'type': 'float32', 'name': 'Signal'}
   float Signal;
-  // {'name': 'Tx', 'type': 'uint32', 'size_bytes': 4}
+  // {'size_bytes': 4, 'type': 'uint32', 'name': 'Tx'}
   uint32_t Tx;
-  // {'name': 'Rx', 'type': 'uint32', 'size_bytes': 4}
+  // {'size_bytes': 4, 'type': 'uint32', 'name': 'Rx'}
   uint32_t Rx;
-  // {'type': 'reserved', 'size_bytes': 2}
+  // {'size_bytes': 2, 'type': 'reserved'}
   uint8_t pad3[2];
-} lifxDeviceStateWifiInfo_t;
-
-// {'pkt_type': 18, 'size_bytes': 0}
-typedef struct {
-} lifxDeviceGetWifiFirmware_t;
-
-// {'pkt_type': 19, 'size_bytes': 20}
-typedef struct {
-  // {'name': 'Build', 'type': 'uint64', 'size_bytes': 8}
-  uint64_t Build;
-  // {'type': 'reserved', 'size_bytes': 8}
-  uint8_t pad1[8];
-  // {'name': 'VersionMinor', 'type': 'uint16', 'size_bytes': 2}
-  uint16_t VersionMinor;
-  // {'name': 'VersionMajor', 'type': 'uint16', 'size_bytes': 2}
-  uint16_t VersionMajor;
-} lifxDeviceStateWifiFirmware_t;
-
-// {'pkt_type': 20, 'size_bytes': 0}
-typedef struct {
-} lifxDeviceGetPower_t;
-
-// {'pkt_type': 21, 'size_bytes': 2}
-typedef struct {
-  // {'name': 'Level', 'type': 'uint16', 'size_bytes': 2}
-  uint16_t Level;
-} lifxDeviceSetPower_t;
-
-// {'pkt_type': 22, 'size_bytes': 2}
-typedef struct {
-  // {'name': 'Level', 'type': 'uint16', 'size_bytes': 2}
-  uint16_t Level;
-} lifxDeviceStatePower_t;
+} lifxDeviceStateHostInfo_t;
 
 // {'pkt_type': 23, 'size_bytes': 0}
 typedef struct {
 } lifxDeviceGetLabel_t;
 
-// {'pkt_type': 24, 'size_bytes': 32}
+// {'pkt_type': 16, 'size_bytes': 0}
 typedef struct {
-  // {'name': 'Label', 'type': '[32]byte', 'size_bytes': 32}
-  uint8_t Label[32];
-} lifxDeviceSetLabel_t;
+} lifxDeviceGetWifiInfo_t;
 
 // {'pkt_type': 25, 'size_bytes': 32}
 typedef struct {
-  // {'name': 'Label', 'type': '[32]byte', 'size_bytes': 32}
+  // {'size_bytes': 32, 'type': '[32]byte', 'name': 'Label'}
   uint8_t Label[32];
 } lifxDeviceStateLabel_t;
-
-// {'pkt_type': 32, 'size_bytes': 0}
-typedef struct {
-} lifxDeviceGetVersion_t;
-
-// HACK: DeviceStateVersion is in lifx_fields.h
-
-// {'pkt_type': 34, 'size_bytes': 0}
-typedef struct {
-} lifxDeviceGetInfo_t;
-
-// {'pkt_type': 35, 'size_bytes': 24}
-typedef struct {
-  // {'name': 'Time', 'type': 'uint64', 'size_bytes': 8}
-  uint64_t Time;
-  // {'name': 'Uptime', 'type': 'uint64', 'size_bytes': 8}
-  uint64_t Uptime;
-  // {'name': 'Downtime', 'type': 'uint64', 'size_bytes': 8}
-  uint64_t Downtime;
-} lifxDeviceStateInfo_t;
-
-// {'pkt_type': 45, 'size_bytes': 0}
-typedef struct {
-} lifxDeviceAcknowledgement_t;
 
 // {'pkt_type': 48, 'size_bytes': 0}
 typedef struct {
 } lifxDeviceGetLocation_t;
 
-// {'pkt_type': 49, 'size_bytes': 56}
+// {'pkt_type': 20, 'size_bytes': 0}
 typedef struct {
-  // {'name': 'Location', 'type': '[16]byte', 'size_bytes': 16}
-  uint8_t Location[16];
-  // {'name': 'Label', 'type': '[32]byte', 'size_bytes': 32}
+} lifxDeviceGetPower_t;
+
+// {'pkt_type': 12, 'size_bytes': 0}
+typedef struct {
+} lifxDeviceGetHostInfo_t;
+
+// {'pkt_type': 19, 'size_bytes': 20}
+typedef struct {
+  // {'size_bytes': 8, 'type': 'uint64', 'name': 'Build'}
+  uint64_t Build;
+  // {'size_bytes': 8, 'type': 'reserved'}
+  uint8_t pad1[8];
+  // {'size_bytes': 2, 'type': 'uint16', 'name': 'VersionMinor'}
+  uint16_t VersionMinor;
+  // {'size_bytes': 2, 'type': 'uint16', 'name': 'VersionMajor'}
+  uint16_t VersionMajor;
+} lifxDeviceStateWifiFirmware_t;
+
+// HACK: DeviceStateVersion is in lifx_fields.h
+
+// {'pkt_type': 32, 'size_bytes': 0}
+typedef struct {
+} lifxDeviceGetVersion_t;
+
+// {'pkt_type': 34, 'size_bytes': 0}
+typedef struct {
+} lifxDeviceGetInfo_t;
+
+// {'pkt_type': 17, 'size_bytes': 14}
+typedef struct {
+  // {'size_bytes': 4, 'type': 'float32', 'name': 'Signal'}
+  float Signal;
+  // {'size_bytes': 4, 'type': 'uint32', 'name': 'Tx'}
+  uint32_t Tx;
+  // {'size_bytes': 4, 'type': 'uint32', 'name': 'Rx'}
+  uint32_t Rx;
+  // {'size_bytes': 2, 'type': 'reserved'}
+  uint8_t pad3[2];
+} lifxDeviceStateWifiInfo_t;
+
+// {'pkt_type': 24, 'size_bytes': 32}
+typedef struct {
+  // {'size_bytes': 32, 'type': '[32]byte', 'name': 'Label'}
   uint8_t Label[32];
-  // {'name': 'UpdatedAt', 'type': 'uint64', 'size_bytes': 8}
+} lifxDeviceSetLabel_t;
+
+// {'pkt_type': 22, 'size_bytes': 2}
+typedef struct {
+  // {'size_bytes': 2, 'type': 'uint16', 'name': 'Level'}
+  uint16_t Level;
+} lifxDeviceStatePower_t;
+
+// {'pkt_type': 53, 'size_bytes': 56}
+typedef struct {
+  // {'size_bytes': 16, 'type': '[16]byte', 'name': 'Group'}
+  uint8_t Group[16];
+  // {'size_bytes': 32, 'type': '[32]byte', 'name': 'Label'}
+  uint8_t Label[32];
+  // {'size_bytes': 8, 'type': 'uint64', 'name': 'UpdatedAt'}
   uint64_t UpdatedAt;
-} lifxDeviceSetLocation_t;
+} lifxDeviceStateGroup_t;
+
+// {'pkt_type': 18, 'size_bytes': 0}
+typedef struct {
+} lifxDeviceGetWifiFirmware_t;
+
+// {'pkt_type': 35, 'size_bytes': 24}
+typedef struct {
+  // {'size_bytes': 8, 'type': 'uint64', 'name': 'Time'}
+  uint64_t Time;
+  // {'size_bytes': 8, 'type': 'uint64', 'name': 'Uptime'}
+  uint64_t Uptime;
+  // {'size_bytes': 8, 'type': 'uint64', 'name': 'Downtime'}
+  uint64_t Downtime;
+} lifxDeviceStateInfo_t;
+
+// HACK: DeviceStateHostFirmware is in lifx_fields.h
 
 // {'pkt_type': 50, 'size_bytes': 56}
 typedef struct {
-  // {'name': 'Location', 'type': '[16]byte', 'size_bytes': 16}
+  // {'size_bytes': 16, 'type': '[16]byte', 'name': 'Location'}
   uint8_t Location[16];
-  // {'name': 'Label', 'type': '[32]byte', 'size_bytes': 32}
+  // {'size_bytes': 32, 'type': '[32]byte', 'name': 'Label'}
   uint8_t Label[32];
-  // {'name': 'UpdatedAt', 'type': 'uint64', 'size_bytes': 8}
+  // {'size_bytes': 8, 'type': 'uint64', 'name': 'UpdatedAt'}
   uint64_t UpdatedAt;
 } lifxDeviceStateLocation_t;
+
+// {'pkt_type': 58, 'size_bytes': 64}
+typedef struct {
+  // {'size_bytes': 64, 'type': '[64]byte', 'name': 'Payload'}
+  uint8_t Payload[64];
+} lifxDeviceEchoRequest_t;
+
+// {'pkt_type': 52, 'size_bytes': 56}
+typedef struct {
+  // {'size_bytes': 16, 'type': '[16]byte', 'name': 'Group'}
+  uint8_t Group[16];
+  // {'size_bytes': 32, 'type': '[32]byte', 'name': 'Label'}
+  uint8_t Label[32];
+  // {'size_bytes': 8, 'type': 'uint64', 'name': 'UpdatedAt'}
+  uint64_t UpdatedAt;
+} lifxDeviceSetGroup_t;
+
+// {'pkt_type': 49, 'size_bytes': 56}
+typedef struct {
+  // {'size_bytes': 16, 'type': '[16]byte', 'name': 'Location'}
+  uint8_t Location[16];
+  // {'size_bytes': 32, 'type': '[32]byte', 'name': 'Label'}
+  uint8_t Label[32];
+  // {'size_bytes': 8, 'type': 'uint64', 'name': 'UpdatedAt'}
+  uint64_t UpdatedAt;
+} lifxDeviceSetLocation_t;
+
+// {'pkt_type': 21, 'size_bytes': 2}
+typedef struct {
+  // {'size_bytes': 2, 'type': 'uint16', 'name': 'Level'}
+  uint16_t Level;
+} lifxDeviceSetPower_t;
+
+// {'pkt_type': 59, 'size_bytes': 64}
+typedef struct {
+  // {'size_bytes': 64, 'type': '[64]byte', 'name': 'Payload'}
+  uint8_t Payload[64];
+} lifxDeviceEchoResponse_t;
 
 // {'pkt_type': 51, 'size_bytes': 0}
 typedef struct {
 } lifxDeviceGetGroup_t;
 
-// {'pkt_type': 52, 'size_bytes': 56}
+// {'pkt_type': 2, 'size_bytes': 0}
 typedef struct {
-  // {'name': 'Group', 'type': '[16]byte', 'size_bytes': 16}
-  uint8_t Group[16];
-  // {'name': 'Label', 'type': '[32]byte', 'size_bytes': 32}
-  uint8_t Label[32];
-  // {'name': 'UpdatedAt', 'type': 'uint64', 'size_bytes': 8}
-  uint64_t UpdatedAt;
-} lifxDeviceSetGroup_t;
-
-// {'pkt_type': 53, 'size_bytes': 56}
-typedef struct {
-  // {'name': 'Group', 'type': '[16]byte', 'size_bytes': 16}
-  uint8_t Group[16];
-  // {'name': 'Label', 'type': '[32]byte', 'size_bytes': 32}
-  uint8_t Label[32];
-  // {'name': 'UpdatedAt', 'type': 'uint64', 'size_bytes': 8}
-  uint64_t UpdatedAt;
-} lifxDeviceStateGroup_t;
-
-// {'pkt_type': 58, 'size_bytes': 64}
-typedef struct {
-  // {'name': 'Payload', 'type': '[64]byte', 'size_bytes': 64}
-  uint8_t Payload[64];
-} lifxDeviceEchoRequest_t;
-
-// {'pkt_type': 59, 'size_bytes': 64}
-typedef struct {
-  // {'name': 'Payload', 'type': '[64]byte', 'size_bytes': 64}
-  uint8_t Payload[64];
-} lifxDeviceEchoResponse_t;
-
-// {'pkt_type': 101, 'size_bytes': 0}
-typedef struct {
-} lifxLightGet_t;
-
-// {'pkt_type': 102, 'size_bytes': 13}
-typedef struct {
-  // {'type': 'reserved', 'size_bytes': 1}
-  uint8_t pad0;
-  // {'name': 'Color', 'type': '<LightHsbk>', 'size_bytes': 8}
-  lifxLightHsbk_t Color;
-  // {'name': 'Duration', 'type': 'uint32', 'size_bytes': 4}
-  uint32_t Duration;
-} lifxLightSetColor_t;
-
-// {'pkt_type': 119, 'size_bytes': 25}
-typedef struct {
-  // {'type': 'reserved', 'size_bytes': 1}
-  uint8_t pad0;
-  // {'name': 'Transient', 'type': 'bool', 'size_bytes': 1}
-  bool Transient;
-  // {'name': 'Color', 'type': '<LightHsbk>', 'size_bytes': 8}
-  lifxLightHsbk_t Color;
-  // {'name': 'Period', 'type': 'uint32', 'size_bytes': 4}
-  uint32_t Period;
-  // {'name': 'Cycles', 'type': 'float32', 'size_bytes': 4}
-  float Cycles;
-  // {'name': 'SkewRatio', 'type': 'int16', 'size_bytes': 2}
-  int16_t SkewRatio;
-  // {'name': 'Waveform', 'type': '<LightWaveform>', 'size_bytes': 1}
-  lifxLightWaveform_t Waveform;
-  // {'name': 'SetHue', 'type': 'bool', 'size_bytes': 1}
-  bool SetHue;
-  // {'name': 'SetSaturation', 'type': 'bool', 'size_bytes': 1}
-  bool SetSaturation;
-  // {'name': 'SetBrightness', 'type': 'bool', 'size_bytes': 1}
-  bool SetBrightness;
-  // {'name': 'SetKelvin', 'type': 'bool', 'size_bytes': 1}
-  bool SetKelvin;
-} lifxLightSetWaveformOptional_t;
-
-// {'pkt_type': 103, 'size_bytes': 21}
-typedef struct {
-  // {'type': 'reserved', 'size_bytes': 1}
-  uint8_t pad0;
-  // {'name': 'Transient', 'type': 'bool', 'size_bytes': 1}
-  bool Transient;
-  // {'name': 'Color', 'type': '<LightHsbk>', 'size_bytes': 8}
-  lifxLightHsbk_t Color;
-  // {'name': 'Period', 'type': 'uint32', 'size_bytes': 4}
-  uint32_t Period;
-  // {'name': 'Cycles', 'type': 'float32', 'size_bytes': 4}
-  float Cycles;
-  // {'name': 'SkewRatio', 'type': 'int16', 'size_bytes': 2}
-  int16_t SkewRatio;
-  // {'name': 'Waveform', 'type': '<LightWaveform>', 'size_bytes': 1}
-  lifxLightWaveform_t Waveform;
-} lifxLightSetWaveform_t;
-
-// {'pkt_type': 116, 'size_bytes': 0}
-typedef struct {
-} lifxLightGetPower_t;
-
-// {'pkt_type': 117, 'size_bytes': 6}
-typedef struct {
-  // {'name': 'Level', 'type': 'uint16', 'size_bytes': 2}
-  uint16_t Level;
-  // {'name': 'Duration', 'type': 'uint32', 'size_bytes': 4}
-  uint32_t Duration;
-} lifxLightSetPower_t;
+} lifxDeviceGetService_t;
 
 // {'pkt_type': 118, 'size_bytes': 2}
 typedef struct {
-  // {'name': 'Level', 'type': 'uint16', 'size_bytes': 2}
+  // {'size_bytes': 2, 'type': 'uint16', 'name': 'Level'}
   uint16_t Level;
 } lifxLightStatePower_t;
-
-// {'pkt_type': 107, 'size_bytes': 52}
-typedef struct {
-  // {'name': 'Color', 'type': '<LightHsbk>', 'size_bytes': 8}
-  lifxLightHsbk_t Color;
-  // {'type': 'reserved', 'size_bytes': 2}
-  uint8_t pad1[2];
-  // {'name': 'Power', 'type': 'uint16', 'size_bytes': 2}
-  uint16_t Power;
-  // {'name': 'Label', 'type': '[32]byte', 'size_bytes': 32}
-  uint8_t Label[32];
-  // {'type': 'reserved', 'size_bytes': 8}
-  uint8_t pad4[8];
-} lifxLightState_t;
 
 // {'pkt_type': 120, 'size_bytes': 0}
 typedef struct {
 } lifxLightGetInfrared_t;
 
-// {'pkt_type': 121, 'size_bytes': 2}
+// {'pkt_type': 107, 'size_bytes': 52}
 typedef struct {
-  // {'name': 'Brightness', 'type': 'uint16', 'size_bytes': 2}
-  uint16_t Brightness;
-} lifxLightStateInfrared_t;
+  // {'size_bytes': 8, 'type': '<LightHsbk>', 'name': 'Color'}
+  lifxLightHsbk_t Color;
+  // {'size_bytes': 2, 'type': 'reserved'}
+  uint8_t pad1[2];
+  // {'size_bytes': 2, 'type': 'uint16', 'name': 'Power'}
+  uint16_t Power;
+  // {'size_bytes': 32, 'type': '[32]byte', 'name': 'Label'}
+  uint8_t Label[32];
+  // {'size_bytes': 8, 'type': 'reserved'}
+  uint8_t pad4[8];
+} lifxLightState_t;
+
+// {'pkt_type': 117, 'size_bytes': 6}
+typedef struct {
+  // {'size_bytes': 2, 'type': 'uint16', 'name': 'Level'}
+  uint16_t Level;
+  // {'size_bytes': 4, 'type': 'uint32', 'name': 'Duration'}
+  uint32_t Duration;
+} lifxLightSetPower_t;
+
+// {'pkt_type': 119, 'size_bytes': 25}
+typedef struct {
+  // {'size_bytes': 1, 'type': 'reserved'}
+  uint8_t pad0;
+  // {'size_bytes': 1, 'type': 'bool', 'name': 'Transient'}
+  bool Transient;
+  // {'size_bytes': 8, 'type': '<LightHsbk>', 'name': 'Color'}
+  lifxLightHsbk_t Color;
+  // {'size_bytes': 4, 'type': 'uint32', 'name': 'Period'}
+  uint32_t Period;
+  // {'size_bytes': 4, 'type': 'float32', 'name': 'Cycles'}
+  float Cycles;
+  // {'size_bytes': 2, 'type': 'int16', 'name': 'SkewRatio'}
+  int16_t SkewRatio;
+  // {'size_bytes': 1, 'type': '<LightWaveform>', 'name': 'Waveform'}
+  lifxLightWaveform_t Waveform;
+  // {'size_bytes': 1, 'type': 'bool', 'name': 'SetHue'}
+  bool SetHue;
+  // {'size_bytes': 1, 'type': 'bool', 'name': 'SetSaturation'}
+  bool SetSaturation;
+  // {'size_bytes': 1, 'type': 'bool', 'name': 'SetBrightness'}
+  bool SetBrightness;
+  // {'size_bytes': 1, 'type': 'bool', 'name': 'SetKelvin'}
+  bool SetKelvin;
+} lifxLightSetWaveformOptional_t;
+
+// {'pkt_type': 103, 'size_bytes': 21}
+typedef struct {
+  // {'size_bytes': 1, 'type': 'reserved'}
+  uint8_t pad0;
+  // {'size_bytes': 1, 'type': 'bool', 'name': 'Transient'}
+  bool Transient;
+  // {'size_bytes': 8, 'type': '<LightHsbk>', 'name': 'Color'}
+  lifxLightHsbk_t Color;
+  // {'size_bytes': 4, 'type': 'uint32', 'name': 'Period'}
+  uint32_t Period;
+  // {'size_bytes': 4, 'type': 'float32', 'name': 'Cycles'}
+  float Cycles;
+  // {'size_bytes': 2, 'type': 'int16', 'name': 'SkewRatio'}
+  int16_t SkewRatio;
+  // {'size_bytes': 1, 'type': '<LightWaveform>', 'name': 'Waveform'}
+  lifxLightWaveform_t Waveform;
+} lifxLightSetWaveform_t;
+
+// {'pkt_type': 101, 'size_bytes': 0}
+typedef struct {
+} lifxLightGet_t;
 
 // {'pkt_type': 122, 'size_bytes': 2}
 typedef struct {
-  // {'name': 'Brightness', 'type': 'uint16', 'size_bytes': 2}
+  // {'size_bytes': 2, 'type': 'uint16', 'name': 'Brightness'}
   uint16_t Brightness;
 } lifxLightSetInfrared_t;
+
+// {'pkt_type': 102, 'size_bytes': 13}
+typedef struct {
+  // {'size_bytes': 1, 'type': 'reserved'}
+  uint8_t pad0;
+  // {'size_bytes': 8, 'type': '<LightHsbk>', 'name': 'Color'}
+  lifxLightHsbk_t Color;
+  // {'size_bytes': 4, 'type': 'uint32', 'name': 'Duration'}
+  uint32_t Duration;
+} lifxLightSetColor_t;
+
+// {'pkt_type': 121, 'size_bytes': 2}
+typedef struct {
+  // {'size_bytes': 2, 'type': 'uint16', 'name': 'Brightness'}
+  uint16_t Brightness;
+} lifxLightStateInfrared_t;
+
+// {'pkt_type': 116, 'size_bytes': 0}
+typedef struct {
+} lifxLightGetPower_t;
+
+// {'pkt_type': 718, 'size_bytes': 2}
+typedef struct {
+  // {'size_bytes': 1, 'type': 'uint8', 'name': 'Reserved0'}
+  uint8_t Reserved0;
+  // {'size_bytes': 1, 'type': 'uint8', 'name': 'Reserved1'}
+  uint8_t Reserved1;
+} lifxTileGetEffect_t;
 
 // {'pkt_type': 701, 'size_bytes': 0}
 typedef struct {
@@ -369,155 +377,159 @@ typedef struct {
 
 // {'pkt_type': 702, 'size_bytes': 882}
 typedef struct {
-  // {'name': 'StartIndex', 'type': 'uint8', 'size_bytes': 1}
+  // {'size_bytes': 1, 'type': 'uint8', 'name': 'StartIndex'}
   uint8_t StartIndex;
-  // {'name': 'TileDevices', 'type': '[16]<TileStateDevice>', 'size_bytes': 880}
+  // {'size_bytes': 880, 'type': '[16]<TileStateDevice>', 'name': 'TileDevices'}
   lifxTileStateDevice_t TileDevices;
-  // {'name': 'TileDevicesCount', 'type': 'uint8', 'size_bytes': 1}
+  // {'size_bytes': 1, 'type': 'uint8', 'name': 'TileDevicesCount'}
   uint8_t TileDevicesCount;
 } lifxTileStateDeviceChain_t;
 
-// {'pkt_type': 703, 'size_bytes': 11}
-typedef struct {
-  // {'name': 'TileIndex', 'type': 'uint8', 'size_bytes': 1}
-  uint8_t TileIndex;
-  // {'type': 'reserved', 'size_bytes': 2}
-  uint8_t pad1[2];
-  // {'name': 'UserX', 'type': 'float32', 'size_bytes': 4}
-  float UserX;
-  // {'name': 'UserY', 'type': 'float32', 'size_bytes': 4}
-  float UserY;
-} lifxTileSetUserPosition_t;
-
-// {'pkt_type': 707, 'size_bytes': 6}
-typedef struct {
-  // {'name': 'TileIndex', 'type': 'uint8', 'size_bytes': 1}
-  uint8_t TileIndex;
-  // {'name': 'Length', 'type': 'uint8', 'size_bytes': 1}
-  uint8_t Length;
-  // {'name': 'Rect', 'type': '<TileBufferRect>', 'size_bytes': 4}
-  lifxTileBufferRect_t Rect;
-} lifxTileGet64_t;
-
 // {'pkt_type': 711, 'size_bytes': 517}
 typedef struct {
-  // {'name': 'TileIndex', 'type': 'uint8', 'size_bytes': 1}
+  // {'size_bytes': 1, 'type': 'uint8', 'name': 'TileIndex'}
   uint8_t TileIndex;
-  // {'name': 'Rect', 'type': '<TileBufferRect>', 'size_bytes': 4}
+  // {'size_bytes': 4, 'type': '<TileBufferRect>', 'name': 'Rect'}
   lifxTileBufferRect_t Rect;
-  // {'name': 'Colors', 'type': '[64]<LightHsbk>', 'size_bytes': 512}
+  // {'size_bytes': 512, 'type': '[64]<LightHsbk>', 'name': 'Colors'}
   lifxLightHsbk_t Colors;
 } lifxTileState64_t;
 
 // {'pkt_type': 715, 'size_bytes': 522}
 typedef struct {
-  // {'name': 'TileIndex', 'type': 'uint8', 'size_bytes': 1}
+  // {'size_bytes': 1, 'type': 'uint8', 'name': 'TileIndex'}
   uint8_t TileIndex;
-  // {'name': 'Length', 'type': 'uint8', 'size_bytes': 1}
+  // {'size_bytes': 1, 'type': 'uint8', 'name': 'Length'}
   uint8_t Length;
-  // {'name': 'Rect', 'type': '<TileBufferRect>', 'size_bytes': 4}
+  // {'size_bytes': 4, 'type': '<TileBufferRect>', 'name': 'Rect'}
   lifxTileBufferRect_t Rect;
-  // {'name': 'Duration', 'type': 'uint32', 'size_bytes': 4}
+  // {'size_bytes': 4, 'type': 'uint32', 'name': 'Duration'}
   uint32_t Duration;
-  // {'name': 'Colors', 'type': '[64]<LightHsbk>', 'size_bytes': 512}
+  // {'size_bytes': 512, 'type': '[64]<LightHsbk>', 'name': 'Colors'}
   lifxLightHsbk_t Colors;
 } lifxTileSet64_t;
 
-// {'pkt_type': 718, 'size_bytes': 2}
+// {'pkt_type': 703, 'size_bytes': 11}
 typedef struct {
-  // {'name': 'Reserved0', 'type': 'uint8', 'size_bytes': 1}
-  uint8_t Reserved0;
-  // {'name': 'Reserved1', 'type': 'uint8', 'size_bytes': 1}
-  uint8_t Reserved1;
-} lifxTileGetEffect_t;
+  // {'size_bytes': 1, 'type': 'uint8', 'name': 'TileIndex'}
+  uint8_t TileIndex;
+  // {'size_bytes': 2, 'type': 'reserved'}
+  uint8_t pad1[2];
+  // {'size_bytes': 4, 'type': 'float32', 'name': 'UserX'}
+  float UserX;
+  // {'size_bytes': 4, 'type': 'float32', 'name': 'UserY'}
+  float UserY;
+} lifxTileSetUserPosition_t;
 
 // {'pkt_type': 719, 'size_bytes': 188}
 typedef struct {
-  // {'name': 'Reserved0', 'type': 'uint8', 'size_bytes': 1}
+  // {'size_bytes': 1, 'type': 'uint8', 'name': 'Reserved0'}
   uint8_t Reserved0;
-  // {'name': 'Reserved1', 'type': 'uint8', 'size_bytes': 1}
+  // {'size_bytes': 1, 'type': 'uint8', 'name': 'Reserved1'}
   uint8_t Reserved1;
-  // {'name': 'Settings', 'type': '<TileEffectSettings>', 'size_bytes': 186}
+  // {'size_bytes': 186, 'type': '<TileEffectSettings>', 'name': 'Settings'}
   lifxTileEffectSettings_t Settings;
 } lifxTileSetEffect_t;
 
 // {'pkt_type': 720, 'size_bytes': 187}
 typedef struct {
-  // {'name': 'Reserved0', 'type': 'uint8', 'size_bytes': 1}
+  // {'size_bytes': 1, 'type': 'uint8', 'name': 'Reserved0'}
   uint8_t Reserved0;
-  // {'name': 'Settings', 'type': '<TileEffectSettings>', 'size_bytes': 186}
+  // {'size_bytes': 186, 'type': '<TileEffectSettings>', 'name': 'Settings'}
   lifxTileEffectSettings_t Settings;
 } lifxTileStateEffect_t;
 
+// {'pkt_type': 707, 'size_bytes': 6}
+typedef struct {
+  // {'size_bytes': 1, 'type': 'uint8', 'name': 'TileIndex'}
+  uint8_t TileIndex;
+  // {'size_bytes': 1, 'type': 'uint8', 'name': 'Length'}
+  uint8_t Length;
+  // {'size_bytes': 4, 'type': '<TileBufferRect>', 'name': 'Rect'}
+  lifxTileBufferRect_t Rect;
+} lifxTileGet64_t;
+
+// {'pkt_type': 512, 'size_bytes': 661}
+typedef struct {
+  // {'size_bytes': 2, 'type': 'uint16', 'name': 'Count'}
+  uint16_t Count;
+  // {'size_bytes': 2, 'type': 'uint16', 'name': 'Index'}
+  uint16_t Index;
+  // {'size_bytes': 1, 'type': 'uint8', 'name': 'ColorsCount'}
+  uint8_t ColorsCount;
+  // {'size_bytes': 656, 'type': '[82]<LightHsbk>', 'name': 'Colors'}
+  lifxLightHsbk_t Colors;
+} lifxMultiZoneExtendedStateMultiZone_t;
+
+// {'pkt_type': 506, 'size_bytes': 66}
+typedef struct {
+  // {'size_bytes': 1, 'type': 'uint8', 'name': 'Count'}
+  uint8_t Count;
+  // {'size_bytes': 1, 'type': 'uint8', 'name': 'Index'}
+  uint8_t Index;
+  // {'size_bytes': 64, 'type': '[8]<LightHsbk>', 'name': 'Colors'}
+  lifxLightHsbk_t Colors;
+} lifxMultiZoneStateMultiZone_t;
+
 // {'pkt_type': 501, 'size_bytes': 15}
 typedef struct {
-  // {'name': 'StartIndex', 'type': 'uint8', 'size_bytes': 1}
+  // {'size_bytes': 1, 'type': 'uint8', 'name': 'StartIndex'}
   uint8_t StartIndex;
-  // {'name': 'EndIndex', 'type': 'uint8', 'size_bytes': 1}
+  // {'size_bytes': 1, 'type': 'uint8', 'name': 'EndIndex'}
   uint8_t EndIndex;
-  // {'name': 'Color', 'type': '<LightHsbk>', 'size_bytes': 8}
+  // {'size_bytes': 8, 'type': '<LightHsbk>', 'name': 'Color'}
   lifxLightHsbk_t Color;
-  // {'name': 'Duration', 'type': 'uint32', 'size_bytes': 4}
+  // {'size_bytes': 4, 'type': 'uint32', 'name': 'Duration'}
   uint32_t Duration;
-  // {'name': 'Apply', 'type': '<MultiZoneApplicationRequest>', 'size_bytes': 1}
+  // {'size_bytes': 1, 'type': '<MultiZoneApplicationRequest>', 'name': 'Apply'}
   lifxMultiZoneApplicationRequest_t Apply;
 } lifxMultiZoneSetColorZones_t;
 
+// {'pkt_type': 508, 'size_bytes': 59}
+typedef struct {
+  // {'size_bytes': 59, 'type': '<MultiZoneEffectSettings>', 'name': 'Settings'}
+  lifxMultiZoneEffectSettings_t Settings;
+} lifxMultiZoneSetEffect_t;
+
 // {'pkt_type': 502, 'size_bytes': 2}
 typedef struct {
-  // {'name': 'StartIndex', 'type': 'uint8', 'size_bytes': 1}
+  // {'size_bytes': 1, 'type': 'uint8', 'name': 'StartIndex'}
   uint8_t StartIndex;
-  // {'name': 'EndIndex', 'type': 'uint8', 'size_bytes': 1}
+  // {'size_bytes': 1, 'type': 'uint8', 'name': 'EndIndex'}
   uint8_t EndIndex;
 } lifxMultiZoneGetColorZones_t;
 
 // {'pkt_type': 503, 'size_bytes': 10}
 typedef struct {
-  // {'name': 'Count', 'type': 'uint8', 'size_bytes': 1}
+  // {'size_bytes': 1, 'type': 'uint8', 'name': 'Count'}
   uint8_t Count;
-  // {'name': 'Index', 'type': 'uint8', 'size_bytes': 1}
+  // {'size_bytes': 1, 'type': 'uint8', 'name': 'Index'}
   uint8_t Index;
-  // {'name': 'Color', 'type': '<LightHsbk>', 'size_bytes': 8}
+  // {'size_bytes': 8, 'type': '<LightHsbk>', 'name': 'Color'}
   lifxLightHsbk_t Color;
 } lifxMultiZoneStateZone_t;
-
-// {'pkt_type': 506, 'size_bytes': 66}
-typedef struct {
-  // {'name': 'Count', 'type': 'uint8', 'size_bytes': 1}
-  uint8_t Count;
-  // {'name': 'Index', 'type': 'uint8', 'size_bytes': 1}
-  uint8_t Index;
-  // {'name': 'Colors', 'type': '[8]<LightHsbk>', 'size_bytes': 64}
-  lifxLightHsbk_t Colors;
-} lifxMultiZoneStateMultiZone_t;
 
 // {'pkt_type': 507, 'size_bytes': 0}
 typedef struct {
 } lifxMultiZoneGetEffect_t;
 
-// {'pkt_type': 508, 'size_bytes': 59}
-typedef struct {
-  // {'name': 'Settings', 'type': '<MultiZoneEffectSettings>', 'size_bytes': 59}
-  lifxMultiZoneEffectSettings_t Settings;
-} lifxMultiZoneSetEffect_t;
-
 // {'pkt_type': 509, 'size_bytes': 59}
 typedef struct {
-  // {'name': 'Settings', 'type': '<MultiZoneEffectSettings>', 'size_bytes': 59}
+  // {'size_bytes': 59, 'type': '<MultiZoneEffectSettings>', 'name': 'Settings'}
   lifxMultiZoneEffectSettings_t Settings;
 } lifxMultiZoneStateEffect_t;
 
 // {'pkt_type': 510, 'size_bytes': 664}
 typedef struct {
-  // {'name': 'Duration', 'type': 'uint32', 'size_bytes': 4}
+  // {'size_bytes': 4, 'type': 'uint32', 'name': 'Duration'}
   uint32_t Duration;
-  // {'name': 'Apply', 'type': '<MultiZoneExtendedApplicationRequest>', 'size_bytes': 1}
+  // {'size_bytes': 1, 'type': '<MultiZoneExtendedApplicationRequest>', 'name': 'Apply'}
   lifxMultiZoneExtendedApplicationRequest_t Apply;
-  // {'name': 'Index', 'type': 'uint16', 'size_bytes': 2}
+  // {'size_bytes': 2, 'type': 'uint16', 'name': 'Index'}
   uint16_t Index;
-  // {'name': 'ColorsCount', 'type': 'uint8', 'size_bytes': 1}
+  // {'size_bytes': 1, 'type': 'uint8', 'name': 'ColorsCount'}
   uint8_t ColorsCount;
-  // {'name': 'Colors', 'type': '[82]<LightHsbk>', 'size_bytes': 656}
+  // {'size_bytes': 656, 'type': '[82]<LightHsbk>', 'name': 'Colors'}
   lifxLightHsbk_t Colors;
 } lifxMultiZoneExtendedSetColorZones_t;
 
@@ -525,17 +537,68 @@ typedef struct {
 typedef struct {
 } lifxMultiZoneExtendedGetColorZones_t;
 
-// {'pkt_type': 512, 'size_bytes': 661}
-typedef struct {
-  // {'name': 'Count', 'type': 'uint16', 'size_bytes': 2}
-  uint16_t Count;
-  // {'name': 'Index', 'type': 'uint16', 'size_bytes': 2}
-  uint16_t Index;
-  // {'name': 'ColorsCount', 'type': 'uint8', 'size_bytes': 1}
-  uint8_t ColorsCount;
-  // {'name': 'Colors', 'type': '[82]<LightHsbk>', 'size_bytes': 656}
-  lifxLightHsbk_t Colors;
-} lifxMultiZoneExtendedStateMultiZone_t;
+typedef union
+{
+  lifxDeviceAcknowledgement_t DeviceAcknowledgement;
+  lifxDeviceStateService_t DeviceStateService;
+  lifxDeviceGetHostFirmware_t DeviceGetHostFirmware;
+  lifxDeviceStateHostInfo_t DeviceStateHostInfo;
+  lifxDeviceGetLabel_t DeviceGetLabel;
+  lifxDeviceGetWifiInfo_t DeviceGetWifiInfo;
+  lifxDeviceStateLabel_t DeviceStateLabel;
+  lifxDeviceGetLocation_t DeviceGetLocation;
+  lifxDeviceGetPower_t DeviceGetPower;
+  lifxDeviceGetHostInfo_t DeviceGetHostInfo;
+  lifxDeviceStateWifiFirmware_t DeviceStateWifiFirmware;
+  lifxDeviceStateVersion_t DeviceStateVersion;
+  lifxDeviceGetVersion_t DeviceGetVersion;
+  lifxDeviceGetInfo_t DeviceGetInfo;
+  lifxDeviceStateWifiInfo_t DeviceStateWifiInfo;
+  lifxDeviceSetLabel_t DeviceSetLabel;
+  lifxDeviceStatePower_t DeviceStatePower;
+  lifxDeviceStateGroup_t DeviceStateGroup;
+  lifxDeviceGetWifiFirmware_t DeviceGetWifiFirmware;
+  lifxDeviceStateInfo_t DeviceStateInfo;
+  lifxDeviceStateHostFirmware_t DeviceStateHostFirmware;
+  lifxDeviceStateLocation_t DeviceStateLocation;
+  lifxDeviceEchoRequest_t DeviceEchoRequest;
+  lifxDeviceSetGroup_t DeviceSetGroup;
+  lifxDeviceSetLocation_t DeviceSetLocation;
+  lifxDeviceSetPower_t DeviceSetPower;
+  lifxDeviceEchoResponse_t DeviceEchoResponse;
+  lifxDeviceGetGroup_t DeviceGetGroup;
+  lifxDeviceGetService_t DeviceGetService;
+  lifxLightStatePower_t LightStatePower;
+  lifxLightGetInfrared_t LightGetInfrared;
+  lifxLightState_t LightState;
+  lifxLightSetPower_t LightSetPower;
+  lifxLightSetWaveformOptional_t LightSetWaveformOptional;
+  lifxLightSetWaveform_t LightSetWaveform;
+  lifxLightGet_t LightGet;
+  lifxLightSetInfrared_t LightSetInfrared;
+  lifxLightSetColor_t LightSetColor;
+  lifxLightStateInfrared_t LightStateInfrared;
+  lifxLightGetPower_t LightGetPower;
+  lifxMultiZoneExtendedStateMultiZone_t MultiZoneExtendedStateMultiZone;
+  lifxMultiZoneStateMultiZone_t MultiZoneStateMultiZone;
+  lifxMultiZoneSetColorZones_t MultiZoneSetColorZones;
+  lifxMultiZoneSetEffect_t MultiZoneSetEffect;
+  lifxMultiZoneGetColorZones_t MultiZoneGetColorZones;
+  lifxMultiZoneStateZone_t MultiZoneStateZone;
+  lifxMultiZoneGetEffect_t MultiZoneGetEffect;
+  lifxMultiZoneStateEffect_t MultiZoneStateEffect;
+  lifxMultiZoneExtendedSetColorZones_t MultiZoneExtendedSetColorZones;
+  lifxMultiZoneExtendedGetColorZones_t MultiZoneExtendedGetColorZones;
+  lifxTileGetEffect_t TileGetEffect;
+  lifxTileGetDeviceChain_t TileGetDeviceChain;
+  lifxTileStateDeviceChain_t TileStateDeviceChain;
+  lifxTileState64_t TileState64;
+  lifxTileSet64_t TileSet64;
+  lifxTileSetUserPosition_t TileSetUserPosition;
+  lifxTileSetEffect_t TileSetEffect;
+  lifxTileStateEffect_t TileStateEffect;
+  lifxTileGet64_t TileGet64;
+} lifxPacket_t;
 
 #ifdef __cplusplus
 }

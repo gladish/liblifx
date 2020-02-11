@@ -1,5 +1,5 @@
 //
-// DO NOT EDIT - AUTO-GENERATE:2020-02-09 20:04:33.279354
+// DO NOT EDIT - AUTO-GENERATE:2020-02-10 14:58:43.459695
 //
 #ifndef __LIFX_FIELDS_H__
 #define __LIFX_FIELDS_H__
@@ -15,167 +15,165 @@ extern "C" {
 //      referenced in the fields structures
 // {'pkt_type': 33, 'size_bytes': 12}
 typedef struct {
-  // {'name': 'Vendor', 'type': 'uint32', 'size_bytes': 4}
+  // {'size_bytes': 4, 'type': 'uint32', 'name': 'Vendor'}
   uint32_t Vendor;
-  // {'name': 'Product', 'type': 'uint32', 'size_bytes': 4}
+  // {'size_bytes': 4, 'type': 'uint32', 'name': 'Product'}
   uint32_t Product;
-  // {'name': 'Version', 'type': 'uint32', 'size_bytes': 4}
+  // {'size_bytes': 4, 'type': 'uint32', 'name': 'Version'}
   uint32_t Version;
 } lifxDeviceStateVersion_t;
 // {'pkt_type': 15, 'size_bytes': 20}
 typedef struct {
-  // {'name': 'Build', 'type': 'uint64', 'size_bytes': 8}
+  // {'size_bytes': 8, 'type': 'uint64', 'name': 'Build'}
   uint64_t Build;
-  // {'type': 'reserved', 'size_bytes': 8}
+  // {'size_bytes': 8, 'type': 'reserved'}
   uint8_t pad1[8];
-  // {'name': 'VersionMinor', 'type': 'uint16', 'size_bytes': 2}
+  // {'size_bytes': 2, 'type': 'uint16', 'name': 'VersionMinor'}
   uint16_t VersionMinor;
-  // {'name': 'VersionMajor', 'type': 'uint16', 'size_bytes': 2}
+  // {'size_bytes': 2, 'type': 'uint16', 'name': 'VersionMajor'}
   uint16_t VersionMajor;
 } lifxDeviceStateHostFirmware_t;
 // XXX: end hack
 
-
-
 // {'size_bytes': 8}
 typedef struct {
-  // {'name': 'Hue', 'type': 'uint16', 'size_bytes': 2}
+  // {'size_bytes': 2, 'type': 'uint16', 'name': 'Hue'}
   uint16_t Hue;
-  // {'name': 'Saturation', 'type': 'uint16', 'size_bytes': 2}
+  // {'size_bytes': 2, 'type': 'uint16', 'name': 'Saturation'}
   uint16_t Saturation;
-  // {'name': 'Brightness', 'type': 'uint16', 'size_bytes': 2}
+  // {'size_bytes': 2, 'type': 'uint16', 'name': 'Brightness'}
   uint16_t Brightness;
-  // {'name': 'Kelvin', 'type': 'uint16', 'size_bytes': 2}
+  // {'size_bytes': 2, 'type': 'uint16', 'name': 'Kelvin'}
   uint16_t Kelvin;
 } lifxLightHsbk_t;
 
+// {'size_bytes': 6}
+typedef struct {
+  // {'size_bytes': 2, 'type': 'int16', 'name': 'X'}
+  int16_t X;
+  // {'size_bytes': 2, 'type': 'int16', 'name': 'Y'}
+  int16_t Y;
+  // {'size_bytes': 2, 'type': 'int16', 'name': 'Z'}
+  int16_t Z;
+} lifxTileAccelMeas_t;
+
 // {'size_bytes': 32}
 typedef struct {
-  // {'name': 'Parameter0', 'type': 'uint32', 'size_bytes': 4}
+  // {'size_bytes': 4, 'type': 'uint32', 'name': 'Parameter0'}
   uint32_t Parameter0;
-  // {'name': 'Parameter1', 'type': 'uint32', 'size_bytes': 4}
+  // {'size_bytes': 4, 'type': 'uint32', 'name': 'Parameter1'}
   uint32_t Parameter1;
-  // {'name': 'Parameter2', 'type': 'uint32', 'size_bytes': 4}
+  // {'size_bytes': 4, 'type': 'uint32', 'name': 'Parameter2'}
   uint32_t Parameter2;
-  // {'name': 'Parameter3', 'type': 'uint32', 'size_bytes': 4}
+  // {'size_bytes': 4, 'type': 'uint32', 'name': 'Parameter3'}
   uint32_t Parameter3;
-  // {'name': 'Parameter4', 'type': 'uint32', 'size_bytes': 4}
+  // {'size_bytes': 4, 'type': 'uint32', 'name': 'Parameter4'}
   uint32_t Parameter4;
-  // {'name': 'Parameter5', 'type': 'uint32', 'size_bytes': 4}
+  // {'size_bytes': 4, 'type': 'uint32', 'name': 'Parameter5'}
   uint32_t Parameter5;
-  // {'name': 'Parameter6', 'type': 'uint32', 'size_bytes': 4}
+  // {'size_bytes': 4, 'type': 'uint32', 'name': 'Parameter6'}
   uint32_t Parameter6;
-  // {'name': 'Parameter7', 'type': 'uint32', 'size_bytes': 4}
+  // {'size_bytes': 4, 'type': 'uint32', 'name': 'Parameter7'}
+  uint32_t Parameter7;
+} lifxTileEffectParameter_t;
+
+// {'size_bytes': 55}
+typedef struct {
+  // {'size_bytes': 6, 'type': '<TileAccelMeas>', 'name': 'AccelMeas'}
+  lifxTileAccelMeas_t AccelMeas;
+  // {'size_bytes': 2, 'type': 'reserved'}
+  uint8_t pad1[2];
+  // {'size_bytes': 4, 'type': 'float32', 'name': 'UserX'}
+  float UserX;
+  // {'size_bytes': 4, 'type': 'float32', 'name': 'UserY'}
+  float UserY;
+  // {'size_bytes': 1, 'type': 'uint8', 'name': 'Width'}
+  uint8_t Width;
+  // {'size_bytes': 1, 'type': 'uint8', 'name': 'Height'}
+  uint8_t Height;
+  // {'size_bytes': 1, 'type': 'reserved'}
+  uint8_t pad6;
+  // {'size_bytes': 12, 'type': '<DeviceStateVersion>', 'name': 'DeviceVersion'}
+  lifxDeviceStateVersion_t DeviceVersion;
+  // {'size_bytes': 20, 'type': '<DeviceStateHostFirmware>', 'name': 'Firmware'}
+  lifxDeviceStateHostFirmware_t Firmware;
+  // {'size_bytes': 4, 'type': 'reserved'}
+  uint8_t pad9[4];
+} lifxTileStateDevice_t;
+
+// {'size_bytes': 186}
+typedef struct {
+  // {'size_bytes': 4, 'type': 'uint32', 'name': 'Instanceid'}
+  uint32_t Instanceid;
+  // {'size_bytes': 1, 'type': '<TileEffectType>', 'name': 'Type'}
+  lifxTileEffectType_t Type;
+  // {'size_bytes': 4, 'type': 'uint32', 'name': 'Speed'}
+  uint32_t Speed;
+  // {'size_bytes': 8, 'type': 'uint64', 'name': 'Duration'}
+  uint64_t Duration;
+  // {'size_bytes': 4, 'type': 'uint32', 'name': 'Reserved0'}
+  uint32_t Reserved0;
+  // {'size_bytes': 4, 'type': 'uint32', 'name': 'Reserved1'}
+  uint32_t Reserved1;
+  // {'size_bytes': 32, 'type': '<TileEffectParameter>', 'name': 'Parameter'}
+  lifxTileEffectParameter_t Parameter;
+  // {'size_bytes': 1, 'type': 'uint8', 'name': 'PaletteCount'}
+  uint8_t PaletteCount;
+  // {'size_bytes': 128, 'type': '[16]<LightHsbk>', 'name': 'Palette'}
+  lifxLightHsbk_t Palette;
+} lifxTileEffectSettings_t;
+
+// {'size_bytes': 32}
+typedef struct {
+  // {'size_bytes': 4, 'type': 'uint32', 'name': 'Parameter0'}
+  uint32_t Parameter0;
+  // {'size_bytes': 4, 'type': 'uint32', 'name': 'Parameter1'}
+  uint32_t Parameter1;
+  // {'size_bytes': 4, 'type': 'uint32', 'name': 'Parameter2'}
+  uint32_t Parameter2;
+  // {'size_bytes': 4, 'type': 'uint32', 'name': 'Parameter3'}
+  uint32_t Parameter3;
+  // {'size_bytes': 4, 'type': 'uint32', 'name': 'Parameter4'}
+  uint32_t Parameter4;
+  // {'size_bytes': 4, 'type': 'uint32', 'name': 'Parameter5'}
+  uint32_t Parameter5;
+  // {'size_bytes': 4, 'type': 'uint32', 'name': 'Parameter6'}
+  uint32_t Parameter6;
+  // {'size_bytes': 4, 'type': 'uint32', 'name': 'Parameter7'}
   uint32_t Parameter7;
 } lifxMultiZoneEffectParameter_t;
 
 // {'size_bytes': 59}
 typedef struct {
-  // {'name': 'Instanceid', 'type': 'uint32', 'size_bytes': 4}
+  // {'size_bytes': 4, 'type': 'uint32', 'name': 'Instanceid'}
   uint32_t Instanceid;
-  // {'name': 'Type', 'type': '<MultiZoneEffectType>', 'size_bytes': 1}
+  // {'size_bytes': 1, 'type': '<MultiZoneEffectType>', 'name': 'Type'}
   lifxMultiZoneEffectType_t Type;
-  // {'type': 'reserved', 'size_bytes': 2}
+  // {'size_bytes': 2, 'type': 'reserved'}
   uint8_t pad2[2];
-  // {'name': 'Speed', 'type': 'uint32', 'size_bytes': 4}
+  // {'size_bytes': 4, 'type': 'uint32', 'name': 'Speed'}
   uint32_t Speed;
-  // {'name': 'Duration', 'type': 'uint64', 'size_bytes': 8}
+  // {'size_bytes': 8, 'type': 'uint64', 'name': 'Duration'}
   uint64_t Duration;
-  // {'type': 'reserved', 'size_bytes': 4}
+  // {'size_bytes': 4, 'type': 'reserved'}
   uint8_t pad5[4];
-  // {'type': 'reserved', 'size_bytes': 4}
+  // {'size_bytes': 4, 'type': 'reserved'}
   uint8_t pad6[4];
-  // {'name': 'Parameter', 'type': '<MultiZoneEffectParameter>', 'size_bytes': 32}
+  // {'size_bytes': 32, 'type': '<MultiZoneEffectParameter>', 'name': 'Parameter'}
   lifxMultiZoneEffectParameter_t Parameter;
 } lifxMultiZoneEffectSettings_t;
 
-// {'size_bytes': 6}
-typedef struct {
-  // {'name': 'X', 'type': 'int16', 'size_bytes': 2}
-  int16_t X;
-  // {'name': 'Y', 'type': 'int16', 'size_bytes': 2}
-  int16_t Y;
-  // {'name': 'Z', 'type': 'int16', 'size_bytes': 2}
-  int16_t Z;
-} lifxTileAccelMeas_t;
-
-// {'size_bytes': 55}
-typedef struct {
-  // {'name': 'AccelMeas', 'type': '<TileAccelMeas>', 'size_bytes': 6}
-  lifxTileAccelMeas_t AccelMeas;
-  // {'type': 'reserved', 'size_bytes': 2}
-  uint8_t pad1[2];
-  // {'name': 'UserX', 'type': 'float32', 'size_bytes': 4}
-  float UserX;
-  // {'name': 'UserY', 'type': 'float32', 'size_bytes': 4}
-  float UserY;
-  // {'name': 'Width', 'type': 'uint8', 'size_bytes': 1}
-  uint8_t Width;
-  // {'name': 'Height', 'type': 'uint8', 'size_bytes': 1}
-  uint8_t Height;
-  // {'type': 'reserved', 'size_bytes': 1}
-  uint8_t pad6;
-  // {'name': 'DeviceVersion', 'type': '<DeviceStateVersion>', 'size_bytes': 12}
-  lifxDeviceStateVersion_t DeviceVersion;
-  // {'name': 'Firmware', 'type': '<DeviceStateHostFirmware>', 'size_bytes': 20}
-  lifxDeviceStateHostFirmware_t Firmware;
-  // {'type': 'reserved', 'size_bytes': 4}
-  uint8_t pad9[4];
-} lifxTileStateDevice_t;
-
 // {'size_bytes': 4}
 typedef struct {
-  // {'type': 'reserved', 'size_bytes': 1}
+  // {'size_bytes': 1, 'type': 'reserved'}
   uint8_t pad0;
-  // {'name': 'X', 'type': 'uint8', 'size_bytes': 1}
+  // {'size_bytes': 1, 'type': 'uint8', 'name': 'X'}
   uint8_t X;
-  // {'name': 'Y', 'type': 'uint8', 'size_bytes': 1}
+  // {'size_bytes': 1, 'type': 'uint8', 'name': 'Y'}
   uint8_t Y;
-  // {'name': 'Width', 'type': 'uint8', 'size_bytes': 1}
+  // {'size_bytes': 1, 'type': 'uint8', 'name': 'Width'}
   uint8_t Width;
 } lifxTileBufferRect_t;
-
-// {'size_bytes': 32}
-typedef struct {
-  // {'name': 'Parameter0', 'type': 'uint32', 'size_bytes': 4}
-  uint32_t Parameter0;
-  // {'name': 'Parameter1', 'type': 'uint32', 'size_bytes': 4}
-  uint32_t Parameter1;
-  // {'name': 'Parameter2', 'type': 'uint32', 'size_bytes': 4}
-  uint32_t Parameter2;
-  // {'name': 'Parameter3', 'type': 'uint32', 'size_bytes': 4}
-  uint32_t Parameter3;
-  // {'name': 'Parameter4', 'type': 'uint32', 'size_bytes': 4}
-  uint32_t Parameter4;
-  // {'name': 'Parameter5', 'type': 'uint32', 'size_bytes': 4}
-  uint32_t Parameter5;
-  // {'name': 'Parameter6', 'type': 'uint32', 'size_bytes': 4}
-  uint32_t Parameter6;
-  // {'name': 'Parameter7', 'type': 'uint32', 'size_bytes': 4}
-  uint32_t Parameter7;
-} lifxTileEffectParameter_t;
-
-// {'size_bytes': 186}
-typedef struct {
-  // {'name': 'Instanceid', 'type': 'uint32', 'size_bytes': 4}
-  uint32_t Instanceid;
-  // {'name': 'Type', 'type': '<TileEffectType>', 'size_bytes': 1}
-  lifxTileEffectType_t Type;
-  // {'name': 'Speed', 'type': 'uint32', 'size_bytes': 4}
-  uint32_t Speed;
-  // {'name': 'Duration', 'type': 'uint64', 'size_bytes': 8}
-  uint64_t Duration;
-  // {'name': 'Reserved0', 'type': 'uint32', 'size_bytes': 4}
-  uint32_t Reserved0;
-  // {'name': 'Reserved1', 'type': 'uint32', 'size_bytes': 4}
-  uint32_t Reserved1;
-  // {'name': 'Parameter', 'type': '<TileEffectParameter>', 'size_bytes': 32}
-  lifxTileEffectParameter_t Parameter;
-  // {'name': 'PaletteCount', 'type': 'uint8', 'size_bytes': 1}
-  uint8_t PaletteCount;
-  // {'name': 'Palette', 'type': '[16]<LightHsbk>', 'size_bytes': 128}
-  lifxLightHsbk_t Palette;
-} lifxTileEffectSettings_t;
 
 #ifdef __cplusplus
 }

@@ -23,36 +23,28 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#pragma pack(push, 1)
-typedef struct
-{
-  // frame
-  uint16_t  size;
-  uint16_t  protocol:12;
-  uint8_t   addressable:1;
-  uint8_t   tagged:1;
-  uint8_t   origin:2;
-  uint32_t  source;
-
-  // frame address
-  uint8_t   target[8];
-  uint8_t   reserved[6];
-  uint8_t   res_required:1;
-  uint8_t   ack_required:1;
-  uint8_t   :6;
-  uint8_t   sequence;
-
-  // protocol header
-  uint64_t  :64;
-  uint16_t  type;
-  uint16_t  :16;
-} lifxProtocolHeader_t;
-#pragma pack(pop)
+static uint8_t const kLifxProtocolNumber = (uint8_t) 1024u;
 
 struct lifxSession
 {
-  int       udpsoc;
-  uint32_t  source_id;
+  int       Socket;
+  uint32_t  SourceId;
+  uint8_t   SequenceNumber;
+  uint8_t*  ReceiveBuffer;
+  int32_t   ReceiveBufferLength;
+};
+
+struct lifxDevice
+{
+  struct sockaddr_storage Endpoint;
+};
+
+struct lifxMessage
+{
+  lifxProtocolHeader_t  Header;
+  lifxPacket_t          Packet;
+  lifxDevice_t          Sender;
+  int32_t               RefCount;
 };
 
 static void lifxDumpBuffer(uint8_t* p, int n)
@@ -79,17 +71,26 @@ lifxSession_Create(lifxSessionConfig_t const* conf)
   if (!lifx)
     return NULL;
 
-  lifx->udpsoc = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-  if (lifx->udpsoc == -1)
+  lifx->Socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+  if (lifx->Socket == -1)
   {
     free(lifx);
     return NULL;
   }
 
-  lifx->source_id = getpid();
+  lifx->ReceiveBufferLength = (int32_t) sizeof(lifxMessage_t);
+  lifx->ReceiveBuffer = malloc(lifx->ReceiveBufferLength);
+  if (!lifx->ReceiveBuffer)
+  {
+    free(lifx);
+    return NULL;
+  }
+
+  lifx->SourceId = getpid();
+  lifx->SequenceNumber = 0;
 
   flag = 1;
-  ret = setsockopt(lifx->udpsoc, SOL_SOCKET, SO_BROADCAST, &flag, sizeof(flag));
+  ret = setsockopt(lifx->Socket, SOL_SOCKET, SO_BROADCAST, &flag, sizeof(flag));
   if (ret == -1)
   {
     free(lifx);
@@ -107,8 +108,8 @@ lifxSession_Close(lifxSession_t* session)
   if (!lifx)
     return EINVAL;
 
-  if (lifx->udpsoc != -1)
-    close(lifx->udpsoc);
+  if (lifx->Socket != -1)
+    close(lifx->Socket);
   free(lifx);
 
   return 0;
@@ -123,79 +124,122 @@ lifxSession_SendTo(
 {
   lifxProtocolHeader_t header;
   struct sockaddr_in dest;
-  uint8_t* buff;
+  int n;
 
   memset(&header, 0, sizeof(lifxProtocolHeader_t));
   memset(&dest, 0, sizeof(struct sockaddr_in));
 
-  header.size = sizeof(lifxProtocolHeader_t);
-  header.protocol = 1024;
-  header.addressable = 1;
-  header.tagged = 1;
-  header.origin = 0;
-  header.source = 0xdeadbeef;
+  header.Size = sizeof(lifxProtocolHeader_t);
+  header.Protocol = kLifxProtocolNumber;
+  header.Addressable = 1;
+  header.Tagged = 1;
+  header.Origin = 0;
+  header.Source = 0xdeadbeef;
   if (device)
   {
-    header.target[0] = 0;
-    header.target[1] = 0;
-    header.target[2] = 0;
-    header.target[3] = 0;
-    header.target[4] = 0;
-    header.target[5] = 0;
-    header.target[6] = 0;
-    header.target[7] = 0;
+    header.Target[0] = 0;
+    header.Target[1] = 0;
+    header.Target[2] = 0;
+    header.Target[3] = 0;
+    header.Target[4] = 0;
+    header.Target[5] = 0;
+    header.Target[6] = 0;
+    header.Target[7] = 0;
   }
-  header.res_required = 0;
-  header.ack_required = 0;
-  header.sequence = 2;
-  header.type = kLifxPacketTypeDeviceGetService;
+  header.ResRequired = 0;
+  header.AckRequired = 0;
+  header.Sequence = lifxInterlockedIncrement(&lifx->SequenceNumber);
+  header.Type = kLifxPacketTypeDeviceGetService;
 
-  buff = malloc(1024);
+  // TODO: This should come from the lifxDevice
+  memset(&dest, 0, sizeof(struct sockaddr_in));
+  dest.sin_family = AF_INET;
+  dest.sin_port = htons(56700);
+  dest.sin_addr.s_addr = htonl(INADDR_BROADCAST);
 
-  while (1)
-  {
-    int n;
-    fd_set fds;
-    struct timeval timeout;
+  printf("sending:\n");
+  lifxDumpBuffer((uint8_t *)&header, (int) sizeof(lifxProtocolHeader_t));
+  printf("\n\n");
 
-    FD_ZERO(&fds);
-    FD_SET(lifx->udpsoc, &fds);
-
-    memset(&dest, 0, sizeof(struct sockaddr_in));
-    dest.sin_family = AF_INET;
-    dest.sin_port = htons(56700);
-    dest.sin_addr.s_addr = htonl(INADDR_BROADCAST);
-
-    printf("sending:\n");
-    lifxDumpBuffer((uint8_t *)&header, (int) sizeof(lifxProtocolHeader_t));
-    printf("\n\n");
-
-    n = sendto(lifx->udpsoc, &header, sizeof(lifxProtocolHeader_t), 0, (struct sockaddr *)&dest,
+  n = sendto(lifx->Socket, &header, sizeof(lifxProtocolHeader_t), 0, (struct sockaddr *)&dest,
       sizeof(struct sockaddr_in));
 
-    timeout.tv_sec = 2;
-    timeout.tv_usec = 0;
-    select(lifx->udpsoc  + 1, &fds, NULL, NULL, &timeout);
+  if (n == -1)
+    return errno;
 
-    if (FD_ISSET(lifx->udpsoc, &fds))
+  return 0;
+}
+
+int
+lifxSession_RecvFrom(lifxSession_t*   lifx,
+                     lifxMessage_t**  message,
+                     int              timeout)
+{
+  int             n;
+  fd_set          fds;
+  struct timeval  wait_time;
+  lifxMessage_t*  incoming_message;
+
+  n = 0;
+  FD_ZERO(&fds);
+  wait_time.tv_sec = timeout;
+  wait_time.tv_usec = 0;
+
+  n = select(lifx->Socket  + 1, &fds, NULL, NULL, &wait_time);
+  if (n == -1)
+    return errno;
+
+  if (FD_ISSET(lifx->Socket, &fds))
+  {
+    socklen_t source_size;
+    struct sockaddr_storage source;
+
+    #ifdef LIFX_DEBUG
+    memset(lifx->ReceiveBuffer, 0, lifx->ReceiverBufferLength);
+    #endif
+
+    n = recvfrom(lifx->Socket, lifx->ReceiveBuffer, lifx->ReceiveBufferLength, 0,
+      (struct sockaddr *)&source, &source_size);
+
+    if (n == -1)
+      return errno;
+
+    incoming_message = malloc(sizeof(lifxMessage_t));
+    if (!incoming_message)
     {
-      // data to read
-      struct sockaddr_storage source;
-      socklen_t source_size;
-      n = recvfrom(lifx->udpsoc, buff, 1024, 0, (struct sockaddr *)&source, &source_size);
-
-      memset(&header, 0, sizeof(header));
-      memcpy(&header, buff, sizeof(header));
-
-      printf("receive:\n");
-      lifxDumpBuffer(buff, n);
-      printf("\n\n");
+      // TODO:
     }
-    else
-    {
-      printf("timeout\n");
-    }
+
+    memcpy(&incoming_message->Header, lifx->ReceiveBuffer, sizeof(lifxProtocolHeader_t));
+
+    // TODO: auto-generate this function
+    // lifxDecoder_DecodePacket(m->Header.Type, buff + sizeof(lifxProtocolHeader_t), &m->Packet);
+
+    memcpy(&incoming_message->Sender.Endpoint, &source, source_size);
   }
+
+  return 0;
+}
+
+int
+lifxMessage_Retain(lifxMessage_t* m)
+{
+  if (!m)
+    return EINVAL;
+  lifxInterlockedIncrement(&m->RefCount);
+  return 0;
+}
+
+int
+lifxMessage_Release(lifxMessage_t* m)
+{
+  int32_t count;
+  if (!m)
+    return EINVAL;
+
+  count = lifxInterlockedIncrement(&m->RefCount);
+  if (count == 0)
+    free(m);
 
   return 0;
 }
