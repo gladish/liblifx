@@ -95,6 +95,7 @@ class CodeGenerator:
       packet_types.update({int(value["pkt_type"]) : name})
     for name, value in pkts["multi_zone"].items():
       packet_types.update({int(value["pkt_type"]) : name})
+    self.packet_types = packet_types
 
     self.write("\n")
     self.write("typedef enum {\n")
@@ -266,6 +267,8 @@ class CodeGenerator:
     self.write("#include <lifx_fields.h>\n")
     self.write("#include <lifx_packets.h>\n")
     self.write("\n")
+    self.write("int lifxDecoder_DecodePacket(lifxPacketType_t type, lifxPacket_t* pkt, lifxBuffer_t* buff);\n")
+    self.write("\n")
     for s in ["device", "light", "tile", "multi_zone"]:
       for key, val in pkts[s].items():
         struct_name =  "%s%s" % (self.prefix, key)
@@ -287,6 +290,25 @@ class CodeGenerator:
     self.open_file("lifx_encoders.c")
     self.write("#include \"lifx.h\"\n")
     self.write("#include \"lifx_encoders.h\"\n\n")
+
+    self.write("int lifxDecoder_DecodePacket(lifxPacketType_t type, lifxPacket_t* pkt, lifxBuffer_t* buff)\n")
+    self.write("{\n");
+    self.indent()
+    self.write("int ret = 0;\n")
+    self.write("switch (type)\n")
+    self.write("{\n")
+    self.indent()
+    for value, name in sorted(self.packet_types.items()):
+      self.write("case kLifxPacketType%s:\n" % (name))
+      self.write("ret = %sDecoder_Decode%s(&pkt->%s, buff);\n" % (self.prefix, name, name))
+      self.write("break;\n")
+    self.outdent()
+    self.write("}\n")
+    self.write("return ret;\n")
+    self.outdent()
+    self.write("}");
+    self.write("\n")
+
     for s in ["device", "light", "tile", "multi_zone"]:
       for key, pktdef in pkts[s].items():
         self.gen_encoder(key, pktdef)

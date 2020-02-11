@@ -74,7 +74,8 @@ add_library(
   SHARED
   src/lifx.c
   src/lifx_buffer.c
-  src/lifx_encoders.c)
+  src/lifx_encoders.c
+  src/lifx_log.c)
 include_directories(lifx ${CMAKE_CURRENT_BINARY_DIR}/deps/src)
 include_directories(lifx ${CMAKE_CURRENT_SOURCE_DIR}/include)
 #add_dependencies(lifx generate_sources)

@@ -51,13 +51,13 @@ extern "C" {
 
 struct lifxDevice;
 struct lifxSession;
-struct lifxMessage;
 struct lifxDevice;
 
 typedef struct lifxDevice lifxDevice_t;
 typedef struct lifxSession lifxSession_t;
-typedef struct lifxMessage lifxMessage_t;
 typedef struct lifxDevice lifxDevice_t;
+
+#define kLifxDefaultBroadcastPort 56700
 
 #pragma pack(push, 1)
 typedef struct
@@ -91,6 +91,13 @@ typedef struct
 
 typedef struct
 {
+  lifxProtocolHeader_t  Header;
+  lifxPacket_t          Packet;
+  lifxDevice_t*         Sender;
+} lifxMessage_t;
+
+typedef struct
+{
   uint8_t*  Data;
   int       Size;
   int       Position;
@@ -106,31 +113,19 @@ typedef enum
 /**
  *
  */
-int
-lifxMessage_Retain(lifxMessage_t* m);
-
-/**
- *
- */
-int
-lifxMessage_Release(lifxMessage_t* m);
-
-/**
- *
- */
-lifxProtocolHeader_t const* const
+lifxProtocolHeader_t*
 lifxMessage_GetHeader(lifxMessage_t const* m);
 
 /**
  *
  */
-lifxPacket_t const* const
+lifxPacket_t*
 lifxMessage_GetPacket(lifxMessage_t const* m);
 
 /**
  *
  */
-lifxDevice_t const* const
+lifxDevice_t*
 lifxMessage_GetDevice(lifxMessage_t const* m);
 
 /**
@@ -156,7 +151,7 @@ lifxSession_SendTo(lifxSession_t*     lifx,
 
 int
 lifxSession_RecvFrom(lifxSession_t*   lifx,
-                     lifxMessage_t**  message,
+                     lifxMessage_t*   message,
                      int              timeout);
 
 int lifxBuffer_Init(lifxBuffer_t* buff, int n);

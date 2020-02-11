@@ -1,5 +1,5 @@
 //
-// DO NOT EDIT - AUTO-GENERATE:2020-02-10 14:58:43.459531
+// DO NOT EDIT - AUTO-GENERATE:2020-02-10 21:58:35.226400
 //
 #ifndef __LIFX_ENUMS_H__
 #define __LIFX_ENUMS_H__
@@ -9,19 +9,6 @@ extern "C" {
 #endif
 
 #include <stdint.h>
-
-typedef enum {
-  kLifxMultiZoneExtendedApplicationRequestNoApply = 0,
-  kLifxMultiZoneExtendedApplicationRequestApply = 1,
-  kLifxMultiZoneExtendedApplicationRequestApplyOnly = 2  
-} lifxMultiZoneExtendedApplicationRequest_t;
-
-typedef enum {
-  kLifxMultiZoneEffectTypeOff = 0,
-  kLifxMultiZoneEffectTypeMove = 1,
-  kLifxMultiZoneEffectType_reserved2 = 2,
-  kLifxMultiZoneEffectType_reserved3 = 3  
-} lifxMultiZoneEffectType_t;
 
 typedef enum {
   kLifxDeviceServiceUdp = 1,
@@ -40,18 +27,31 @@ typedef enum {
 } lifxLightWaveform_t;
 
 typedef enum {
+  kLifxMultiZoneApplicationRequestNoApply = 0,
+  kLifxMultiZoneApplicationRequestApply = 1,
+  kLifxMultiZoneApplicationRequestApplyOnly = 2  
+} lifxMultiZoneApplicationRequest_t;
+
+typedef enum {
+  kLifxMultiZoneEffectTypeOff = 0,
+  kLifxMultiZoneEffectTypeMove = 1,
+  kLifxMultiZoneEffectType_reserved2 = 2,
+  kLifxMultiZoneEffectType_reserved3 = 3  
+} lifxMultiZoneEffectType_t;
+
+typedef enum {
+  kLifxMultiZoneExtendedApplicationRequestNoApply = 0,
+  kLifxMultiZoneExtendedApplicationRequestApply = 1,
+  kLifxMultiZoneExtendedApplicationRequestApplyOnly = 2  
+} lifxMultiZoneExtendedApplicationRequest_t;
+
+typedef enum {
   kLifxTileEffectTypeOff = 0,
   kLifxTileEffectType_reserved1 = 1,
   kLifxTileEffectTypeMorph = 2,
   kLifxTileEffectTypeFlame = 3,
   kLifxTileEffectType_reserved4 = 4  
 } lifxTileEffectType_t;
-
-typedef enum {
-  kLifxMultiZoneApplicationRequestNoApply = 0,
-  kLifxMultiZoneApplicationRequestApply = 1,
-  kLifxMultiZoneApplicationRequestApplyOnly = 2  
-} lifxMultiZoneApplicationRequest_t;
 
 #ifdef __cplusplus
 }
