@@ -9,6 +9,8 @@ set(CMAKE_C_FLAGS_RELEASE "-Werror -Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "-Wall -Wextra -g -O0 -fno-inline") # -Weffc++ ")
 set(CMAKE_CXX_FLAGS_RELEASE "-Werror -Wall -Wextra") # -Weffc++")
 
+enable_testing()
+
 ########################################################
 # generates sources using lxcodegen with protocol.yml
 set(LIFX_YAML ${CMAKE_CURRENT_BINARY_DIR}/deps/src/lifx_yaml_file/protocol.yml)
@@ -85,3 +87,7 @@ include_directories(lifx ${CMAKE_CURRENT_SOURCE_DIR}/include)
 add_executable(findbulbs examples/findbulbs.c)
 add_dependencies(findbulbs lifx)
 target_link_libraries(findbulbs lifx)
+
+if (ENABLE_UNIT_TESTS)
+  add_subdirectory(tests)
+endif()

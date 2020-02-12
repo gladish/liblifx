@@ -59,20 +59,32 @@ lifxBuffer_Destroy(lifxBuffer_t* buff)
 int
 lifxBuffer_Seek(lifxBuffer_t* buff, int offset, lifxBufferWhence whence)
 {
-  // TODO: finish this
+  if (!buff)
+    return EINVAL;
+
+  int const max_index = buff->Size - 1;
+  int const min_index = 0;
+  int new_index = 0;
+
   switch (whence)
   {
     case kLifxBufferWhenceCurrent:
-    buff->Position += offset;
+    new_index = buff->Position + offset;
     break;
 
     case kLifxBufferWhenceEnd:
+    new_index = max_index + offset;
     break;
 
     case kLifxBufferWhenceSet:
+    new_index = offset;
     break;
   }
 
+  if ((new_index < min_index) || (new_index > max_index))
+    return EINVAL;
+
+  buff->Position = new_index;
   return 0;
 }
 
