@@ -77,55 +77,44 @@ lifxBuffer_Seek(lifxBuffer_t* buff, int offset, lifxBufferWhence whence)
 }
 
 int
-lifxBuffer_Write(lifxBuffer_t* buff, uint8_t const* data, int len)
+lifxBuffer_Write(lifxBuffer_t* buff, void const* data, int len)
 {
-  int i;
-  for (i = 0; i < len; ++i)
-  {
-    buff->Data[buff->Position++] = data[i];
-  }
+  memcpy(&buff->Data[buff->Position], data, len);
+  buff->Position += len;
   return 0;
 }
 
 int
 lifxBuffer_WriteInt8(lifxBuffer_t* buff, int8_t n)
 {
-  buff->Data[buff->Position++] = n;
-  return 0;
+  return lifxBuffer_Write(buff, &n, 1);
 }
 
 int
 lifxBuffer_WriteUInt8(lifxBuffer_t* buff, uint8_t n)
 {
-  buff->Data[buff->Position++] = n;
-  return 0;
+  return lifxBuffer_Write(buff, &n, 1);
 }
 
 int
 lifxBuffer_WriteInt16(lifxBuffer_t* buff, int16_t n)
 {
-  n = lifxHostToLittleInt16(n);
-  memcpy(&(buff->Data[buff->Position]), &n, 2);
-  buff->Position += 2;
-  return 0;
+  int16_t temp = lifxHostToLittleInt16(n);
+  return lifxBuffer_Write(buff, &temp, 2);
 }
 
 int
 lifxBuffer_WriteUInt16(lifxBuffer_t* buff, uint16_t n)
 {
-  n = lifxHostToLittleInt16(n);
-  memcpy(&(buff->Data[buff->Position]), &n, 2);
-  buff->Position += 2;
-  return 0;
+  uint16_t temp = lifxHostToLittleInt16(n);
+  return lifxBuffer_Write(buff, &temp, 2);
 }
 
 int
 lifxBuffer_WriteInt32(lifxBuffer_t* buff, int32_t n)
 {
-  n = lifxHostToLittleInt32(n);
-  memcpy(&(buff->Data[buff->Position]), &n, 4);
-  buff->Position += 4;
-  return 0;
+  int32_t temp = lifxHostToLittleInt32(n);
+  return lifxBuffer_Write(buff, &temp, 2);
 }
 
 int
@@ -157,55 +146,85 @@ lifxBuffer_WriteFloat(lifxBuffer_t* buff, float n)
 }
 
 int
-lifxBuffer_ReadUInt16(lifxBuffer_t* buff, uint16_t* n)
+lifxBuffer_WriteBool(lifxBuffer_t* buff, bool b)
 {
-  return 0;
+  return b
+    ? lifxBuffer_WriteUInt8(buff, 1)
+    : lifxBuffer_WriteUInt8(buff, 0);
 }
 
 int
 lifxBuffer_ReadFloat(lifxBuffer_t* buff, float* f)
 {
-  return 0;
+  float temp;
+  int ret = lifxBuffer_Read(buff, &temp, sizeof(float));
+  if (ret == 0)
+  {
+    *f = temp;
+  }
+  return ret;
 }
 
 int
-lifxBuffer_Read(lifxBuffer_t* buff, uint8_t* data, int n)
+lifxBuffer_Read(lifxBuffer_t* buff, void* data, int n)
 {
-  return 0;
-}
+  if (!buff || !data)
+    return EINVAL;
 
-int
-lifxBuffer_WriteBool(lifxBuffer_t* buff, bool b)
-{
+  memcpy(data, &buff->Data[buff->Position], n);
+  buff->Position += n;
+
   return 0;
 }
 
 int
 lifxBuffer_ReadUInt64(lifxBuffer_t* buff, uint64_t* n)
 {
-  return 0;
+  int ret = lifxBuffer_Read(buff, n, sizeof(uint64_t));
+  if (ret == 0)
+    *n = lifxLittleToHostInt64(*n);
+  return ret;
 }
 
 int
 lifxBuffer_ReadUInt32(lifxBuffer_t* buff, uint32_t* n)
 {
-  return 0;
+  int ret = lifxBuffer_Read(buff, n, sizeof(uint32_t));
+  if (ret == 0)
+    *n = lifxLittleToHostInt32(*n);
+  return ret;
 }
 
 int
 lifxBuffer_ReadInt16(lifxBuffer_t* buff, int16_t* n)
 {
-  return 0;
+  int ret = lifxBuffer_Read(buff, n, sizeof(int16_t));
+  if (ret == 0)
+    *n = lifxLittleToHostInt16(*n);
+  return ret;
+}
+
+int
+lifxBuffer_ReadUInt16(lifxBuffer_t* buff, uint16_t* n)
+{
+  int ret = lifxBuffer_Read(buff, n, sizeof(uint16_t));
+  if (ret == 0)
+    *n = lifxLittleToHostInt16(*n);
+  return ret;
 }
 
 int
 lifxBuffer_ReadUInt8(lifxBuffer_t* buff, uint8_t* n)
 {
-  return 0;
+  return lifxBuffer_Read(buff, &n, sizeof(uint8_t));
 }
 
 int
 lifxBuffer_ReadBool(lifxBuffer_t* buff, bool* b)
 {
-  return 0;
+  uint8_t n;
+  int ret = lifxBuffer_ReadUInt8(buff, &n);
+  if (ret == 0)
+    *b = (n == 0 ? true : false);
+  return ret;
 }

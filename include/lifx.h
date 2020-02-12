@@ -35,7 +35,7 @@ extern "C" {
 #else
 #include <endian.h>
 #define lifxHostToLittleInt16(n) htole16(n)
-#define lifxLittleToHostInt16(n) letoh16(n)
+#define lifxLittleToHostInt16(n) le16toh(n)
 #define lifxHostToLittleInt32(n) htole32(n)
 #define lifxLittleToHostInt32(n) le32toh(n)
 #define lifxHostToLittleInt64(n) htole64(n)
@@ -85,9 +85,22 @@ typedef struct
 } lifxProtocolHeader_t;
 #pragma pack(pop)
 
+typedef enum
+{
+  kLifxLogLevelDebug = 0,
+  kLifxLogLevelInfo = 1,
+  kLifxLogLevelWarn = 2,
+  kLifxLogLevelError = 3,
+  kLifxLogLevelFatal = 4
+} lifxLogLevel_t;
+
+typedef void (*lifxLogHandler_t)(lifxSession_t const* lifx,
+  lifxLogLevel_t level, char const* message);
+
 typedef struct
 {
-  char*     BindInterface;
+  char*               BindInterface;
+  lifxLogHandler_t    LogCallback;
 } lifxSessionConfig_t;
 
 typedef struct
@@ -160,7 +173,7 @@ lifxSession_RecvFrom(lifxSession_t*   lifx,
 int lifxBuffer_Init(lifxBuffer_t* buff, int n);
 int lifxBuffer_Destroy(lifxBuffer_t* buff);
 int lifxBuffer_Seek(lifxBuffer_t* buff, int offset, lifxBufferWhence whence);
-int lifxBuffer_Write(lifxBuffer_t* buff, uint8_t const* data, int len);
+int lifxBuffer_Write(lifxBuffer_t* buff, void const* data, int len);
 int lifxBuffer_WriteUInt8(lifxBuffer_t* buff, uint8_t n);
 int lifxBuffer_WriteBool(lifxBuffer_t* buff, bool b);
 int lifxBuffer_WriteInt16(lifxBuffer_t* buff, int16_t n);
@@ -169,7 +182,7 @@ int lifxBuffer_WriteInt32(lifxBuffer_t* buff, int32_t n);
 int lifxBuffer_WriteUInt32(lifxBuffer_t* buff, uint32_t n);
 int lifxBuffer_WriteUInt64(lifxBuffer_t* buff, uint64_t n);
 int lifxBuffer_WriteFloat(lifxBuffer_t* buff, float n);
-int lifxBuffer_Read(lifxBuffer_t* buff, uint8_t* data, int len);
+int lifxBuffer_Read(lifxBuffer_t* buff, void* data, int len);
 int lifxBuffer_ReadUInt8(lifxBuffer_t* buff, uint8_t* n);
 int lifxBuffer_ReadInt16(lifxBuffer_t* buff, int16_t* n);
 int lifxBuffer_ReadUInt16(lifxBuffer_t* buff, uint16_t* n);

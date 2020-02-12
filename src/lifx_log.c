@@ -65,18 +65,28 @@ void
 lxLog_Printf(lifxSession_t* lifx, lifxLogLevel_t level, char const* format, ...)
 {
   va_list argp;
-  struct timeval now;
 
   if (level < lifx->LogLevel)
     return;
 
-  gettimeofday(&now, NULL);
-
-  // TODO: allow user to insert log callback
-  printf("%ld.%06ld %5s -- Thread-%" LIFX_THREADID_FMT ": ", now.tv_sec, now.tv_usec,
-    lifxLogLevelToString(level), lifxThreadGetCurrentId());
   va_start(argp, format);
-  vprintf(format, argp);
+
+  if (lifx->LogCallback)
+  {
+    char buff[512];
+    vsnprintf(buff, sizeof(buff), format, argp);
+    lifx->LogCallback(lifx, level, buff);
+  }
+  else
+  {
+    struct timeval now;
+    gettimeofday(&now, NULL);
+
+    printf("%ld.%06ld %5s -- Thread-%" LIFX_THREADID_FMT ": ", now.tv_sec, now.tv_usec,
+        lifxLogLevelToString(level), lifxThreadGetCurrentId());
+    vprintf(format, argp);
+    printf("\n");
+  }
+
   va_end(argp);
-  printf("\n");
 }

@@ -30,22 +30,14 @@ extern "C" {
 #define LIFX_PRINTF_FORMAT(IDX, FIRST)
 #endif
 
-typedef enum
-{
-  kLifxLogLevelDebug = 0,
-  kLifxLogLevelInfo = 1,
-  kLifxLogLevelWarn = 2,
-  kLifxLogLevelError = 3,
-  kLifxLogLevelFatal = 4
-} lifxLogLevel_t;
-
 struct lifxSession
 {
-  int             Socket;
-  uint32_t        SourceId;
-  uint8_t         SequenceNumber;
-  lifxBuffer_t    ReadBuffer;
-  lifxLogLevel_t  LogLevel;
+  int               Socket;
+  uint32_t          SourceId;
+  uint8_t           SequenceNumber;
+  lifxBuffer_t      ReadBuffer;
+  lifxLogLevel_t    LogLevel;
+  lifxLogHandler_t  LogCallback;
 };
 
 struct lifxDevice

@@ -26,15 +26,16 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-static uint8_t const kLifxProtocolNumber = (uint8_t) 1024u;
+static uint16_t const kLifxProtocolNumber = 0x400; // 1024
 
 static void lifxDumpBuffer(lifxSession_t* lifx, uint8_t* p, int n)
 {
   int i;
+  printf("\t");
   for (i = 0; i < n; ++i)
   {
     if ((i > 0) && (i % 16) == 0)
-      printf("\n");
+      printf("\n\t");
     printf("0x%02x ", p[i]);
   }
   printf("\n");
@@ -47,8 +48,6 @@ lifxSession_Open(lifxSessionConfig_t const* conf)
   int                 ret;
   int                 flag;
   struct lifxSession* lifx;
-
-  (void) conf;
 
   lifx = malloc(sizeof(struct lifxSession));
   if (!lifx)
@@ -135,7 +134,7 @@ lifxSession_SendTo(
   memset(&dest, 0, sizeof(struct sockaddr_in));
 
   header.Size = sizeof(lifxProtocolHeader_t);
-  header.Protocol = 1024; // kLifxProtocolNumber;
+  header.Protocol = kLifxProtocolNumber;
   header.Addressable = 1;
   header.Tagged = 1;
   header.Origin = 0;
@@ -202,12 +201,12 @@ lifxSession_RecvFrom(lifxSession_t*   lifx,
   int             n;
   fd_set          fds;
   struct timeval  wait_time;
-  lifxMessage_t*  msg;
 
   n = 0;
   wait_time.tv_sec = timeout / 1000;
   wait_time.tv_usec = (timeout % 1000) * 1000;
   memset(message, 0, sizeof(lifxMessage_t));
+  lifxBuffer_Seek(&lifx->ReadBuffer, 0, kLifxBufferWhenceSet);
 
   lxLog_Info(lifx,"timeout:%lus %luus", wait_time.tv_sec, wait_time.tv_usec);
 
@@ -228,8 +227,14 @@ lifxSession_RecvFrom(lifxSession_t*   lifx,
     memset(lifx->ReadBuffer.Data, 0, lifx->ReadBuffer.Size);
     #endif
 
+    source_size = 0;
+    memset(&source, 0, sizeof(struct sockaddr_storage));
+
     n = recvfrom(lifx->Socket, lifx->ReadBuffer.Data, lifx->ReadBuffer.Size, 0,
       (struct sockaddr *)&source, &source_size);
+
+    lxLog_Debug(lifx, "receive:%d", n);
+    lifxDumpBuffer(lifx, lifx->ReadBuffer.Data, n);
 
     if (n == -1)
     {
@@ -238,24 +243,15 @@ lifxSession_RecvFrom(lifxSession_t*   lifx,
       return err;
     }
 
-    msg = malloc(sizeof(lifxMessage_t));
-    if (!msg)
-    {
-      lxLog_Fatal(lifx, "failed to allocate message");
-      // TODO:
-    }
-
-    memcpy(&msg->Header, lifx->ReadBuffer.Data, sizeof(lifxProtocolHeader_t));
+    memcpy(&message->Header, lifx->ReadBuffer.Data, sizeof(lifxProtocolHeader_t));
     lifxBuffer_Seek(&lifx->ReadBuffer, sizeof(lifxProtocolHeader_t), kLifxBufferWhenceCurrent);
 
-    // XXX: leaked
-    msg->Sender = malloc(sizeof(struct lifxDevice));
+    // XXX: leaked, still working out what API should look like
+    message->Sender = malloc(sizeof(struct lifxDevice));
+    memset(message->Sender, 0, sizeof(struct lifxDevice));
 
-    lifxDecoder_DecodePacket(msg->Header.Type, &msg->Packet, &lifx->ReadBuffer);
-    memcpy(&msg->Sender->Endpoint, &source, source_size);
-
-    lxLog_Debug(lifx, "receive:%d", n);
-    lifxDumpBuffer(lifx, lifx->ReadBuffer.Data, n);
+    lifxDecoder_DecodePacket(message->Header.Type, &message->Packet, &lifx->ReadBuffer);
+    memcpy(&message->Sender->Endpoint, &source, source_size);
   }
   else
   {
