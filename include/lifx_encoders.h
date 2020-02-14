@@ -1,5 +1,5 @@
 //
-// DO NOT EDIT - AUTO-GENERATE:2020-02-10 21:58:35.227943
+// DO NOT EDIT - AUTO-GENERATE:2020-02-14 11:04:43.334918
 //
 #ifndef __LIFX_ENCODERS_H__
 #define __LIFX_ENCODERS_H__
@@ -13,6 +13,8 @@ extern "C" {
 #include <lifx_packets.h>
 
 int lifxDecoder_DecodePacket(lifxPacketType_t type, lifxPacket_t* pkt, lifxBuffer_t* buff);
+int lifxEncoder_EncodePacket(lifxPacketType_t type, lifxPacket_t const* pkt, lifxBuffer_t* buff);
+int lifxEncoder_GetEncodedSize(lifxPacketType_t type);
 
 int lifxEncoder_EncodeDeviceGetService(lifxDeviceGetService_t const* pkt, lifxBuffer_t* buff);
 int lifxEncoder_EncodeDeviceStateService(lifxDeviceStateService_t const* pkt, lifxBuffer_t* buff);

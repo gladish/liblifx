@@ -81,7 +81,8 @@ add_library(
   src/lifx.c
   src/lifx_buffer.c
   src/lifx_encoders.c
-  src/lifx_log.c)
+  src/lifx_log.c
+  src/lifx_session.c)
 configure_file("include/lifx_version.h.in" "${CMAKE_CURRENT_SOURCE_DIR}/include/lifx_version.h")
 include_directories(lifx ${CMAKE_CURRENT_BINARY_DIR}/deps/src)
 include_directories(lifx ${CMAKE_CURRENT_SOURCE_DIR}/include)

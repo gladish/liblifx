@@ -126,35 +126,28 @@ int
 lifxBuffer_WriteInt32(lifxBuffer_t* buff, int32_t n)
 {
   int32_t temp = lifxHostToLittleInt32(n);
-  return lifxBuffer_Write(buff, &temp, 2);
+  return lifxBuffer_Write(buff, &temp, 4);
 }
 
 int
 lifxBuffer_WriteUInt32(lifxBuffer_t* buff, uint32_t n)
 {
-  n = lifxHostToLittleInt32(n);
-  memcpy(&(buff->Data[buff->Position]), &n, 4);
-  buff->Position += 4;
-  return 0;
+  uint32_t temp = lifxHostToLittleInt32(n);
+  return lifxBuffer_Write(buff, &temp, 4);
 }
 
 int
 lifxBuffer_WriteUInt64(lifxBuffer_t* buff, uint64_t n)
 {
-  n = lifxHostToLittleInt64(n);
-  memcpy(&(buff->Data[buff->Position]), &n, 8);
-  buff->Position += 8;
-  return 0;
+  uint64_t temp = lifxHostToLittleInt64(n);
+  return lifxBuffer_Write(buff, &temp, 8);
 }
 
 int
 lifxBuffer_WriteFloat(lifxBuffer_t* buff, float n)
 {
-  // TODO: do you byte-swap floats?
-  n = lifxHostToLittleInt32(n);
-  memcpy(&(buff->Data[buff->Position]), &n, 4);
-  buff->Position += 4;
-  return 0;
+  uint32_t temp = lifxHostToLittleInt32((uint32_t)n);
+  return lifxBuffer_Write(buff, &temp, 4);
 }
 
 int
@@ -168,12 +161,10 @@ lifxBuffer_WriteBool(lifxBuffer_t* buff, bool b)
 int
 lifxBuffer_ReadFloat(lifxBuffer_t* buff, float* f)
 {
-  float temp;
-  int ret = lifxBuffer_Read(buff, &temp, sizeof(float));
+  uint32_t temp;
+  int ret = lifxBuffer_Read(buff, &temp, sizeof(uint32_t));
   if (ret == 0)
-  {
-    *f = temp;
-  }
+    *f = (float) lifxLittleToHostInt32(temp);
   return ret;
 }
 
@@ -182,10 +173,8 @@ lifxBuffer_Read(lifxBuffer_t* buff, void* data, int n)
 {
   if (!buff || !data)
     return EINVAL;
-
   memcpy(data, &buff->Data[buff->Position], n);
   buff->Position += n;
-
   return 0;
 }
 
@@ -228,7 +217,7 @@ lifxBuffer_ReadUInt16(lifxBuffer_t* buff, uint16_t* n)
 int
 lifxBuffer_ReadUInt8(lifxBuffer_t* buff, uint8_t* n)
 {
-  return lifxBuffer_Read(buff, &n, sizeof(uint8_t));
+  return lifxBuffer_Read(buff, n, sizeof(uint8_t));
 }
 
 int

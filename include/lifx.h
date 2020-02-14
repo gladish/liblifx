@@ -138,6 +138,7 @@ typedef struct
   lifxLogLevel_t        LogLevel;
   bool                  UseBackgroundDispatchThread;
   lifxMessageHandler_t  MessageHandler;
+  bool                  ReportDuplicateDevices;
 } LIFX_EXPORT lifxSessionConfig_t;
 
 /**

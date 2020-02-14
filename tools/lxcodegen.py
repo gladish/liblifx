@@ -220,7 +220,7 @@ class CodeGenerator:
     self.write("{\n")
     self.indent()
     self.write("// %s\n" % (pktdef))
-    self.write("lifxBuffer_Init(buff, %d);\n" % (pktdef["size_bytes"]))
+    # self.write("lifxBuffer_Init(buff, %d);\n" % (pktdef["size_bytes"]))
     if len(pktdef["fields"]) > 0:
       for idx, field in enumerate(pktdef["fields"]):
         if "name" in field:
@@ -268,6 +268,8 @@ class CodeGenerator:
     self.write("#include <lifx_packets.h>\n")
     self.write("\n")
     self.write("int lifxDecoder_DecodePacket(lifxPacketType_t type, lifxPacket_t* pkt, lifxBuffer_t* buff);\n")
+    self.write("int lifxEncoder_EncodePacket(lifxPacketType_t type, lifxPacket_t const* pkt, lifxBuffer_t* buff);\n")
+    self.write("int lifxEncoder_GetEncodedSize(lifxPacketType_t type);\n")
     self.write("\n")
     for s in ["device", "light", "tile", "multi_zone"]:
       for key, val in pkts[s].items():
@@ -309,6 +311,47 @@ class CodeGenerator:
     self.write("}");
     self.write("\n")
 
+    self.write("\n")
+    self.write("int lifxEncoder_EncodePacket(lifxPacketType_t type, lifxPacket_t const* pkt, lifxBuffer_t* buff)\n")
+    self.write("{\n");
+    self.indent()
+    self.write("int ret = 0;\n")
+    self.write("switch (type)\n")
+    self.write("{\n")
+    self.indent()
+    for value, name in sorted(self.packet_types.items()):
+      self.write("case kLifxPacketType%s:\n" % (name))
+      self.write("ret = %sEncoder_Encode%s(&pkt->%s, buff);\n" % (self.prefix, name, name))
+      self.write("break;\n")
+    self.outdent()
+    self.write("}\n")
+    self.write("return ret;\n")
+    self.outdent()
+    self.write("}");
+    self.write("\n")
+
+    self.write("\n")
+    self.write("int lifxEncoder_GetEncodedSize(lifxPacketType_t type)\n")
+    self.write("{\n");
+    self.indent()
+    self.write("int ret = 0;\n")
+    self.write("switch (type)\n")
+    self.write("{\n")
+    self.indent()
+    for s in ["device", "light", "tile", "multi_zone"]:
+      for key, pktdef in pkts[s].items():
+        self.write("// %s\n" % (pktdef))
+        self.write("case kLifxPacketType%s:\n" % (key))
+        self.write("ret = %d;\n"  % (pktdef["size_bytes"]))
+        self.write("break;\n")
+    self.outdent()
+    self.write("}\n")
+    self.write("return ret;\n")
+    self.outdent()
+    self.write("}");
+    self.write("\n")
+
+    self.write("\n")
     for s in ["device", "light", "tile", "multi_zone"]:
       for key, pktdef in pkts[s].items():
         self.gen_encoder(key, pktdef)
