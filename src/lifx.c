@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 #include "lifx.h"
+#include "lifx_version.h"
 #include "lifx_encoders.h"
 #include "lifx_internal.h"
 
@@ -24,12 +25,48 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <sys/time.h>
 #include <unistd.h>
+#include <pthread.h>
 
 static uint16_t const kLifxProtocolNumber = 0x400; // 1024
+static pthread_once_t error_once = PTHREAD_ONCE_INIT;
+static pthread_key_t  error_key;
+
+typedef struct
+{
+  int  LastError;
+  char LastErrorMessage[kLifxErrorMessageMaxLength];
+} lifxErrorThreadSpecific_t;
+
+static void lifxErrorInitThreadSpecificKey()
+{
+  pthread_key_create(&error_key, NULL);
+}
+
+lifxErrorThreadSpecific_t*
+lifxError_GetThreadSpecific()
+{
+  lifxErrorThreadSpecific_t* specific;
+  pthread_once(&error_once, lifxErrorInitThreadSpecificKey);
+
+  specific = (lifxErrorThreadSpecific_t *) pthread_getspecific(error_key);
+  if (!specific)
+  {
+    specific = (lifxErrorThreadSpecific_t *) malloc(sizeof(lifxErrorThreadSpecific_t));
+    specific->LastError = 0;
+    specific->LastErrorMessage[0] = '\0';
+    pthread_setspecific(error_key, specific);
+  }
+
+  return specific;
+}
 
 static void lifxDumpBuffer(lifxSession_t* lifx, uint8_t* p, int n)
 {
+  if (kLifxLogLevelDebug < lifx->LogLevel)
+    return;
+
   int i;
   printf("\t");
   for (i = 0; i < n; ++i)
@@ -39,6 +76,97 @@ static void lifxDumpBuffer(lifxSession_t* lifx, uint8_t* p, int n)
     printf("0x%02x ", p[i]);
   }
   printf("\n");
+}
+
+static void lifxSockaddr_ToString(struct sockaddr_storage* ss, char* buff, int n, uint16_t* port)
+{
+  if (ss->ss_family == AF_INET)
+  {
+    struct sockaddr_in* v4 = (struct sockaddr_in *) ss;
+    inet_ntop(ss->ss_family, &v4->sin_addr, buff, n);
+    if (port)
+      *port = ntohs(v4->sin_port);
+  }
+}
+
+char const*
+lifx_Version()
+{
+  return "v" LIFX_PROJECT_VER;
+}
+
+void*
+lifxSession_Dispatcher(void* argp)
+{
+  int ret;
+  struct lifxSession* lifx = (struct lifxSession *) argp;
+
+  while (true)
+  {
+    ret = lifxSession_Dispatch(lifx, 1);
+    lxLog_Info(lifx, "lifxSession_Dispatch:%d", ret);
+  }
+  return NULL;
+}
+
+lifxDevice_t lifxSession_FindDevice(lifxSession_t* lifx, lifxProtocolHeader_t const* header)
+{
+  int i;
+  for (i = 0; i < kLifxMaxDevices; ++i)
+  {
+    if (lifx->DeviceDatabase[i])
+    {
+      if (memcmp(header->Target, lifx->DeviceDatabase[i]->HardwareAddress, 6) == 0)
+        return (lifxDevice_t) i;
+    }
+  }
+
+  return kLifxDeviceInvalid;
+}
+
+lifxDevice_t lifxSession_CreateDevice(
+  lifxSession_t*                  lifx,
+  lifxMessage_t const*            message,
+  struct sockaddr_storage* const  source)
+{
+  int i;
+  lifxDevice_t dev = kLifxDeviceInvalid;
+
+  for (i = 0; i < kLifxMaxDevices; ++i)
+  {
+    if (!lifx->DeviceDatabase[i])
+    {
+      struct lifxDevice* new_device = malloc(sizeof(struct lifxDevice));
+      memcpy(new_device->HardwareAddress, message->Header.Target, 6);
+      memcpy(&new_device->Endpoint, source, sizeof(struct sockaddr_storage));
+      lifx->DeviceDatabase[i] = new_device;
+
+      // always assumes ipv4
+      {
+        struct sockaddr_in* v4 = (struct sockaddr_in *) &new_device->Endpoint;
+        v4->sin_port = htons(message->Packet.DeviceStateService.Port);
+      }
+
+      dev = i;
+
+      {
+        uint16_t port;
+        char buff[256];
+        lifxSockaddr_ToString(source, buff, sizeof(buff), &port);
+        lxLog_Info(lifx, "adding new device %s:%d to database", buff, port);
+        lxLog_Info(lifx, "mac:%02x%02x%02x%02x%02x%02x",
+          lifx->DeviceDatabase[i]->HardwareAddress[0],
+          lifx->DeviceDatabase[i]->HardwareAddress[1],
+          lifx->DeviceDatabase[i]->HardwareAddress[2],
+          lifx->DeviceDatabase[i]->HardwareAddress[3],
+          lifx->DeviceDatabase[i]->HardwareAddress[4],
+          lifx->DeviceDatabase[i]->HardwareAddress[5]);
+      }
+
+      break;
+    }
+  }
+  return dev;
 }
 
 lifxSession_t*
@@ -53,9 +181,12 @@ lifxSession_Open(lifxSessionConfig_t const* conf)
   if (!lifx)
     return NULL;
 
-  // set this as early as possible to avoid uninitialized reads
-  lifx->LogLevel = kLifxLogLevelDebug;
+  memset(lifx, 0, sizeof(struct lifxSession));
 
+  // set this as early as possible to avoid uninitialized reads
+  lifx->LogLevel = kLifxLogLevelInfo;
+  if (conf)
+    lifx->LogLevel = conf->LogLevel;
   lifx->Socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
   if (lifx->Socket == -1)
   {
@@ -95,12 +226,43 @@ lifxSession_Open(lifxSessionConfig_t const* conf)
       if (ret != 0)
       {
         int err = errno;
-        lxLog_Warn(lifx, "bind:%d", err);
+        lxLog_Warn(lifx, "bind:%s", lifxError_ToString(err));
       }
+    }
+
+    if (conf->UseBackgroundDispatchThread)
+    {
+      lifx->MessageHandler = conf->MessageHandler;
+      pthread_create(&lifx->BackgroundDispatchThread, NULL, lifxSession_Dispatcher, lifx);
     }
   }
 
   return lifx;
+}
+
+char const*
+lifxError_ToString(int errnum)
+{
+  int n;
+  char const* buff;
+  lifxErrorThreadSpecific_t* specific;
+  
+  buff = NULL;
+  specific = lifxError_GetThreadSpecific();
+
+  if (specific)
+  {
+    #ifdef __linux__
+    n = strerror_r(errnum, specific->LastErrorMessage, kLifxErrorMessageMaxLength - 1);
+    if (!n)
+      buff = specific->LastErrorMessage;
+    #else
+    buff = strerror(errnum);
+    #endif
+    specific->LastError = errnum;
+  }
+
+  return buff;
 }
 
 int
@@ -120,9 +282,55 @@ lifxSession_Close(lifxSession_t* lifx)
 }
 
 int
+lifxSession_Dispatch(
+  lifxSession_t*    lifx,
+  int               timeout)
+{
+  int                     ret;
+  int                     elapsed;
+  struct timeval          time;
+  bool                    done;
+  lifxMessage_t           message;
+  lifxDevice_t            dev;
+  struct sockaddr_storage source_addr;
+
+  ret = 0;
+  elapsed = 0;
+  gettimeofday(&time, NULL);
+  done = false;
+
+  while (!done)
+  {
+    dev = kLifxDeviceInvalid;
+    memset(&message, 0, sizeof(lifxMessage_t));
+
+    ret = lifxSession_RecvFromInternal(lifx, &message, &source_addr, 1000);
+    if (ret != 0)
+      done = true;
+
+    if ((timeout != kLifxWaitForever) && (elapsed >= timeout))
+      done = true;
+
+    if (!done && (ret == 0))
+    {
+      if (message.Header.Type == kLifxPacketTypeDeviceStateService)
+      {
+        lifxDevice_t dev = lifxSession_FindDevice(lifx, &message.Header);
+        if (dev == kLifxDeviceInvalid)
+          dev = lifxSession_CreateDevice(lifx, &message, &source_addr);
+      }
+
+      lifx->MessageHandler(lifx, &message, dev);
+    }
+  }
+
+  return ret;
+}
+
+int
 lifxSession_SendTo(
   lifxSession_t*    lifx,
-  lifxDevice_t*     device,
+  lifxDevice_t      dev,
   void*             packet,
   lifxPacketType_t  packet_type)
 {
@@ -139,7 +347,19 @@ lifxSession_SendTo(
   header.Tagged = 1;
   header.Origin = 0;
   header.Source = 0xdeadbeef;
-  if (device)
+  header.ResRequired = 0;
+  header.AckRequired = 0;
+  header.Sequence = lifxInterlockedIncrement(&lifx->SequenceNumber);
+  header.Type = kLifxPacketTypeDeviceGetService;
+
+  // TODO: This should come from the lifxDevice
+  if (dev == kLifxDeviceAll)
+  {
+    dest.sin_family = AF_INET;
+    dest.sin_port = htons(kLifxDefaultBroadcastPort);
+    dest.sin_addr.s_addr = htonl(INADDR_BROADCAST);
+  }
+  else
   {
     // TODO
     header.Target[0] = 0;
@@ -150,25 +370,6 @@ lifxSession_SendTo(
     header.Target[5] = 0;
     header.Target[6] = 0;
     header.Target[7] = 0;
-  }
-  header.ResRequired = 0;
-  header.AckRequired = 0;
-  header.Sequence = lifxInterlockedIncrement(&lifx->SequenceNumber);
-  header.Type = kLifxPacketTypeDeviceGetService;
-
-  // TODO: This should come from the lifxDevice
-  if (!device)
-  {
-    memset(&dest, 0, sizeof(struct sockaddr_in));
-    dest.sin_family = AF_INET;
-    dest.sin_port = htons(kLifxDefaultBroadcastPort);
-    dest.sin_addr.s_addr = htonl(INADDR_BROADCAST);
-  }
-  else
-  {
-    // TODO: ipv6
-    struct sockaddr_in* v4 = (struct sockaddr_in *) &device->Endpoint;
-    memcpy(&dest, v4, sizeof(struct sockaddr_in));
   }
 
   {
@@ -186,17 +387,28 @@ lifxSession_SendTo(
   if (n == -1)
   {
     int err = errno;
-    lxLog_Warn(lifx, "sendto:%d", err);
+    lxLog_Warn(lifx, "sendto:%s", lifxError_ToString(err));
     return err;
   }
 
   return 0;
 }
 
-int
-lifxSession_RecvFrom(lifxSession_t*   lifx,
-                     lifxMessage_t*   message,
-                     int              timeout)
+int lifxSession_RecvFrom(
+  lifxSession_t*  lifx,
+  lifxMessage_t*  message,
+  int             timeout)
+{
+  struct sockaddr_storage source_addr;
+  return lifxSession_RecvFromInternal(lifx, message, &source_addr, timeout);
+}
+
+
+int lifxSession_RecvFromInternal(
+  lifxSession_t*              lifx,
+  lifxMessage_t*              message,
+  struct sockaddr_storage*    source,
+  int                         timeout)
 {
   int             n;
   fd_set          fds;
@@ -208,38 +420,41 @@ lifxSession_RecvFrom(lifxSession_t*   lifx,
   memset(message, 0, sizeof(lifxMessage_t));
   lifxBuffer_Seek(&lifx->ReadBuffer, 0, kLifxBufferWhenceSet);
 
-  lxLog_Info(lifx,"timeout:%lus %luus", wait_time.tv_sec, wait_time.tv_usec);
-
   FD_ZERO(&fds);
   FD_SET(lifx->Socket, &fds);
 
   n = select(lifx->Socket  + 1, &fds, NULL, NULL, &wait_time);
-  lxLog_Debug(lifx, "select:%d", n);
   if (n == -1)
     return errno;
 
   if (FD_ISSET(lifx->Socket, &fds))
   {
     socklen_t source_size;
-    struct sockaddr_storage source;
 
     #ifdef LIFX_DEBUG
     memset(lifx->ReadBuffer.Data, 0, lifx->ReadBuffer.Size);
     #endif
 
-    source_size = 0;
-    memset(&source, 0, sizeof(struct sockaddr_storage));
+    source_size = sizeof(struct sockaddr_storage);
+    memset(source, 0, sizeof(struct sockaddr_storage));
 
     n = recvfrom(lifx->Socket, lifx->ReadBuffer.Data, lifx->ReadBuffer.Size, 0,
-      (struct sockaddr *)&source, &source_size);
+      (struct sockaddr *)source, &source_size);
 
-    lxLog_Debug(lifx, "receive:%d", n);
-    lifxDumpBuffer(lifx, lifx->ReadBuffer.Data, n);
+    {
+      uint16_t port;
+      char buff[256];
+      lifxSockaddr_ToString(source, buff, sizeof(buff), &port);
+      lxLog_Debug(lifx, "recvfrom:%s:%u", buff, port);
+      lxLog_Debug(lifx, "receive:%d", n);
+      lifxDumpBuffer(lifx, lifx->ReadBuffer.Data, n);
+    }
+
 
     if (n == -1)
     {
       int err = errno;
-      lxLog_Warn(lifx, "recvfrom:%d", err);
+      lxLog_Warn(lifx, "recvfrom:%s", lifxError_ToString(err));
       return err;
     }
 
@@ -247,11 +462,11 @@ lifxSession_RecvFrom(lifxSession_t*   lifx,
     lifxBuffer_Seek(&lifx->ReadBuffer, sizeof(lifxProtocolHeader_t), kLifxBufferWhenceCurrent);
 
     // XXX: leaked, still working out what API should look like
-    message->Sender = malloc(sizeof(struct lifxDevice));
-    memset(message->Sender, 0, sizeof(struct lifxDevice));
+    // message->Sender = malloc(sizeof(struct lifxDevice));
+    //  memset(message->Sender, 0, sizeof(struct lifxDevice));
 
     lifxDecoder_DecodePacket(message->Header.Type, &message->Packet, &lifx->ReadBuffer);
-    memcpy(&message->Sender->Endpoint, &source, source_size);
+    // memcpy(&message->Sender->Endpoint, &source, source_size);
   }
   else
   {

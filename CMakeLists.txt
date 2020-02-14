@@ -1,8 +1,12 @@
 #cmake_minimum_required(VERSION 3.4)
 cmake_minimum_required(VERSION 2.8)
 
-project(liblifx)
+cmake_policy(SET CMP0048 NEW)
+
+project(liblifx VERSION 0.0.1)
 include(ExternalProject)
+
+find_package(Threads)
 
 set(CMAKE_C_FLAGS_DEBUG "-Wall -Wextra -g -O0 -fno-inline -Wno-unused-parameter")
 set(CMAKE_C_FLAGS_RELEASE "-Werror -Wall -Wextra")
@@ -78,8 +82,10 @@ add_library(
   src/lifx_buffer.c
   src/lifx_encoders.c
   src/lifx_log.c)
+configure_file("include/lifx_version.h.in" "${CMAKE_CURRENT_SOURCE_DIR}/include/lifx_version.h")
 include_directories(lifx ${CMAKE_CURRENT_BINARY_DIR}/deps/src)
 include_directories(lifx ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(lifx ${CMAKE_THREAD_LIBS_INIT})
 #add_dependencies(lifx generate_sources)
 #add_dependencies(generate_sources lifx_yaml_file)
 ########################################################

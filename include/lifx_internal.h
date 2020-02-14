@@ -19,6 +19,7 @@
 #include "lifx.h"
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <pthread.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -30,22 +31,44 @@ extern "C" {
 #define LIFX_PRINTF_FORMAT(IDX, FIRST)
 #endif
 
-struct lifxSession
-{
-  int               Socket;
-  uint32_t          SourceId;
-  uint8_t           SequenceNumber;
-  lifxBuffer_t      ReadBuffer;
-  lifxLogLevel_t    LogLevel;
-  lifxLogHandler_t  LogCallback;
-};
+#define kLifxErrorMessageMaxLength 256
+#define kLifxMaxDevices 256
 
-struct lifxDevice
+LIFX_IMPORT struct lifxDevice
 {
+  uint8_t                 HardwareAddress[6];
   struct sockaddr_storage Endpoint;
 };
 
-void lxLog_Printf(lifxSession_t* lifx, lifxLogLevel_t level, const char* format, ...) LIFX_PRINTF_FORMAT(3, 4);
+LIFX_IMPORT struct lifxSession
+{
+  int                   Socket;
+  uint32_t              SourceId;
+  uint8_t               SequenceNumber;
+  lifxBuffer_t          ReadBuffer;
+  lifxLogLevel_t        LogLevel;
+  lifxLogHandler_t      LogCallback;
+  lifxMessageHandler_t  MessageHandler;
+  pthread_t             BackgroundDispatchThread;
+  pthread_mutex_t       LogMutex;
+  struct lifxDevice*    DeviceDatabase[kLifxMaxDevices];
+};
+
+LIFX_IMPORT char const* lifxError_ToString(int errnum);
+//LIFX_IMPORT lifxDevice_t lifxSession_FindDevice(lifxSession_t* session, lifxDevice_t dev);
+//LIFX_IMPORT lifxDevice_t lifxSession_CreateDevice(lifxSession_t* session);
+
+LIFX_IMPORT int lifxSession_RecvFromInternal(
+  lifxSession_t*              lifx,
+  lifxMessage_t*              message,
+  struct sockaddr_storage*    source,
+  int                         timeout);
+
+LIFX_IMPORT void lxLog_Printf(
+  lifxSession_t*  lifx,
+  lifxLogLevel_t  level,
+  const char*     format, ...) LIFX_PRINTF_FORMAT(3, 4);
+
 #define lxLog_Print(SESS, LEVEL, FORMAT, ...) do { lxLog_Printf(SESS, LEVEL, FORMAT, ## __VA_ARGS__); } while (0)
 
 #define lxLog_Debug(SESS, FORMAT, ...) lxLog_Print(SESS, kLifxLogLevelDebug, FORMAT, ## __VA_ARGS__)

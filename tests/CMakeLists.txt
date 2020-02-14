@@ -1,6 +1,8 @@
 include(ExternalProject)
 include(GoogleTest)
 
+find_packete(Threads)
+
 ExternalProject_Add(
   gtest
   URL https://github.com/google/googletest/archive/master.zip
@@ -30,7 +32,7 @@ add_custom_target(test_memcheck
 
 # testGroup.lifxBuffer
 add_executable(testGroup.lifxBuffer lifxBufferTests.cpp main.cpp)
-target_link_libraries(testGroup.lifxBuffer libgtest libgmock lifx pthread)
+target_link_libraries(testGroup.lifxBuffer libgtest libgmock lifx ${CMAKE_THREAD_LIBS_INIT})
 
 
 gtest_discover_tests(testGroup.lifxBuffer)
