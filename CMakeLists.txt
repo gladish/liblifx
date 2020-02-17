@@ -1,18 +1,20 @@
 #cmake_minimum_required(VERSION 3.4)
 cmake_minimum_required(VERSION 2.8)
 
-cmake_policy(SET CMP0048 NEW)
+if (CMAKE_VERSION VERSION_LESS "3.0")
+  project(lifxlifx C)
+  set(PROJECT_VERSION 0.0.1)
+else ()
+  cmake_policy(SET CMP0048 NEW)
+  project(liblifx VERSION 0.0.01)
+endif()
 
-project(liblifx VERSION 0.0.1)
 include(ExternalProject)
-
 find_package(Threads)
-
 set(CMAKE_C_FLAGS_DEBUG "-Wall -Wextra -g -O0 -fno-inline -Wno-unused-parameter")
 set(CMAKE_C_FLAGS_RELEASE "-Werror -Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "-Wall -Wextra -g -O0 -fno-inline") # -Weffc++ ")
 set(CMAKE_CXX_FLAGS_RELEASE "-Werror -Wall -Wextra") # -Weffc++")
-
 enable_testing()
 
 ########################################################
@@ -86,7 +88,7 @@ add_library(
 configure_file("include/lifx_version.h.in" "${CMAKE_CURRENT_SOURCE_DIR}/include/lifx_version.h")
 include_directories(lifx ${CMAKE_CURRENT_BINARY_DIR}/deps/src)
 include_directories(lifx ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_link_libraries(lifx ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(lifx ${CMAKE_THREAD_LIBS_INIT} rt)
 #add_dependencies(lifx generate_sources)
 #add_dependencies(generate_sources lifx_yaml_file)
 ########################################################
