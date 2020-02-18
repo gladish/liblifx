@@ -20,19 +20,19 @@
 #include <stdbool.h>
 #include <pthread.h>
 
-static lifxDevice_t dev = kLifxDeviceInvalid;
+static lifxDeviceId_t dev = kLifxDeviceInvalidInitializer;
 static bool device_found = false;
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 
 void message_handler(lifxSession_t const* lifx, lifxMessage_t const* const message,
-  lifxDevice_t device)
+  lifxDeviceId_t deviceId)
 {
   printf("message_type:%d\n", message->Header.Type);
-  if ((dev == kLifxDeviceInvalid) && (message->Header.Type == kLifxPacketTypeDeviceStateService))
+  if ((lifxDeviceId_Compare(&dev, &kLifxDeviceInvalid) == 0) && (message->Header.Type == kLifxPacketTypeDeviceStateService))
   {
-    dev = device;
-    printf("device found:%d\n", dev);
+    dev = deviceId;
+    printf("device found\n");
 
     pthread_mutex_lock(&mutex);
     device_found = true;

@@ -35,11 +35,11 @@ extern "C" {
 #define kLifxMaxDevices (256)
 #define kLifxSizeofHeader (sizeof(lifxProtocolHeader_t))
 
-LIFX_IMPORT struct lifxDevice
+typedef struct
 {
-  uint8_t                 HardwareAddress[6];
+  lifxDeviceId_t          DeviceId; 
   struct sockaddr_storage Endpoint;
-};
+} LIFX_IMPORT lifxDevice_t;
 
 LIFX_IMPORT struct lifxSession
 {
@@ -53,7 +53,7 @@ LIFX_IMPORT struct lifxSession
   lifxMessageHandler_t  MessageHandler;
   pthread_t             BackgroundDispatchThread;
   pthread_mutex_t       LogMutex;
-  struct lifxDevice*    DeviceDatabase[kLifxMaxDevices];
+  lifxDevice_t*         DeviceDatabase[kLifxMaxDevices];
 };
 
 /**
@@ -64,20 +64,17 @@ LIFX_IMPORT char const* lifxError_ToString(int errnum);
 /**
  *
  */
-LIFX_IMPORT lifxDevice_t lifxSession_FindDevice(
-  lifxSession_t*                  lifx,
-  lifxProtocolHeader_t            const* header);
+LIFX_IMPORT lifxDevice_t* lifxSession_FindDevice(
+  lifxSession_t*  lifx,
+  lifxDeviceId_t  deviceId);
 
 /**
  *
  */
-LIFX_IMPORT lifxDevice_t lifxSession_CreateDevice(
+LIFX_IMPORT lifxDevice_t* lifxSession_CreateDevice(
   lifxSession_t*                  lifx,
   lifxMessage_t const*            message,
   struct sockaddr_storage* const  source);
-
-//LIFX_IMPORT lifxDevice_t lifxSession_FindDevice(lifxSession_t* session, lifxDevice_t dev);
-//LIFX_IMPORT lifxDevice_t lifxSession_CreateDevice(lifxSession_t* session);
 
 LIFX_IMPORT int lifxSession_RecvFromInternal(
   lifxSession_t*              lifx,

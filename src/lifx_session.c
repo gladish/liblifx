@@ -39,42 +39,40 @@ static void* lifxSession_Dispatcher(void* argp)
   return NULL;
 }
 
-struct lifxDevice* lifxSession_GetDeviceEntry(lifxSession_t* lifx, lifxDevice_t dev)
-{
-  if (dev < 0 || dev >= kLifxMaxDevices)
-    return NULL;
-  return lifx->DeviceDatabase[dev];
-}
-
-lifxDevice_t lifxSession_FindDevice(lifxSession_t* lifx, lifxProtocolHeader_t const* header)
+lifxDevice_t* lifxSession_FindDevice(lifxSession_t* lifx, lifxDeviceId_t deviceId)
 {
   int i;
+  if (lifx == NULL)
+    return NULL;
+
   for (i = 0; i < kLifxMaxDevices; ++i)
   {
-    if (lifx->DeviceDatabase[i])
+    if (lifx->DeviceDatabase[i] != NULL)
     {
-      if (memcmp(header->Target, lifx->DeviceDatabase[i]->HardwareAddress, 6) == 0)
-        return (lifxDevice_t) i;
+      if (lifxDeviceId_Compare(&deviceId, &lifx->DeviceDatabase[i]->DeviceId) == 0)
+        return lifx->DeviceDatabase[i];
     }
   }
 
-  return kLifxDeviceInvalid;
+  return NULL;
 }
 
-lifxDevice_t lifxSession_CreateDevice(
+lifxDevice_t* lifxSession_CreateDevice(
   lifxSession_t*                  lifx,
   lifxMessage_t const*            message,
   struct sockaddr_storage* const  source)
 {
   int i;
-  lifxDevice_t dev = kLifxDeviceInvalid;
+  lifxDevice_t* new_device;
+
+  new_device = NULL;
 
   for (i = 0; i < kLifxMaxDevices; ++i)
   {
-    if (!lifx->DeviceDatabase[i])
+    if (lifx->DeviceDatabase[i] == NULL)
     {
-      struct lifxDevice* new_device = malloc(sizeof(struct lifxDevice));
-      memcpy(new_device->HardwareAddress, message->Header.Target, 6);
+      new_device = malloc(sizeof(lifxDevice_t));
+      memcpy(new_device->DeviceId.Octets, message->Header.Target, 6);
       memcpy(&new_device->Endpoint, source, sizeof(struct sockaddr_storage));
       lifx->DeviceDatabase[i] = new_device;
 
@@ -84,27 +82,25 @@ lifxDevice_t lifxSession_CreateDevice(
         v4->sin_port = htons(message->Packet.DeviceStateService.Port);
       }
 
-      dev = i;
-
       {
         uint16_t port;
         char buff[256];
         lifxSockaddr_ToString(source, buff, sizeof(buff), &port);
         lxLog_Info(lifx, "adding new device %s:%d to database", buff, port);
         lxLog_Info(lifx, "mac:%02x%02x%02x%02x%02x%02x",
-          lifx->DeviceDatabase[i]->HardwareAddress[0],
-          lifx->DeviceDatabase[i]->HardwareAddress[1],
-          lifx->DeviceDatabase[i]->HardwareAddress[2],
-          lifx->DeviceDatabase[i]->HardwareAddress[3],
-          lifx->DeviceDatabase[i]->HardwareAddress[4],
-          lifx->DeviceDatabase[i]->HardwareAddress[5]);
+          lifx->DeviceDatabase[i]->DeviceId.Octets[0],
+          lifx->DeviceDatabase[i]->DeviceId.Octets[1],
+          lifx->DeviceDatabase[i]->DeviceId.Octets[2],
+          lifx->DeviceDatabase[i]->DeviceId.Octets[3],
+          lifx->DeviceDatabase[i]->DeviceId.Octets[4],
+          lifx->DeviceDatabase[i]->DeviceId.Octets[5]);
       }
 
       break;
     }
   }
 
-  return dev;
+  return new_device;
 }
 
 lifxSession_t* lifxSession_Open(lifxSessionConfig_t const* conf)
@@ -130,6 +126,9 @@ lifxSession_t* lifxSession_Open(lifxSessionConfig_t const* conf)
     free(lifx);
     return NULL;
   }
+
+  for (n = 0; n < kLifxMaxDevices; ++n)
+    lifx->DeviceDatabase[n] = NULL;
 
   n = (int) (kLifxSizeofHeader + sizeof(lifxPacket_t));
   lifxBuffer_Init(&lifx->ReadBuffer, n);
@@ -180,6 +179,8 @@ lifxSession_t* lifxSession_Open(lifxSessionConfig_t const* conf)
 
 int lifxSession_Close(lifxSession_t* lifx)
 {
+  int i;
+
   if (!lifx)
     return EINVAL;
 
@@ -189,6 +190,12 @@ int lifxSession_Close(lifxSession_t* lifx)
   lifxBuffer_Destroy(&lifx->ReadBuffer);
   lifxBuffer_Destroy(&lifx->WriteBuffer);
   free(lifx);
+
+  for (i = 0; i < kLifxMaxDevices; ++i)
+  {
+    if (lifx->DeviceDatabase[i] != NULL)
+      free(lifx->DeviceDatabase[i]);
+  }
 
   return 0;
 }
@@ -201,7 +208,6 @@ lifxSession_Dispatch(lifxSession_t* lifx, int timeout)
   struct timeval          time;
   bool                    done;
   lifxMessage_t           message;
-  lifxDevice_t            dev;
   struct sockaddr_storage source_addr;
 
   ret = 0;
@@ -211,7 +217,6 @@ lifxSession_Dispatch(lifxSession_t* lifx, int timeout)
 
   while (!done)
   {
-    dev = kLifxDeviceInvalid;
     memset(&message, 0, sizeof(lifxMessage_t));
 
     ret = lifxSession_RecvFromInternal(lifx, &message, &source_addr, 1000);
@@ -224,14 +229,18 @@ lifxSession_Dispatch(lifxSession_t* lifx, int timeout)
 
     if (!done && (ret == 0))
     {
+      lifxDeviceId_t deviceId;
+
+      // response to a device disovery, cache the device in db
       if (message.Header.Type == kLifxPacketTypeDeviceStateService)
       {
-        dev = lifxSession_FindDevice(lifx, &message.Header);
-        if (dev == kLifxDeviceInvalid)
-          dev = lifxSession_CreateDevice(lifx, &message, &source_addr);
+        lifxDevice_t* device;
+        if ((device = lifxSession_FindDevice(lifx, deviceId)) == NULL)
+          device = lifxSession_CreateDevice(lifx, &message, &source_addr);
       }
 
-      lifx->MessageHandler(lifx, &message, dev);
+      memcpy(&deviceId.Octets, &message.Header.Target, 6);
+      lifx->MessageHandler(lifx, &message, deviceId);
     }
   }
 
@@ -241,7 +250,7 @@ lifxSession_Dispatch(lifxSession_t* lifx, int timeout)
 int
 lifxSession_SendTo(
   lifxSession_t*    lifx,
-  lifxDevice_t      dev,
+  lifxDeviceId_t    deviceId,
   void*             packet,
   lifxPacketType_t  packet_type)
 {
@@ -265,7 +274,7 @@ lifxSession_SendTo(
   header.Sequence = lifxInterlockedIncrement(&lifx->SequenceNumber);
   header.Type = packet_type;
 
-  if (dev == kLifxDeviceAll)
+  if (lifxDeviceId_Compare(&deviceId, &kLifxDeviceAll) == 0)
   {
     struct sockaddr_in* v4 = (struct sockaddr_in *) &dest;
     memset(&dest, 0, sizeof(struct sockaddr_in));
@@ -275,18 +284,18 @@ lifxSession_SendTo(
   }
   else
   {
-    struct lifxDevice* entry = lifxSession_GetDeviceEntry(lifx, dev);
+    lifxDevice_t* entry = lifxSession_FindDevice(lifx, deviceId);
     if (entry)
     {
       header.ResRequired = 1;
       header.Addressable = 1;
       header.Tagged = 0;
-      header.Target[0] = entry->HardwareAddress[0];
-      header.Target[1] = entry->HardwareAddress[1];
-      header.Target[2] = entry->HardwareAddress[2];
-      header.Target[3] = entry->HardwareAddress[3];
-      header.Target[4] = entry->HardwareAddress[4];
-      header.Target[5] = entry->HardwareAddress[5];
+      header.Target[0] = entry->DeviceId.Octets[0];
+      header.Target[1] = entry->DeviceId.Octets[1];
+      header.Target[2] = entry->DeviceId.Octets[2];
+      header.Target[3] = entry->DeviceId.Octets[3];
+      header.Target[4] = entry->DeviceId.Octets[4];
+      header.Target[5] = entry->DeviceId.Octets[5];
       header.Target[6] = 0;
       header.Target[7] = 0;
       memcpy(&dest, &entry->Endpoint, sizeof(struct sockaddr_storage));
@@ -404,4 +413,9 @@ int lifxSession_RecvFromInternal(
   }
 
   return 0;
+}
+
+int lifxDeviceId_Compare(lifxDeviceId_t const* dev1, lifxDeviceId_t const* dev2)
+{
+  return memcmp(dev1->Octets, dev2->Octets, 6);
 }

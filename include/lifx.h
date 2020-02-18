@@ -52,16 +52,24 @@ extern "C" {
 #error "Implement me!"
 #endif
 
-struct lifxSession;
-struct lifxDevice;
-
-typedef int32_t lifxDevice_t;
-typedef struct lifxSession lifxSession_t;
-
 #define kLifxDefaultBroadcastPort (56700)
 #define kLifxWaitForever (-1)
-#define kLifxDeviceAll (-1)
-#define kLifxDeviceInvalid (-2)
+#define kLifxDeviceIdSize (6)
+#define kLifxDeviceAllInitializer {{0, 0, 0, 0, 0, 0}}
+#define kLifxDeviceInvalidInitializer {{0xff, 0xff, 0xff, 0xff, 0xff, 0xff}}
+
+struct lifxSession;
+typedef struct lifxSession lifxSession_t;
+
+typedef struct
+{
+  uint8_t Octets[kLifxDeviceIdSize];
+} lifxDeviceId_t;
+
+static lifxDeviceId_t const kLifxDeviceAll = kLifxDeviceAllInitializer;
+static lifxDeviceId_t const kLifxDeviceInvalid = kLifxDeviceInvalidInitializer;
+
+int lifxDeviceId_Compare(lifxDeviceId_t const* a, lifxDeviceId_t const* b);
 
 #pragma pack(push, 1)
 typedef struct
@@ -126,7 +134,7 @@ typedef void (*lifxLogHandler_t)(
 typedef void (*lifxMessageHandler_t)(
   lifxSession_t const* lifx,
   lifxMessage_t const* const message,
-  lifxDevice_t device);
+  lifxDeviceId_t device);
 
 /**
  *
@@ -176,7 +184,7 @@ LIFX_EXPORT int lifxSession_Close(lifxSession_t* lifx);
  */
 LIFX_EXPORT int lifxSession_SendTo(
   lifxSession_t*     lifx,
-  lifxDevice_t       device,
+  lifxDeviceId_t     device,
   void*              packet,
   lifxPacketType_t   packet_type);
 
