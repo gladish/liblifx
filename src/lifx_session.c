@@ -294,9 +294,11 @@ lifxSession_SendTo(
   }
 
   // copy header to write buffer
-  memcpy(lifx->WriteBuffer.Data, &header, kLifxSizeofHeader);
-  lifxBuffer_Seek(&lifx->WriteBuffer, kLifxSizeofHeader, kLifxBufferWhenceSet);
-  lifxEncoder_EncodePacket(packet_type, packet, &lifx->WriteBuffer);
+  // memcpy(lifx->WriteBuffer.Data, &header, kLifxSizeofHeader);
+  // lifxBuffer_Seek(&lifx->WriteBuffer, kLifxSizeofHeader, kLifxBufferWhenceSet);
+  lifxBuffer_Seek(&lifx->WriteBuffer, 0, kLifxBufferWhenceSet);
+  lifxBuffer_Write(&lifx->WriteBuffer, &header, kLifxSizeofHeader);
+  lifxEncoder_EncodePacket(&lifx->WriteBuffer, packet_type, packet);
 
   {
     char addr[64];
@@ -393,7 +395,7 @@ int lifxSession_RecvFromInternal(
     // message->Sender = malloc(sizeof(struct lifxDevice));
     //  memset(message->Sender, 0, sizeof(struct lifxDevice));
 
-    lifxDecoder_DecodePacket(message->Header.Type, &message->Packet, &lifx->ReadBuffer);
+    lifxDecoder_DecodePacket(&lifx->ReadBuffer, message->Header.Type, &message->Packet);
     // memcpy(&message->Sender->Endpoint, &source, source_size);
   }
   else

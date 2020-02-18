@@ -1,376 +1,376 @@
 //
-// DO NOT EDIT - AUTO-GENERATE:2020-02-14 11:04:43.335092
+// DO NOT EDIT - AUTO-GENERATE:2020-02-17 21:03:16.981975
 //
 #include "lifx.h"
 #include "lifx_encoders.h"
 
-int lifxDecoder_DecodePacket(lifxPacketType_t type, lifxPacket_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodePacket(lifxBuffer_t* buff, lifxPacketType_t type, lifxPacket_t* pkt)
 {
   int ret = 0;
   switch (type)
   {
     case kLifxPacketTypeDeviceGetService:
-    ret = lifxDecoder_DecodeDeviceGetService(&pkt->DeviceGetService, buff);
+    ret = lifxDecoder_DecodeDeviceGetService(buff, &pkt->DeviceGetService);
     break;
     case kLifxPacketTypeDeviceStateService:
-    ret = lifxDecoder_DecodeDeviceStateService(&pkt->DeviceStateService, buff);
+    ret = lifxDecoder_DecodeDeviceStateService(buff, &pkt->DeviceStateService);
     break;
     case kLifxPacketTypeDeviceGetHostInfo:
-    ret = lifxDecoder_DecodeDeviceGetHostInfo(&pkt->DeviceGetHostInfo, buff);
+    ret = lifxDecoder_DecodeDeviceGetHostInfo(buff, &pkt->DeviceGetHostInfo);
     break;
     case kLifxPacketTypeDeviceStateHostInfo:
-    ret = lifxDecoder_DecodeDeviceStateHostInfo(&pkt->DeviceStateHostInfo, buff);
+    ret = lifxDecoder_DecodeDeviceStateHostInfo(buff, &pkt->DeviceStateHostInfo);
     break;
     case kLifxPacketTypeDeviceGetHostFirmware:
-    ret = lifxDecoder_DecodeDeviceGetHostFirmware(&pkt->DeviceGetHostFirmware, buff);
+    ret = lifxDecoder_DecodeDeviceGetHostFirmware(buff, &pkt->DeviceGetHostFirmware);
     break;
     case kLifxPacketTypeDeviceStateHostFirmware:
-    ret = lifxDecoder_DecodeDeviceStateHostFirmware(&pkt->DeviceStateHostFirmware, buff);
+    ret = lifxDecoder_DecodeDeviceStateHostFirmware(buff, &pkt->DeviceStateHostFirmware);
     break;
     case kLifxPacketTypeDeviceGetWifiInfo:
-    ret = lifxDecoder_DecodeDeviceGetWifiInfo(&pkt->DeviceGetWifiInfo, buff);
+    ret = lifxDecoder_DecodeDeviceGetWifiInfo(buff, &pkt->DeviceGetWifiInfo);
     break;
     case kLifxPacketTypeDeviceStateWifiInfo:
-    ret = lifxDecoder_DecodeDeviceStateWifiInfo(&pkt->DeviceStateWifiInfo, buff);
+    ret = lifxDecoder_DecodeDeviceStateWifiInfo(buff, &pkt->DeviceStateWifiInfo);
     break;
     case kLifxPacketTypeDeviceGetWifiFirmware:
-    ret = lifxDecoder_DecodeDeviceGetWifiFirmware(&pkt->DeviceGetWifiFirmware, buff);
+    ret = lifxDecoder_DecodeDeviceGetWifiFirmware(buff, &pkt->DeviceGetWifiFirmware);
     break;
     case kLifxPacketTypeDeviceStateWifiFirmware:
-    ret = lifxDecoder_DecodeDeviceStateWifiFirmware(&pkt->DeviceStateWifiFirmware, buff);
+    ret = lifxDecoder_DecodeDeviceStateWifiFirmware(buff, &pkt->DeviceStateWifiFirmware);
     break;
     case kLifxPacketTypeDeviceGetPower:
-    ret = lifxDecoder_DecodeDeviceGetPower(&pkt->DeviceGetPower, buff);
+    ret = lifxDecoder_DecodeDeviceGetPower(buff, &pkt->DeviceGetPower);
     break;
     case kLifxPacketTypeDeviceSetPower:
-    ret = lifxDecoder_DecodeDeviceSetPower(&pkt->DeviceSetPower, buff);
+    ret = lifxDecoder_DecodeDeviceSetPower(buff, &pkt->DeviceSetPower);
     break;
     case kLifxPacketTypeDeviceStatePower:
-    ret = lifxDecoder_DecodeDeviceStatePower(&pkt->DeviceStatePower, buff);
+    ret = lifxDecoder_DecodeDeviceStatePower(buff, &pkt->DeviceStatePower);
     break;
     case kLifxPacketTypeDeviceGetLabel:
-    ret = lifxDecoder_DecodeDeviceGetLabel(&pkt->DeviceGetLabel, buff);
+    ret = lifxDecoder_DecodeDeviceGetLabel(buff, &pkt->DeviceGetLabel);
     break;
     case kLifxPacketTypeDeviceSetLabel:
-    ret = lifxDecoder_DecodeDeviceSetLabel(&pkt->DeviceSetLabel, buff);
+    ret = lifxDecoder_DecodeDeviceSetLabel(buff, &pkt->DeviceSetLabel);
     break;
     case kLifxPacketTypeDeviceStateLabel:
-    ret = lifxDecoder_DecodeDeviceStateLabel(&pkt->DeviceStateLabel, buff);
+    ret = lifxDecoder_DecodeDeviceStateLabel(buff, &pkt->DeviceStateLabel);
     break;
     case kLifxPacketTypeDeviceGetVersion:
-    ret = lifxDecoder_DecodeDeviceGetVersion(&pkt->DeviceGetVersion, buff);
+    ret = lifxDecoder_DecodeDeviceGetVersion(buff, &pkt->DeviceGetVersion);
     break;
     case kLifxPacketTypeDeviceStateVersion:
-    ret = lifxDecoder_DecodeDeviceStateVersion(&pkt->DeviceStateVersion, buff);
+    ret = lifxDecoder_DecodeDeviceStateVersion(buff, &pkt->DeviceStateVersion);
     break;
     case kLifxPacketTypeDeviceGetInfo:
-    ret = lifxDecoder_DecodeDeviceGetInfo(&pkt->DeviceGetInfo, buff);
+    ret = lifxDecoder_DecodeDeviceGetInfo(buff, &pkt->DeviceGetInfo);
     break;
     case kLifxPacketTypeDeviceStateInfo:
-    ret = lifxDecoder_DecodeDeviceStateInfo(&pkt->DeviceStateInfo, buff);
+    ret = lifxDecoder_DecodeDeviceStateInfo(buff, &pkt->DeviceStateInfo);
     break;
     case kLifxPacketTypeDeviceAcknowledgement:
-    ret = lifxDecoder_DecodeDeviceAcknowledgement(&pkt->DeviceAcknowledgement, buff);
+    ret = lifxDecoder_DecodeDeviceAcknowledgement(buff, &pkt->DeviceAcknowledgement);
     break;
     case kLifxPacketTypeDeviceGetLocation:
-    ret = lifxDecoder_DecodeDeviceGetLocation(&pkt->DeviceGetLocation, buff);
+    ret = lifxDecoder_DecodeDeviceGetLocation(buff, &pkt->DeviceGetLocation);
     break;
     case kLifxPacketTypeDeviceSetLocation:
-    ret = lifxDecoder_DecodeDeviceSetLocation(&pkt->DeviceSetLocation, buff);
+    ret = lifxDecoder_DecodeDeviceSetLocation(buff, &pkt->DeviceSetLocation);
     break;
     case kLifxPacketTypeDeviceStateLocation:
-    ret = lifxDecoder_DecodeDeviceStateLocation(&pkt->DeviceStateLocation, buff);
+    ret = lifxDecoder_DecodeDeviceStateLocation(buff, &pkt->DeviceStateLocation);
     break;
     case kLifxPacketTypeDeviceGetGroup:
-    ret = lifxDecoder_DecodeDeviceGetGroup(&pkt->DeviceGetGroup, buff);
+    ret = lifxDecoder_DecodeDeviceGetGroup(buff, &pkt->DeviceGetGroup);
     break;
     case kLifxPacketTypeDeviceSetGroup:
-    ret = lifxDecoder_DecodeDeviceSetGroup(&pkt->DeviceSetGroup, buff);
+    ret = lifxDecoder_DecodeDeviceSetGroup(buff, &pkt->DeviceSetGroup);
     break;
     case kLifxPacketTypeDeviceStateGroup:
-    ret = lifxDecoder_DecodeDeviceStateGroup(&pkt->DeviceStateGroup, buff);
+    ret = lifxDecoder_DecodeDeviceStateGroup(buff, &pkt->DeviceStateGroup);
     break;
     case kLifxPacketTypeDeviceEchoRequest:
-    ret = lifxDecoder_DecodeDeviceEchoRequest(&pkt->DeviceEchoRequest, buff);
+    ret = lifxDecoder_DecodeDeviceEchoRequest(buff, &pkt->DeviceEchoRequest);
     break;
     case kLifxPacketTypeDeviceEchoResponse:
-    ret = lifxDecoder_DecodeDeviceEchoResponse(&pkt->DeviceEchoResponse, buff);
+    ret = lifxDecoder_DecodeDeviceEchoResponse(buff, &pkt->DeviceEchoResponse);
     break;
     case kLifxPacketTypeLightGet:
-    ret = lifxDecoder_DecodeLightGet(&pkt->LightGet, buff);
+    ret = lifxDecoder_DecodeLightGet(buff, &pkt->LightGet);
     break;
     case kLifxPacketTypeLightSetColor:
-    ret = lifxDecoder_DecodeLightSetColor(&pkt->LightSetColor, buff);
+    ret = lifxDecoder_DecodeLightSetColor(buff, &pkt->LightSetColor);
     break;
     case kLifxPacketTypeLightSetWaveform:
-    ret = lifxDecoder_DecodeLightSetWaveform(&pkt->LightSetWaveform, buff);
+    ret = lifxDecoder_DecodeLightSetWaveform(buff, &pkt->LightSetWaveform);
     break;
     case kLifxPacketTypeLightState:
-    ret = lifxDecoder_DecodeLightState(&pkt->LightState, buff);
+    ret = lifxDecoder_DecodeLightState(buff, &pkt->LightState);
     break;
     case kLifxPacketTypeLightGetPower:
-    ret = lifxDecoder_DecodeLightGetPower(&pkt->LightGetPower, buff);
+    ret = lifxDecoder_DecodeLightGetPower(buff, &pkt->LightGetPower);
     break;
     case kLifxPacketTypeLightSetPower:
-    ret = lifxDecoder_DecodeLightSetPower(&pkt->LightSetPower, buff);
+    ret = lifxDecoder_DecodeLightSetPower(buff, &pkt->LightSetPower);
     break;
     case kLifxPacketTypeLightStatePower:
-    ret = lifxDecoder_DecodeLightStatePower(&pkt->LightStatePower, buff);
+    ret = lifxDecoder_DecodeLightStatePower(buff, &pkt->LightStatePower);
     break;
     case kLifxPacketTypeLightSetWaveformOptional:
-    ret = lifxDecoder_DecodeLightSetWaveformOptional(&pkt->LightSetWaveformOptional, buff);
+    ret = lifxDecoder_DecodeLightSetWaveformOptional(buff, &pkt->LightSetWaveformOptional);
     break;
     case kLifxPacketTypeLightGetInfrared:
-    ret = lifxDecoder_DecodeLightGetInfrared(&pkt->LightGetInfrared, buff);
+    ret = lifxDecoder_DecodeLightGetInfrared(buff, &pkt->LightGetInfrared);
     break;
     case kLifxPacketTypeLightStateInfrared:
-    ret = lifxDecoder_DecodeLightStateInfrared(&pkt->LightStateInfrared, buff);
+    ret = lifxDecoder_DecodeLightStateInfrared(buff, &pkt->LightStateInfrared);
     break;
     case kLifxPacketTypeLightSetInfrared:
-    ret = lifxDecoder_DecodeLightSetInfrared(&pkt->LightSetInfrared, buff);
+    ret = lifxDecoder_DecodeLightSetInfrared(buff, &pkt->LightSetInfrared);
     break;
     case kLifxPacketTypeMultiZoneSetColorZones:
-    ret = lifxDecoder_DecodeMultiZoneSetColorZones(&pkt->MultiZoneSetColorZones, buff);
+    ret = lifxDecoder_DecodeMultiZoneSetColorZones(buff, &pkt->MultiZoneSetColorZones);
     break;
     case kLifxPacketTypeMultiZoneGetColorZones:
-    ret = lifxDecoder_DecodeMultiZoneGetColorZones(&pkt->MultiZoneGetColorZones, buff);
+    ret = lifxDecoder_DecodeMultiZoneGetColorZones(buff, &pkt->MultiZoneGetColorZones);
     break;
     case kLifxPacketTypeMultiZoneStateZone:
-    ret = lifxDecoder_DecodeMultiZoneStateZone(&pkt->MultiZoneStateZone, buff);
+    ret = lifxDecoder_DecodeMultiZoneStateZone(buff, &pkt->MultiZoneStateZone);
     break;
     case kLifxPacketTypeMultiZoneStateMultiZone:
-    ret = lifxDecoder_DecodeMultiZoneStateMultiZone(&pkt->MultiZoneStateMultiZone, buff);
+    ret = lifxDecoder_DecodeMultiZoneStateMultiZone(buff, &pkt->MultiZoneStateMultiZone);
     break;
     case kLifxPacketTypeMultiZoneGetEffect:
-    ret = lifxDecoder_DecodeMultiZoneGetEffect(&pkt->MultiZoneGetEffect, buff);
+    ret = lifxDecoder_DecodeMultiZoneGetEffect(buff, &pkt->MultiZoneGetEffect);
     break;
     case kLifxPacketTypeMultiZoneSetEffect:
-    ret = lifxDecoder_DecodeMultiZoneSetEffect(&pkt->MultiZoneSetEffect, buff);
+    ret = lifxDecoder_DecodeMultiZoneSetEffect(buff, &pkt->MultiZoneSetEffect);
     break;
     case kLifxPacketTypeMultiZoneStateEffect:
-    ret = lifxDecoder_DecodeMultiZoneStateEffect(&pkt->MultiZoneStateEffect, buff);
+    ret = lifxDecoder_DecodeMultiZoneStateEffect(buff, &pkt->MultiZoneStateEffect);
     break;
     case kLifxPacketTypeMultiZoneExtendedSetColorZones:
-    ret = lifxDecoder_DecodeMultiZoneExtendedSetColorZones(&pkt->MultiZoneExtendedSetColorZones, buff);
+    ret = lifxDecoder_DecodeMultiZoneExtendedSetColorZones(buff, &pkt->MultiZoneExtendedSetColorZones);
     break;
     case kLifxPacketTypeMultiZoneExtendedGetColorZones:
-    ret = lifxDecoder_DecodeMultiZoneExtendedGetColorZones(&pkt->MultiZoneExtendedGetColorZones, buff);
+    ret = lifxDecoder_DecodeMultiZoneExtendedGetColorZones(buff, &pkt->MultiZoneExtendedGetColorZones);
     break;
     case kLifxPacketTypeMultiZoneExtendedStateMultiZone:
-    ret = lifxDecoder_DecodeMultiZoneExtendedStateMultiZone(&pkt->MultiZoneExtendedStateMultiZone, buff);
+    ret = lifxDecoder_DecodeMultiZoneExtendedStateMultiZone(buff, &pkt->MultiZoneExtendedStateMultiZone);
     break;
     case kLifxPacketTypeTileGetDeviceChain:
-    ret = lifxDecoder_DecodeTileGetDeviceChain(&pkt->TileGetDeviceChain, buff);
+    ret = lifxDecoder_DecodeTileGetDeviceChain(buff, &pkt->TileGetDeviceChain);
     break;
     case kLifxPacketTypeTileStateDeviceChain:
-    ret = lifxDecoder_DecodeTileStateDeviceChain(&pkt->TileStateDeviceChain, buff);
+    ret = lifxDecoder_DecodeTileStateDeviceChain(buff, &pkt->TileStateDeviceChain);
     break;
     case kLifxPacketTypeTileSetUserPosition:
-    ret = lifxDecoder_DecodeTileSetUserPosition(&pkt->TileSetUserPosition, buff);
+    ret = lifxDecoder_DecodeTileSetUserPosition(buff, &pkt->TileSetUserPosition);
     break;
     case kLifxPacketTypeTileGet64:
-    ret = lifxDecoder_DecodeTileGet64(&pkt->TileGet64, buff);
+    ret = lifxDecoder_DecodeTileGet64(buff, &pkt->TileGet64);
     break;
     case kLifxPacketTypeTileState64:
-    ret = lifxDecoder_DecodeTileState64(&pkt->TileState64, buff);
+    ret = lifxDecoder_DecodeTileState64(buff, &pkt->TileState64);
     break;
     case kLifxPacketTypeTileSet64:
-    ret = lifxDecoder_DecodeTileSet64(&pkt->TileSet64, buff);
+    ret = lifxDecoder_DecodeTileSet64(buff, &pkt->TileSet64);
     break;
     case kLifxPacketTypeTileGetEffect:
-    ret = lifxDecoder_DecodeTileGetEffect(&pkt->TileGetEffect, buff);
+    ret = lifxDecoder_DecodeTileGetEffect(buff, &pkt->TileGetEffect);
     break;
     case kLifxPacketTypeTileSetEffect:
-    ret = lifxDecoder_DecodeTileSetEffect(&pkt->TileSetEffect, buff);
+    ret = lifxDecoder_DecodeTileSetEffect(buff, &pkt->TileSetEffect);
     break;
     case kLifxPacketTypeTileStateEffect:
-    ret = lifxDecoder_DecodeTileStateEffect(&pkt->TileStateEffect, buff);
+    ret = lifxDecoder_DecodeTileStateEffect(buff, &pkt->TileStateEffect);
     break;
   }
   return ret;
 }
 
-int lifxEncoder_EncodePacket(lifxPacketType_t type, lifxPacket_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodePacket(lifxBuffer_t* buff, lifxPacketType_t type, lifxPacket_t const* pkt)
 {
   int ret = 0;
   switch (type)
   {
     case kLifxPacketTypeDeviceGetService:
-    ret = lifxEncoder_EncodeDeviceGetService(&pkt->DeviceGetService, buff);
+    ret = lifxEncoder_EncodeDeviceGetService(buff, &pkt->DeviceGetService);
     break;
     case kLifxPacketTypeDeviceStateService:
-    ret = lifxEncoder_EncodeDeviceStateService(&pkt->DeviceStateService, buff);
+    ret = lifxEncoder_EncodeDeviceStateService(buff, &pkt->DeviceStateService);
     break;
     case kLifxPacketTypeDeviceGetHostInfo:
-    ret = lifxEncoder_EncodeDeviceGetHostInfo(&pkt->DeviceGetHostInfo, buff);
+    ret = lifxEncoder_EncodeDeviceGetHostInfo(buff, &pkt->DeviceGetHostInfo);
     break;
     case kLifxPacketTypeDeviceStateHostInfo:
-    ret = lifxEncoder_EncodeDeviceStateHostInfo(&pkt->DeviceStateHostInfo, buff);
+    ret = lifxEncoder_EncodeDeviceStateHostInfo(buff, &pkt->DeviceStateHostInfo);
     break;
     case kLifxPacketTypeDeviceGetHostFirmware:
-    ret = lifxEncoder_EncodeDeviceGetHostFirmware(&pkt->DeviceGetHostFirmware, buff);
+    ret = lifxEncoder_EncodeDeviceGetHostFirmware(buff, &pkt->DeviceGetHostFirmware);
     break;
     case kLifxPacketTypeDeviceStateHostFirmware:
-    ret = lifxEncoder_EncodeDeviceStateHostFirmware(&pkt->DeviceStateHostFirmware, buff);
+    ret = lifxEncoder_EncodeDeviceStateHostFirmware(buff, &pkt->DeviceStateHostFirmware);
     break;
     case kLifxPacketTypeDeviceGetWifiInfo:
-    ret = lifxEncoder_EncodeDeviceGetWifiInfo(&pkt->DeviceGetWifiInfo, buff);
+    ret = lifxEncoder_EncodeDeviceGetWifiInfo(buff, &pkt->DeviceGetWifiInfo);
     break;
     case kLifxPacketTypeDeviceStateWifiInfo:
-    ret = lifxEncoder_EncodeDeviceStateWifiInfo(&pkt->DeviceStateWifiInfo, buff);
+    ret = lifxEncoder_EncodeDeviceStateWifiInfo(buff, &pkt->DeviceStateWifiInfo);
     break;
     case kLifxPacketTypeDeviceGetWifiFirmware:
-    ret = lifxEncoder_EncodeDeviceGetWifiFirmware(&pkt->DeviceGetWifiFirmware, buff);
+    ret = lifxEncoder_EncodeDeviceGetWifiFirmware(buff, &pkt->DeviceGetWifiFirmware);
     break;
     case kLifxPacketTypeDeviceStateWifiFirmware:
-    ret = lifxEncoder_EncodeDeviceStateWifiFirmware(&pkt->DeviceStateWifiFirmware, buff);
+    ret = lifxEncoder_EncodeDeviceStateWifiFirmware(buff, &pkt->DeviceStateWifiFirmware);
     break;
     case kLifxPacketTypeDeviceGetPower:
-    ret = lifxEncoder_EncodeDeviceGetPower(&pkt->DeviceGetPower, buff);
+    ret = lifxEncoder_EncodeDeviceGetPower(buff, &pkt->DeviceGetPower);
     break;
     case kLifxPacketTypeDeviceSetPower:
-    ret = lifxEncoder_EncodeDeviceSetPower(&pkt->DeviceSetPower, buff);
+    ret = lifxEncoder_EncodeDeviceSetPower(buff, &pkt->DeviceSetPower);
     break;
     case kLifxPacketTypeDeviceStatePower:
-    ret = lifxEncoder_EncodeDeviceStatePower(&pkt->DeviceStatePower, buff);
+    ret = lifxEncoder_EncodeDeviceStatePower(buff, &pkt->DeviceStatePower);
     break;
     case kLifxPacketTypeDeviceGetLabel:
-    ret = lifxEncoder_EncodeDeviceGetLabel(&pkt->DeviceGetLabel, buff);
+    ret = lifxEncoder_EncodeDeviceGetLabel(buff, &pkt->DeviceGetLabel);
     break;
     case kLifxPacketTypeDeviceSetLabel:
-    ret = lifxEncoder_EncodeDeviceSetLabel(&pkt->DeviceSetLabel, buff);
+    ret = lifxEncoder_EncodeDeviceSetLabel(buff, &pkt->DeviceSetLabel);
     break;
     case kLifxPacketTypeDeviceStateLabel:
-    ret = lifxEncoder_EncodeDeviceStateLabel(&pkt->DeviceStateLabel, buff);
+    ret = lifxEncoder_EncodeDeviceStateLabel(buff, &pkt->DeviceStateLabel);
     break;
     case kLifxPacketTypeDeviceGetVersion:
-    ret = lifxEncoder_EncodeDeviceGetVersion(&pkt->DeviceGetVersion, buff);
+    ret = lifxEncoder_EncodeDeviceGetVersion(buff, &pkt->DeviceGetVersion);
     break;
     case kLifxPacketTypeDeviceStateVersion:
-    ret = lifxEncoder_EncodeDeviceStateVersion(&pkt->DeviceStateVersion, buff);
+    ret = lifxEncoder_EncodeDeviceStateVersion(buff, &pkt->DeviceStateVersion);
     break;
     case kLifxPacketTypeDeviceGetInfo:
-    ret = lifxEncoder_EncodeDeviceGetInfo(&pkt->DeviceGetInfo, buff);
+    ret = lifxEncoder_EncodeDeviceGetInfo(buff, &pkt->DeviceGetInfo);
     break;
     case kLifxPacketTypeDeviceStateInfo:
-    ret = lifxEncoder_EncodeDeviceStateInfo(&pkt->DeviceStateInfo, buff);
+    ret = lifxEncoder_EncodeDeviceStateInfo(buff, &pkt->DeviceStateInfo);
     break;
     case kLifxPacketTypeDeviceAcknowledgement:
-    ret = lifxEncoder_EncodeDeviceAcknowledgement(&pkt->DeviceAcknowledgement, buff);
+    ret = lifxEncoder_EncodeDeviceAcknowledgement(buff, &pkt->DeviceAcknowledgement);
     break;
     case kLifxPacketTypeDeviceGetLocation:
-    ret = lifxEncoder_EncodeDeviceGetLocation(&pkt->DeviceGetLocation, buff);
+    ret = lifxEncoder_EncodeDeviceGetLocation(buff, &pkt->DeviceGetLocation);
     break;
     case kLifxPacketTypeDeviceSetLocation:
-    ret = lifxEncoder_EncodeDeviceSetLocation(&pkt->DeviceSetLocation, buff);
+    ret = lifxEncoder_EncodeDeviceSetLocation(buff, &pkt->DeviceSetLocation);
     break;
     case kLifxPacketTypeDeviceStateLocation:
-    ret = lifxEncoder_EncodeDeviceStateLocation(&pkt->DeviceStateLocation, buff);
+    ret = lifxEncoder_EncodeDeviceStateLocation(buff, &pkt->DeviceStateLocation);
     break;
     case kLifxPacketTypeDeviceGetGroup:
-    ret = lifxEncoder_EncodeDeviceGetGroup(&pkt->DeviceGetGroup, buff);
+    ret = lifxEncoder_EncodeDeviceGetGroup(buff, &pkt->DeviceGetGroup);
     break;
     case kLifxPacketTypeDeviceSetGroup:
-    ret = lifxEncoder_EncodeDeviceSetGroup(&pkt->DeviceSetGroup, buff);
+    ret = lifxEncoder_EncodeDeviceSetGroup(buff, &pkt->DeviceSetGroup);
     break;
     case kLifxPacketTypeDeviceStateGroup:
-    ret = lifxEncoder_EncodeDeviceStateGroup(&pkt->DeviceStateGroup, buff);
+    ret = lifxEncoder_EncodeDeviceStateGroup(buff, &pkt->DeviceStateGroup);
     break;
     case kLifxPacketTypeDeviceEchoRequest:
-    ret = lifxEncoder_EncodeDeviceEchoRequest(&pkt->DeviceEchoRequest, buff);
+    ret = lifxEncoder_EncodeDeviceEchoRequest(buff, &pkt->DeviceEchoRequest);
     break;
     case kLifxPacketTypeDeviceEchoResponse:
-    ret = lifxEncoder_EncodeDeviceEchoResponse(&pkt->DeviceEchoResponse, buff);
+    ret = lifxEncoder_EncodeDeviceEchoResponse(buff, &pkt->DeviceEchoResponse);
     break;
     case kLifxPacketTypeLightGet:
-    ret = lifxEncoder_EncodeLightGet(&pkt->LightGet, buff);
+    ret = lifxEncoder_EncodeLightGet(buff, &pkt->LightGet);
     break;
     case kLifxPacketTypeLightSetColor:
-    ret = lifxEncoder_EncodeLightSetColor(&pkt->LightSetColor, buff);
+    ret = lifxEncoder_EncodeLightSetColor(buff, &pkt->LightSetColor);
     break;
     case kLifxPacketTypeLightSetWaveform:
-    ret = lifxEncoder_EncodeLightSetWaveform(&pkt->LightSetWaveform, buff);
+    ret = lifxEncoder_EncodeLightSetWaveform(buff, &pkt->LightSetWaveform);
     break;
     case kLifxPacketTypeLightState:
-    ret = lifxEncoder_EncodeLightState(&pkt->LightState, buff);
+    ret = lifxEncoder_EncodeLightState(buff, &pkt->LightState);
     break;
     case kLifxPacketTypeLightGetPower:
-    ret = lifxEncoder_EncodeLightGetPower(&pkt->LightGetPower, buff);
+    ret = lifxEncoder_EncodeLightGetPower(buff, &pkt->LightGetPower);
     break;
     case kLifxPacketTypeLightSetPower:
-    ret = lifxEncoder_EncodeLightSetPower(&pkt->LightSetPower, buff);
+    ret = lifxEncoder_EncodeLightSetPower(buff, &pkt->LightSetPower);
     break;
     case kLifxPacketTypeLightStatePower:
-    ret = lifxEncoder_EncodeLightStatePower(&pkt->LightStatePower, buff);
+    ret = lifxEncoder_EncodeLightStatePower(buff, &pkt->LightStatePower);
     break;
     case kLifxPacketTypeLightSetWaveformOptional:
-    ret = lifxEncoder_EncodeLightSetWaveformOptional(&pkt->LightSetWaveformOptional, buff);
+    ret = lifxEncoder_EncodeLightSetWaveformOptional(buff, &pkt->LightSetWaveformOptional);
     break;
     case kLifxPacketTypeLightGetInfrared:
-    ret = lifxEncoder_EncodeLightGetInfrared(&pkt->LightGetInfrared, buff);
+    ret = lifxEncoder_EncodeLightGetInfrared(buff, &pkt->LightGetInfrared);
     break;
     case kLifxPacketTypeLightStateInfrared:
-    ret = lifxEncoder_EncodeLightStateInfrared(&pkt->LightStateInfrared, buff);
+    ret = lifxEncoder_EncodeLightStateInfrared(buff, &pkt->LightStateInfrared);
     break;
     case kLifxPacketTypeLightSetInfrared:
-    ret = lifxEncoder_EncodeLightSetInfrared(&pkt->LightSetInfrared, buff);
+    ret = lifxEncoder_EncodeLightSetInfrared(buff, &pkt->LightSetInfrared);
     break;
     case kLifxPacketTypeMultiZoneSetColorZones:
-    ret = lifxEncoder_EncodeMultiZoneSetColorZones(&pkt->MultiZoneSetColorZones, buff);
+    ret = lifxEncoder_EncodeMultiZoneSetColorZones(buff, &pkt->MultiZoneSetColorZones);
     break;
     case kLifxPacketTypeMultiZoneGetColorZones:
-    ret = lifxEncoder_EncodeMultiZoneGetColorZones(&pkt->MultiZoneGetColorZones, buff);
+    ret = lifxEncoder_EncodeMultiZoneGetColorZones(buff, &pkt->MultiZoneGetColorZones);
     break;
     case kLifxPacketTypeMultiZoneStateZone:
-    ret = lifxEncoder_EncodeMultiZoneStateZone(&pkt->MultiZoneStateZone, buff);
+    ret = lifxEncoder_EncodeMultiZoneStateZone(buff, &pkt->MultiZoneStateZone);
     break;
     case kLifxPacketTypeMultiZoneStateMultiZone:
-    ret = lifxEncoder_EncodeMultiZoneStateMultiZone(&pkt->MultiZoneStateMultiZone, buff);
+    ret = lifxEncoder_EncodeMultiZoneStateMultiZone(buff, &pkt->MultiZoneStateMultiZone);
     break;
     case kLifxPacketTypeMultiZoneGetEffect:
-    ret = lifxEncoder_EncodeMultiZoneGetEffect(&pkt->MultiZoneGetEffect, buff);
+    ret = lifxEncoder_EncodeMultiZoneGetEffect(buff, &pkt->MultiZoneGetEffect);
     break;
     case kLifxPacketTypeMultiZoneSetEffect:
-    ret = lifxEncoder_EncodeMultiZoneSetEffect(&pkt->MultiZoneSetEffect, buff);
+    ret = lifxEncoder_EncodeMultiZoneSetEffect(buff, &pkt->MultiZoneSetEffect);
     break;
     case kLifxPacketTypeMultiZoneStateEffect:
-    ret = lifxEncoder_EncodeMultiZoneStateEffect(&pkt->MultiZoneStateEffect, buff);
+    ret = lifxEncoder_EncodeMultiZoneStateEffect(buff, &pkt->MultiZoneStateEffect);
     break;
     case kLifxPacketTypeMultiZoneExtendedSetColorZones:
-    ret = lifxEncoder_EncodeMultiZoneExtendedSetColorZones(&pkt->MultiZoneExtendedSetColorZones, buff);
+    ret = lifxEncoder_EncodeMultiZoneExtendedSetColorZones(buff, &pkt->MultiZoneExtendedSetColorZones);
     break;
     case kLifxPacketTypeMultiZoneExtendedGetColorZones:
-    ret = lifxEncoder_EncodeMultiZoneExtendedGetColorZones(&pkt->MultiZoneExtendedGetColorZones, buff);
+    ret = lifxEncoder_EncodeMultiZoneExtendedGetColorZones(buff, &pkt->MultiZoneExtendedGetColorZones);
     break;
     case kLifxPacketTypeMultiZoneExtendedStateMultiZone:
-    ret = lifxEncoder_EncodeMultiZoneExtendedStateMultiZone(&pkt->MultiZoneExtendedStateMultiZone, buff);
+    ret = lifxEncoder_EncodeMultiZoneExtendedStateMultiZone(buff, &pkt->MultiZoneExtendedStateMultiZone);
     break;
     case kLifxPacketTypeTileGetDeviceChain:
-    ret = lifxEncoder_EncodeTileGetDeviceChain(&pkt->TileGetDeviceChain, buff);
+    ret = lifxEncoder_EncodeTileGetDeviceChain(buff, &pkt->TileGetDeviceChain);
     break;
     case kLifxPacketTypeTileStateDeviceChain:
-    ret = lifxEncoder_EncodeTileStateDeviceChain(&pkt->TileStateDeviceChain, buff);
+    ret = lifxEncoder_EncodeTileStateDeviceChain(buff, &pkt->TileStateDeviceChain);
     break;
     case kLifxPacketTypeTileSetUserPosition:
-    ret = lifxEncoder_EncodeTileSetUserPosition(&pkt->TileSetUserPosition, buff);
+    ret = lifxEncoder_EncodeTileSetUserPosition(buff, &pkt->TileSetUserPosition);
     break;
     case kLifxPacketTypeTileGet64:
-    ret = lifxEncoder_EncodeTileGet64(&pkt->TileGet64, buff);
+    ret = lifxEncoder_EncodeTileGet64(buff, &pkt->TileGet64);
     break;
     case kLifxPacketTypeTileState64:
-    ret = lifxEncoder_EncodeTileState64(&pkt->TileState64, buff);
+    ret = lifxEncoder_EncodeTileState64(buff, &pkt->TileState64);
     break;
     case kLifxPacketTypeTileSet64:
-    ret = lifxEncoder_EncodeTileSet64(&pkt->TileSet64, buff);
+    ret = lifxEncoder_EncodeTileSet64(buff, &pkt->TileSet64);
     break;
     case kLifxPacketTypeTileGetEffect:
-    ret = lifxEncoder_EncodeTileGetEffect(&pkt->TileGetEffect, buff);
+    ret = lifxEncoder_EncodeTileGetEffect(buff, &pkt->TileGetEffect);
     break;
     case kLifxPacketTypeTileSetEffect:
-    ret = lifxEncoder_EncodeTileSetEffect(&pkt->TileSetEffect, buff);
+    ret = lifxEncoder_EncodeTileSetEffect(buff, &pkt->TileSetEffect);
     break;
     case kLifxPacketTypeTileStateEffect:
-    ret = lifxEncoder_EncodeTileStateEffect(&pkt->TileStateEffect, buff);
+    ret = lifxEncoder_EncodeTileStateEffect(buff, &pkt->TileStateEffect);
     break;
   }
   return ret;
@@ -621,19 +621,19 @@ int lifxEncoder_GetEncodedSize(lifxPacketType_t type)
   return ret;
 }
 
-int lifxEncoder_EncodeDeviceGetService(lifxDeviceGetService_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeDeviceGetService(lifxBuffer_t* buff, lifxDeviceGetService_t const* pkt)
 {
   // {'pkt_type': 2, 'size_bytes': 0, 'fields': []}
   return 0;
 }
 
-int lifxDecoder_DecodeDeviceGetService(lifxDeviceGetService_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeDeviceGetService(lifxBuffer_t* buff, lifxDeviceGetService_t* pkt)
 {
   // {'pkt_type': 2, 'size_bytes': 0, 'fields': []}
   return 0;
 }
 
-int lifxEncoder_EncodeDeviceStateService(lifxDeviceStateService_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeDeviceStateService(lifxBuffer_t* buff, lifxDeviceStateService_t const* pkt)
 {
   // {'pkt_type': 3, 'size_bytes': 5, 'fields': [{'name': 'Service', 'type': '<DeviceService>', 'size_bytes': 1}, {'name': 'Port', 'type': 'uint32', 'size_bytes': 4}]}
   // {'name': 'Service', 'type': '<DeviceService>', 'size_bytes': 1}
@@ -643,7 +643,7 @@ int lifxEncoder_EncodeDeviceStateService(lifxDeviceStateService_t const* pkt, li
   return 0;
 }
 
-int lifxDecoder_DecodeDeviceStateService(lifxDeviceStateService_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeDeviceStateService(lifxBuffer_t* buff, lifxDeviceStateService_t* pkt)
 {
   // {'pkt_type': 3, 'size_bytes': 5, 'fields': [{'name': 'Service', 'type': '<DeviceService>', 'size_bytes': 1}, {'name': 'Port', 'type': 'uint32', 'size_bytes': 4}]}
   // {'name': 'Service', 'type': '<DeviceService>', 'size_bytes': 1}
@@ -653,19 +653,19 @@ int lifxDecoder_DecodeDeviceStateService(lifxDeviceStateService_t* pkt, lifxBuff
   return 0;
 }
 
-int lifxEncoder_EncodeDeviceGetHostInfo(lifxDeviceGetHostInfo_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeDeviceGetHostInfo(lifxBuffer_t* buff, lifxDeviceGetHostInfo_t const* pkt)
 {
   // {'pkt_type': 12, 'size_bytes': 0, 'fields': []}
   return 0;
 }
 
-int lifxDecoder_DecodeDeviceGetHostInfo(lifxDeviceGetHostInfo_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeDeviceGetHostInfo(lifxBuffer_t* buff, lifxDeviceGetHostInfo_t* pkt)
 {
   // {'pkt_type': 12, 'size_bytes': 0, 'fields': []}
   return 0;
 }
 
-int lifxEncoder_EncodeDeviceStateHostInfo(lifxDeviceStateHostInfo_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeDeviceStateHostInfo(lifxBuffer_t* buff, lifxDeviceStateHostInfo_t const* pkt)
 {
   // {'pkt_type': 13, 'size_bytes': 14, 'fields': [{'name': 'Signal', 'type': 'float32', 'size_bytes': 4}, {'name': 'Tx', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Rx', 'type': 'uint32', 'size_bytes': 4}, {'type': 'reserved', 'size_bytes': 2}]}
   // {'name': 'Signal', 'type': 'float32', 'size_bytes': 4}
@@ -679,7 +679,7 @@ int lifxEncoder_EncodeDeviceStateHostInfo(lifxDeviceStateHostInfo_t const* pkt, 
   return 0;
 }
 
-int lifxDecoder_DecodeDeviceStateHostInfo(lifxDeviceStateHostInfo_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeDeviceStateHostInfo(lifxBuffer_t* buff, lifxDeviceStateHostInfo_t* pkt)
 {
   // {'pkt_type': 13, 'size_bytes': 14, 'fields': [{'name': 'Signal', 'type': 'float32', 'size_bytes': 4}, {'name': 'Tx', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Rx', 'type': 'uint32', 'size_bytes': 4}, {'type': 'reserved', 'size_bytes': 2}]}
   // {'name': 'Signal', 'type': 'float32', 'size_bytes': 4}
@@ -693,19 +693,19 @@ int lifxDecoder_DecodeDeviceStateHostInfo(lifxDeviceStateHostInfo_t* pkt, lifxBu
   return 0;
 }
 
-int lifxEncoder_EncodeDeviceGetHostFirmware(lifxDeviceGetHostFirmware_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeDeviceGetHostFirmware(lifxBuffer_t* buff, lifxDeviceGetHostFirmware_t const* pkt)
 {
   // {'pkt_type': 14, 'size_bytes': 0, 'fields': []}
   return 0;
 }
 
-int lifxDecoder_DecodeDeviceGetHostFirmware(lifxDeviceGetHostFirmware_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeDeviceGetHostFirmware(lifxBuffer_t* buff, lifxDeviceGetHostFirmware_t* pkt)
 {
   // {'pkt_type': 14, 'size_bytes': 0, 'fields': []}
   return 0;
 }
 
-int lifxEncoder_EncodeDeviceStateHostFirmware(lifxDeviceStateHostFirmware_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeDeviceStateHostFirmware(lifxBuffer_t* buff, lifxDeviceStateHostFirmware_t const* pkt)
 {
   // {'pkt_type': 15, 'size_bytes': 20, 'fields': [{'name': 'Build', 'type': 'uint64', 'size_bytes': 8}, {'type': 'reserved', 'size_bytes': 8}, {'name': 'VersionMinor', 'type': 'uint16', 'size_bytes': 2}, {'name': 'VersionMajor', 'type': 'uint16', 'size_bytes': 2}]}
   // {'name': 'Build', 'type': 'uint64', 'size_bytes': 8}
@@ -719,7 +719,7 @@ int lifxEncoder_EncodeDeviceStateHostFirmware(lifxDeviceStateHostFirmware_t cons
   return 0;
 }
 
-int lifxDecoder_DecodeDeviceStateHostFirmware(lifxDeviceStateHostFirmware_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeDeviceStateHostFirmware(lifxBuffer_t* buff, lifxDeviceStateHostFirmware_t* pkt)
 {
   // {'pkt_type': 15, 'size_bytes': 20, 'fields': [{'name': 'Build', 'type': 'uint64', 'size_bytes': 8}, {'type': 'reserved', 'size_bytes': 8}, {'name': 'VersionMinor', 'type': 'uint16', 'size_bytes': 2}, {'name': 'VersionMajor', 'type': 'uint16', 'size_bytes': 2}]}
   // {'name': 'Build', 'type': 'uint64', 'size_bytes': 8}
@@ -733,19 +733,19 @@ int lifxDecoder_DecodeDeviceStateHostFirmware(lifxDeviceStateHostFirmware_t* pkt
   return 0;
 }
 
-int lifxEncoder_EncodeDeviceGetWifiInfo(lifxDeviceGetWifiInfo_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeDeviceGetWifiInfo(lifxBuffer_t* buff, lifxDeviceGetWifiInfo_t const* pkt)
 {
   // {'pkt_type': 16, 'size_bytes': 0, 'fields': []}
   return 0;
 }
 
-int lifxDecoder_DecodeDeviceGetWifiInfo(lifxDeviceGetWifiInfo_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeDeviceGetWifiInfo(lifxBuffer_t* buff, lifxDeviceGetWifiInfo_t* pkt)
 {
   // {'pkt_type': 16, 'size_bytes': 0, 'fields': []}
   return 0;
 }
 
-int lifxEncoder_EncodeDeviceStateWifiInfo(lifxDeviceStateWifiInfo_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeDeviceStateWifiInfo(lifxBuffer_t* buff, lifxDeviceStateWifiInfo_t const* pkt)
 {
   // {'pkt_type': 17, 'size_bytes': 14, 'fields': [{'name': 'Signal', 'type': 'float32', 'size_bytes': 4}, {'name': 'Tx', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Rx', 'type': 'uint32', 'size_bytes': 4}, {'type': 'reserved', 'size_bytes': 2}]}
   // {'name': 'Signal', 'type': 'float32', 'size_bytes': 4}
@@ -759,7 +759,7 @@ int lifxEncoder_EncodeDeviceStateWifiInfo(lifxDeviceStateWifiInfo_t const* pkt, 
   return 0;
 }
 
-int lifxDecoder_DecodeDeviceStateWifiInfo(lifxDeviceStateWifiInfo_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeDeviceStateWifiInfo(lifxBuffer_t* buff, lifxDeviceStateWifiInfo_t* pkt)
 {
   // {'pkt_type': 17, 'size_bytes': 14, 'fields': [{'name': 'Signal', 'type': 'float32', 'size_bytes': 4}, {'name': 'Tx', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Rx', 'type': 'uint32', 'size_bytes': 4}, {'type': 'reserved', 'size_bytes': 2}]}
   // {'name': 'Signal', 'type': 'float32', 'size_bytes': 4}
@@ -773,19 +773,19 @@ int lifxDecoder_DecodeDeviceStateWifiInfo(lifxDeviceStateWifiInfo_t* pkt, lifxBu
   return 0;
 }
 
-int lifxEncoder_EncodeDeviceGetWifiFirmware(lifxDeviceGetWifiFirmware_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeDeviceGetWifiFirmware(lifxBuffer_t* buff, lifxDeviceGetWifiFirmware_t const* pkt)
 {
   // {'pkt_type': 18, 'size_bytes': 0, 'fields': []}
   return 0;
 }
 
-int lifxDecoder_DecodeDeviceGetWifiFirmware(lifxDeviceGetWifiFirmware_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeDeviceGetWifiFirmware(lifxBuffer_t* buff, lifxDeviceGetWifiFirmware_t* pkt)
 {
   // {'pkt_type': 18, 'size_bytes': 0, 'fields': []}
   return 0;
 }
 
-int lifxEncoder_EncodeDeviceStateWifiFirmware(lifxDeviceStateWifiFirmware_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeDeviceStateWifiFirmware(lifxBuffer_t* buff, lifxDeviceStateWifiFirmware_t const* pkt)
 {
   // {'pkt_type': 19, 'size_bytes': 20, 'fields': [{'name': 'Build', 'type': 'uint64', 'size_bytes': 8}, {'type': 'reserved', 'size_bytes': 8}, {'name': 'VersionMinor', 'type': 'uint16', 'size_bytes': 2}, {'name': 'VersionMajor', 'type': 'uint16', 'size_bytes': 2}]}
   // {'name': 'Build', 'type': 'uint64', 'size_bytes': 8}
@@ -799,7 +799,7 @@ int lifxEncoder_EncodeDeviceStateWifiFirmware(lifxDeviceStateWifiFirmware_t cons
   return 0;
 }
 
-int lifxDecoder_DecodeDeviceStateWifiFirmware(lifxDeviceStateWifiFirmware_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeDeviceStateWifiFirmware(lifxBuffer_t* buff, lifxDeviceStateWifiFirmware_t* pkt)
 {
   // {'pkt_type': 19, 'size_bytes': 20, 'fields': [{'name': 'Build', 'type': 'uint64', 'size_bytes': 8}, {'type': 'reserved', 'size_bytes': 8}, {'name': 'VersionMinor', 'type': 'uint16', 'size_bytes': 2}, {'name': 'VersionMajor', 'type': 'uint16', 'size_bytes': 2}]}
   // {'name': 'Build', 'type': 'uint64', 'size_bytes': 8}
@@ -813,19 +813,19 @@ int lifxDecoder_DecodeDeviceStateWifiFirmware(lifxDeviceStateWifiFirmware_t* pkt
   return 0;
 }
 
-int lifxEncoder_EncodeDeviceGetPower(lifxDeviceGetPower_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeDeviceGetPower(lifxBuffer_t* buff, lifxDeviceGetPower_t const* pkt)
 {
   // {'pkt_type': 20, 'size_bytes': 0, 'fields': []}
   return 0;
 }
 
-int lifxDecoder_DecodeDeviceGetPower(lifxDeviceGetPower_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeDeviceGetPower(lifxBuffer_t* buff, lifxDeviceGetPower_t* pkt)
 {
   // {'pkt_type': 20, 'size_bytes': 0, 'fields': []}
   return 0;
 }
 
-int lifxEncoder_EncodeDeviceSetPower(lifxDeviceSetPower_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeDeviceSetPower(lifxBuffer_t* buff, lifxDeviceSetPower_t const* pkt)
 {
   // {'pkt_type': 21, 'size_bytes': 2, 'fields': [{'name': 'Level', 'type': 'uint16', 'size_bytes': 2}]}
   // {'name': 'Level', 'type': 'uint16', 'size_bytes': 2}
@@ -833,7 +833,7 @@ int lifxEncoder_EncodeDeviceSetPower(lifxDeviceSetPower_t const* pkt, lifxBuffer
   return 0;
 }
 
-int lifxDecoder_DecodeDeviceSetPower(lifxDeviceSetPower_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeDeviceSetPower(lifxBuffer_t* buff, lifxDeviceSetPower_t* pkt)
 {
   // {'pkt_type': 21, 'size_bytes': 2, 'fields': [{'name': 'Level', 'type': 'uint16', 'size_bytes': 2}]}
   // {'name': 'Level', 'type': 'uint16', 'size_bytes': 2}
@@ -841,7 +841,7 @@ int lifxDecoder_DecodeDeviceSetPower(lifxDeviceSetPower_t* pkt, lifxBuffer_t* bu
   return 0;
 }
 
-int lifxEncoder_EncodeDeviceStatePower(lifxDeviceStatePower_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeDeviceStatePower(lifxBuffer_t* buff, lifxDeviceStatePower_t const* pkt)
 {
   // {'pkt_type': 22, 'size_bytes': 2, 'fields': [{'name': 'Level', 'type': 'uint16', 'size_bytes': 2}]}
   // {'name': 'Level', 'type': 'uint16', 'size_bytes': 2}
@@ -849,7 +849,7 @@ int lifxEncoder_EncodeDeviceStatePower(lifxDeviceStatePower_t const* pkt, lifxBu
   return 0;
 }
 
-int lifxDecoder_DecodeDeviceStatePower(lifxDeviceStatePower_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeDeviceStatePower(lifxBuffer_t* buff, lifxDeviceStatePower_t* pkt)
 {
   // {'pkt_type': 22, 'size_bytes': 2, 'fields': [{'name': 'Level', 'type': 'uint16', 'size_bytes': 2}]}
   // {'name': 'Level', 'type': 'uint16', 'size_bytes': 2}
@@ -857,19 +857,19 @@ int lifxDecoder_DecodeDeviceStatePower(lifxDeviceStatePower_t* pkt, lifxBuffer_t
   return 0;
 }
 
-int lifxEncoder_EncodeDeviceGetLabel(lifxDeviceGetLabel_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeDeviceGetLabel(lifxBuffer_t* buff, lifxDeviceGetLabel_t const* pkt)
 {
   // {'pkt_type': 23, 'size_bytes': 0, 'fields': []}
   return 0;
 }
 
-int lifxDecoder_DecodeDeviceGetLabel(lifxDeviceGetLabel_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeDeviceGetLabel(lifxBuffer_t* buff, lifxDeviceGetLabel_t* pkt)
 {
   // {'pkt_type': 23, 'size_bytes': 0, 'fields': []}
   return 0;
 }
 
-int lifxEncoder_EncodeDeviceSetLabel(lifxDeviceSetLabel_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeDeviceSetLabel(lifxBuffer_t* buff, lifxDeviceSetLabel_t const* pkt)
 {
   // {'pkt_type': 24, 'size_bytes': 32, 'fields': [{'name': 'Label', 'type': '[32]byte', 'size_bytes': 32}]}
   // {'name': 'Label', 'type': '[32]byte', 'size_bytes': 32}
@@ -877,7 +877,7 @@ int lifxEncoder_EncodeDeviceSetLabel(lifxDeviceSetLabel_t const* pkt, lifxBuffer
   return 0;
 }
 
-int lifxDecoder_DecodeDeviceSetLabel(lifxDeviceSetLabel_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeDeviceSetLabel(lifxBuffer_t* buff, lifxDeviceSetLabel_t* pkt)
 {
   // {'pkt_type': 24, 'size_bytes': 32, 'fields': [{'name': 'Label', 'type': '[32]byte', 'size_bytes': 32}]}
   // {'name': 'Label', 'type': '[32]byte', 'size_bytes': 32}
@@ -885,7 +885,7 @@ int lifxDecoder_DecodeDeviceSetLabel(lifxDeviceSetLabel_t* pkt, lifxBuffer_t* bu
   return 0;
 }
 
-int lifxEncoder_EncodeDeviceStateLabel(lifxDeviceStateLabel_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeDeviceStateLabel(lifxBuffer_t* buff, lifxDeviceStateLabel_t const* pkt)
 {
   // {'pkt_type': 25, 'size_bytes': 32, 'fields': [{'name': 'Label', 'type': '[32]byte', 'size_bytes': 32}]}
   // {'name': 'Label', 'type': '[32]byte', 'size_bytes': 32}
@@ -893,7 +893,7 @@ int lifxEncoder_EncodeDeviceStateLabel(lifxDeviceStateLabel_t const* pkt, lifxBu
   return 0;
 }
 
-int lifxDecoder_DecodeDeviceStateLabel(lifxDeviceStateLabel_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeDeviceStateLabel(lifxBuffer_t* buff, lifxDeviceStateLabel_t* pkt)
 {
   // {'pkt_type': 25, 'size_bytes': 32, 'fields': [{'name': 'Label', 'type': '[32]byte', 'size_bytes': 32}]}
   // {'name': 'Label', 'type': '[32]byte', 'size_bytes': 32}
@@ -901,19 +901,19 @@ int lifxDecoder_DecodeDeviceStateLabel(lifxDeviceStateLabel_t* pkt, lifxBuffer_t
   return 0;
 }
 
-int lifxEncoder_EncodeDeviceGetVersion(lifxDeviceGetVersion_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeDeviceGetVersion(lifxBuffer_t* buff, lifxDeviceGetVersion_t const* pkt)
 {
   // {'pkt_type': 32, 'size_bytes': 0, 'fields': []}
   return 0;
 }
 
-int lifxDecoder_DecodeDeviceGetVersion(lifxDeviceGetVersion_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeDeviceGetVersion(lifxBuffer_t* buff, lifxDeviceGetVersion_t* pkt)
 {
   // {'pkt_type': 32, 'size_bytes': 0, 'fields': []}
   return 0;
 }
 
-int lifxEncoder_EncodeDeviceStateVersion(lifxDeviceStateVersion_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeDeviceStateVersion(lifxBuffer_t* buff, lifxDeviceStateVersion_t const* pkt)
 {
   // {'pkt_type': 33, 'size_bytes': 12, 'fields': [{'name': 'Vendor', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Product', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Version', 'type': 'uint32', 'size_bytes': 4}]}
   // {'name': 'Vendor', 'type': 'uint32', 'size_bytes': 4}
@@ -925,7 +925,7 @@ int lifxEncoder_EncodeDeviceStateVersion(lifxDeviceStateVersion_t const* pkt, li
   return 0;
 }
 
-int lifxDecoder_DecodeDeviceStateVersion(lifxDeviceStateVersion_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeDeviceStateVersion(lifxBuffer_t* buff, lifxDeviceStateVersion_t* pkt)
 {
   // {'pkt_type': 33, 'size_bytes': 12, 'fields': [{'name': 'Vendor', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Product', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Version', 'type': 'uint32', 'size_bytes': 4}]}
   // {'name': 'Vendor', 'type': 'uint32', 'size_bytes': 4}
@@ -937,19 +937,19 @@ int lifxDecoder_DecodeDeviceStateVersion(lifxDeviceStateVersion_t* pkt, lifxBuff
   return 0;
 }
 
-int lifxEncoder_EncodeDeviceGetInfo(lifxDeviceGetInfo_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeDeviceGetInfo(lifxBuffer_t* buff, lifxDeviceGetInfo_t const* pkt)
 {
   // {'pkt_type': 34, 'size_bytes': 0, 'fields': []}
   return 0;
 }
 
-int lifxDecoder_DecodeDeviceGetInfo(lifxDeviceGetInfo_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeDeviceGetInfo(lifxBuffer_t* buff, lifxDeviceGetInfo_t* pkt)
 {
   // {'pkt_type': 34, 'size_bytes': 0, 'fields': []}
   return 0;
 }
 
-int lifxEncoder_EncodeDeviceStateInfo(lifxDeviceStateInfo_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeDeviceStateInfo(lifxBuffer_t* buff, lifxDeviceStateInfo_t const* pkt)
 {
   // {'pkt_type': 35, 'size_bytes': 24, 'fields': [{'name': 'Time', 'type': 'uint64', 'size_bytes': 8}, {'name': 'Uptime', 'type': 'uint64', 'size_bytes': 8}, {'name': 'Downtime', 'type': 'uint64', 'size_bytes': 8}]}
   // {'name': 'Time', 'type': 'uint64', 'size_bytes': 8}
@@ -961,7 +961,7 @@ int lifxEncoder_EncodeDeviceStateInfo(lifxDeviceStateInfo_t const* pkt, lifxBuff
   return 0;
 }
 
-int lifxDecoder_DecodeDeviceStateInfo(lifxDeviceStateInfo_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeDeviceStateInfo(lifxBuffer_t* buff, lifxDeviceStateInfo_t* pkt)
 {
   // {'pkt_type': 35, 'size_bytes': 24, 'fields': [{'name': 'Time', 'type': 'uint64', 'size_bytes': 8}, {'name': 'Uptime', 'type': 'uint64', 'size_bytes': 8}, {'name': 'Downtime', 'type': 'uint64', 'size_bytes': 8}]}
   // {'name': 'Time', 'type': 'uint64', 'size_bytes': 8}
@@ -973,31 +973,31 @@ int lifxDecoder_DecodeDeviceStateInfo(lifxDeviceStateInfo_t* pkt, lifxBuffer_t* 
   return 0;
 }
 
-int lifxEncoder_EncodeDeviceAcknowledgement(lifxDeviceAcknowledgement_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeDeviceAcknowledgement(lifxBuffer_t* buff, lifxDeviceAcknowledgement_t const* pkt)
 {
   // {'pkt_type': 45, 'size_bytes': 0, 'fields': []}
   return 0;
 }
 
-int lifxDecoder_DecodeDeviceAcknowledgement(lifxDeviceAcknowledgement_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeDeviceAcknowledgement(lifxBuffer_t* buff, lifxDeviceAcknowledgement_t* pkt)
 {
   // {'pkt_type': 45, 'size_bytes': 0, 'fields': []}
   return 0;
 }
 
-int lifxEncoder_EncodeDeviceGetLocation(lifxDeviceGetLocation_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeDeviceGetLocation(lifxBuffer_t* buff, lifxDeviceGetLocation_t const* pkt)
 {
   // {'pkt_type': 48, 'size_bytes': 0, 'fields': []}
   return 0;
 }
 
-int lifxDecoder_DecodeDeviceGetLocation(lifxDeviceGetLocation_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeDeviceGetLocation(lifxBuffer_t* buff, lifxDeviceGetLocation_t* pkt)
 {
   // {'pkt_type': 48, 'size_bytes': 0, 'fields': []}
   return 0;
 }
 
-int lifxEncoder_EncodeDeviceSetLocation(lifxDeviceSetLocation_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeDeviceSetLocation(lifxBuffer_t* buff, lifxDeviceSetLocation_t const* pkt)
 {
   // {'pkt_type': 49, 'size_bytes': 56, 'fields': [{'name': 'Location', 'type': '[16]byte', 'size_bytes': 16}, {'name': 'Label', 'type': '[32]byte', 'size_bytes': 32}, {'name': 'UpdatedAt', 'type': 'uint64', 'size_bytes': 8}]}
   // {'name': 'Location', 'type': '[16]byte', 'size_bytes': 16}
@@ -1009,7 +1009,7 @@ int lifxEncoder_EncodeDeviceSetLocation(lifxDeviceSetLocation_t const* pkt, lifx
   return 0;
 }
 
-int lifxDecoder_DecodeDeviceSetLocation(lifxDeviceSetLocation_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeDeviceSetLocation(lifxBuffer_t* buff, lifxDeviceSetLocation_t* pkt)
 {
   // {'pkt_type': 49, 'size_bytes': 56, 'fields': [{'name': 'Location', 'type': '[16]byte', 'size_bytes': 16}, {'name': 'Label', 'type': '[32]byte', 'size_bytes': 32}, {'name': 'UpdatedAt', 'type': 'uint64', 'size_bytes': 8}]}
   // {'name': 'Location', 'type': '[16]byte', 'size_bytes': 16}
@@ -1021,7 +1021,7 @@ int lifxDecoder_DecodeDeviceSetLocation(lifxDeviceSetLocation_t* pkt, lifxBuffer
   return 0;
 }
 
-int lifxEncoder_EncodeDeviceStateLocation(lifxDeviceStateLocation_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeDeviceStateLocation(lifxBuffer_t* buff, lifxDeviceStateLocation_t const* pkt)
 {
   // {'pkt_type': 50, 'size_bytes': 56, 'fields': [{'name': 'Location', 'type': '[16]byte', 'size_bytes': 16}, {'name': 'Label', 'type': '[32]byte', 'size_bytes': 32}, {'name': 'UpdatedAt', 'type': 'uint64', 'size_bytes': 8}]}
   // {'name': 'Location', 'type': '[16]byte', 'size_bytes': 16}
@@ -1033,7 +1033,7 @@ int lifxEncoder_EncodeDeviceStateLocation(lifxDeviceStateLocation_t const* pkt, 
   return 0;
 }
 
-int lifxDecoder_DecodeDeviceStateLocation(lifxDeviceStateLocation_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeDeviceStateLocation(lifxBuffer_t* buff, lifxDeviceStateLocation_t* pkt)
 {
   // {'pkt_type': 50, 'size_bytes': 56, 'fields': [{'name': 'Location', 'type': '[16]byte', 'size_bytes': 16}, {'name': 'Label', 'type': '[32]byte', 'size_bytes': 32}, {'name': 'UpdatedAt', 'type': 'uint64', 'size_bytes': 8}]}
   // {'name': 'Location', 'type': '[16]byte', 'size_bytes': 16}
@@ -1045,19 +1045,19 @@ int lifxDecoder_DecodeDeviceStateLocation(lifxDeviceStateLocation_t* pkt, lifxBu
   return 0;
 }
 
-int lifxEncoder_EncodeDeviceGetGroup(lifxDeviceGetGroup_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeDeviceGetGroup(lifxBuffer_t* buff, lifxDeviceGetGroup_t const* pkt)
 {
   // {'pkt_type': 51, 'size_bytes': 0, 'fields': []}
   return 0;
 }
 
-int lifxDecoder_DecodeDeviceGetGroup(lifxDeviceGetGroup_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeDeviceGetGroup(lifxBuffer_t* buff, lifxDeviceGetGroup_t* pkt)
 {
   // {'pkt_type': 51, 'size_bytes': 0, 'fields': []}
   return 0;
 }
 
-int lifxEncoder_EncodeDeviceSetGroup(lifxDeviceSetGroup_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeDeviceSetGroup(lifxBuffer_t* buff, lifxDeviceSetGroup_t const* pkt)
 {
   // {'pkt_type': 52, 'size_bytes': 56, 'fields': [{'name': 'Group', 'type': '[16]byte', 'size_bytes': 16}, {'name': 'Label', 'type': '[32]byte', 'size_bytes': 32}, {'name': 'UpdatedAt', 'type': 'uint64', 'size_bytes': 8}]}
   // {'name': 'Group', 'type': '[16]byte', 'size_bytes': 16}
@@ -1069,7 +1069,7 @@ int lifxEncoder_EncodeDeviceSetGroup(lifxDeviceSetGroup_t const* pkt, lifxBuffer
   return 0;
 }
 
-int lifxDecoder_DecodeDeviceSetGroup(lifxDeviceSetGroup_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeDeviceSetGroup(lifxBuffer_t* buff, lifxDeviceSetGroup_t* pkt)
 {
   // {'pkt_type': 52, 'size_bytes': 56, 'fields': [{'name': 'Group', 'type': '[16]byte', 'size_bytes': 16}, {'name': 'Label', 'type': '[32]byte', 'size_bytes': 32}, {'name': 'UpdatedAt', 'type': 'uint64', 'size_bytes': 8}]}
   // {'name': 'Group', 'type': '[16]byte', 'size_bytes': 16}
@@ -1081,7 +1081,7 @@ int lifxDecoder_DecodeDeviceSetGroup(lifxDeviceSetGroup_t* pkt, lifxBuffer_t* bu
   return 0;
 }
 
-int lifxEncoder_EncodeDeviceStateGroup(lifxDeviceStateGroup_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeDeviceStateGroup(lifxBuffer_t* buff, lifxDeviceStateGroup_t const* pkt)
 {
   // {'pkt_type': 53, 'size_bytes': 56, 'fields': [{'name': 'Group', 'type': '[16]byte', 'size_bytes': 16}, {'name': 'Label', 'type': '[32]byte', 'size_bytes': 32}, {'name': 'UpdatedAt', 'type': 'uint64', 'size_bytes': 8}]}
   // {'name': 'Group', 'type': '[16]byte', 'size_bytes': 16}
@@ -1093,7 +1093,7 @@ int lifxEncoder_EncodeDeviceStateGroup(lifxDeviceStateGroup_t const* pkt, lifxBu
   return 0;
 }
 
-int lifxDecoder_DecodeDeviceStateGroup(lifxDeviceStateGroup_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeDeviceStateGroup(lifxBuffer_t* buff, lifxDeviceStateGroup_t* pkt)
 {
   // {'pkt_type': 53, 'size_bytes': 56, 'fields': [{'name': 'Group', 'type': '[16]byte', 'size_bytes': 16}, {'name': 'Label', 'type': '[32]byte', 'size_bytes': 32}, {'name': 'UpdatedAt', 'type': 'uint64', 'size_bytes': 8}]}
   // {'name': 'Group', 'type': '[16]byte', 'size_bytes': 16}
@@ -1105,7 +1105,7 @@ int lifxDecoder_DecodeDeviceStateGroup(lifxDeviceStateGroup_t* pkt, lifxBuffer_t
   return 0;
 }
 
-int lifxEncoder_EncodeDeviceEchoRequest(lifxDeviceEchoRequest_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeDeviceEchoRequest(lifxBuffer_t* buff, lifxDeviceEchoRequest_t const* pkt)
 {
   // {'pkt_type': 58, 'size_bytes': 64, 'fields': [{'name': 'Payload', 'type': '[64]byte', 'size_bytes': 64}]}
   // {'name': 'Payload', 'type': '[64]byte', 'size_bytes': 64}
@@ -1113,7 +1113,7 @@ int lifxEncoder_EncodeDeviceEchoRequest(lifxDeviceEchoRequest_t const* pkt, lifx
   return 0;
 }
 
-int lifxDecoder_DecodeDeviceEchoRequest(lifxDeviceEchoRequest_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeDeviceEchoRequest(lifxBuffer_t* buff, lifxDeviceEchoRequest_t* pkt)
 {
   // {'pkt_type': 58, 'size_bytes': 64, 'fields': [{'name': 'Payload', 'type': '[64]byte', 'size_bytes': 64}]}
   // {'name': 'Payload', 'type': '[64]byte', 'size_bytes': 64}
@@ -1121,7 +1121,7 @@ int lifxDecoder_DecodeDeviceEchoRequest(lifxDeviceEchoRequest_t* pkt, lifxBuffer
   return 0;
 }
 
-int lifxEncoder_EncodeDeviceEchoResponse(lifxDeviceEchoResponse_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeDeviceEchoResponse(lifxBuffer_t* buff, lifxDeviceEchoResponse_t const* pkt)
 {
   // {'pkt_type': 59, 'size_bytes': 64, 'fields': [{'name': 'Payload', 'type': '[64]byte', 'size_bytes': 64}]}
   // {'name': 'Payload', 'type': '[64]byte', 'size_bytes': 64}
@@ -1129,7 +1129,7 @@ int lifxEncoder_EncodeDeviceEchoResponse(lifxDeviceEchoResponse_t const* pkt, li
   return 0;
 }
 
-int lifxDecoder_DecodeDeviceEchoResponse(lifxDeviceEchoResponse_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeDeviceEchoResponse(lifxBuffer_t* buff, lifxDeviceEchoResponse_t* pkt)
 {
   // {'pkt_type': 59, 'size_bytes': 64, 'fields': [{'name': 'Payload', 'type': '[64]byte', 'size_bytes': 64}]}
   // {'name': 'Payload', 'type': '[64]byte', 'size_bytes': 64}
@@ -1137,43 +1137,43 @@ int lifxDecoder_DecodeDeviceEchoResponse(lifxDeviceEchoResponse_t* pkt, lifxBuff
   return 0;
 }
 
-int lifxEncoder_EncodeLightGet(lifxLightGet_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeLightGet(lifxBuffer_t* buff, lifxLightGet_t const* pkt)
 {
   // {'pkt_type': 101, 'size_bytes': 0, 'fields': []}
   return 0;
 }
 
-int lifxDecoder_DecodeLightGet(lifxLightGet_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeLightGet(lifxBuffer_t* buff, lifxLightGet_t* pkt)
 {
   // {'pkt_type': 101, 'size_bytes': 0, 'fields': []}
   return 0;
 }
 
-int lifxEncoder_EncodeLightSetColor(lifxLightSetColor_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeLightSetColor(lifxBuffer_t* buff, lifxLightSetColor_t const* pkt)
 {
   // {'pkt_type': 102, 'size_bytes': 13, 'fields': [{'type': 'reserved', 'size_bytes': 1}, {'name': 'Color', 'type': '<LightHsbk>', 'size_bytes': 8}, {'name': 'Duration', 'type': 'uint32', 'size_bytes': 4}]}
   // {'type': 'reserved', 'size_bytes': 1}
   lifxBuffer_Seek(buff, 1, kLifxBufferWhenceCurrent);
   // {'name': 'Color', 'type': '<LightHsbk>', 'size_bytes': 8}
-  lifxEncoder_EncodeLightHsbk(&pkt->Color, buff);
+  lifxEncoder_EncodeLightHsbk(buff, &pkt->Color);
   // {'name': 'Duration', 'type': 'uint32', 'size_bytes': 4}
   lifxBuffer_WriteUInt32(buff, pkt->Duration);
   return 0;
 }
 
-int lifxDecoder_DecodeLightSetColor(lifxLightSetColor_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeLightSetColor(lifxBuffer_t* buff, lifxLightSetColor_t* pkt)
 {
   // {'pkt_type': 102, 'size_bytes': 13, 'fields': [{'type': 'reserved', 'size_bytes': 1}, {'name': 'Color', 'type': '<LightHsbk>', 'size_bytes': 8}, {'name': 'Duration', 'type': 'uint32', 'size_bytes': 4}]}
   // {'type': 'reserved', 'size_bytes': 1}
   lifxBuffer_Seek(buff, 1, kLifxBufferWhenceCurrent);
   // {'name': 'Color', 'type': '<LightHsbk>', 'size_bytes': 8}
-  lifxDecoder_DecodeLightHsbk(&pkt->Color, buff);
+  lifxDecoder_DecodeLightHsbk(buff, &pkt->Color);
   // {'name': 'Duration', 'type': 'uint32', 'size_bytes': 4}
   lifxBuffer_ReadUInt32(buff, &pkt->Duration);
   return 0;
 }
 
-int lifxEncoder_EncodeLightSetWaveformOptional(lifxLightSetWaveformOptional_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeLightSetWaveformOptional(lifxBuffer_t* buff, lifxLightSetWaveformOptional_t const* pkt)
 {
   // {'pkt_type': 119, 'size_bytes': 25, 'fields': [{'type': 'reserved', 'size_bytes': 1}, {'name': 'Transient', 'type': 'bool', 'size_bytes': 1}, {'name': 'Color', 'type': '<LightHsbk>', 'size_bytes': 8}, {'name': 'Period', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Cycles', 'type': 'float32', 'size_bytes': 4}, {'name': 'SkewRatio', 'type': 'int16', 'size_bytes': 2}, {'name': 'Waveform', 'type': '<LightWaveform>', 'size_bytes': 1}, {'name': 'SetHue', 'type': 'bool', 'size_bytes': 1}, {'name': 'SetSaturation', 'type': 'bool', 'size_bytes': 1}, {'name': 'SetBrightness', 'type': 'bool', 'size_bytes': 1}, {'name': 'SetKelvin', 'type': 'bool', 'size_bytes': 1}]}
   // {'type': 'reserved', 'size_bytes': 1}
@@ -1181,7 +1181,7 @@ int lifxEncoder_EncodeLightSetWaveformOptional(lifxLightSetWaveformOptional_t co
   // {'name': 'Transient', 'type': 'bool', 'size_bytes': 1}
   lifxBuffer_WriteBool(buff, pkt->Transient);
   // {'name': 'Color', 'type': '<LightHsbk>', 'size_bytes': 8}
-  lifxEncoder_EncodeLightHsbk(&pkt->Color, buff);
+  lifxEncoder_EncodeLightHsbk(buff, &pkt->Color);
   // {'name': 'Period', 'type': 'uint32', 'size_bytes': 4}
   lifxBuffer_WriteUInt32(buff, pkt->Period);
   // {'name': 'Cycles', 'type': 'float32', 'size_bytes': 4}
@@ -1201,7 +1201,7 @@ int lifxEncoder_EncodeLightSetWaveformOptional(lifxLightSetWaveformOptional_t co
   return 0;
 }
 
-int lifxDecoder_DecodeLightSetWaveformOptional(lifxLightSetWaveformOptional_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeLightSetWaveformOptional(lifxBuffer_t* buff, lifxLightSetWaveformOptional_t* pkt)
 {
   // {'pkt_type': 119, 'size_bytes': 25, 'fields': [{'type': 'reserved', 'size_bytes': 1}, {'name': 'Transient', 'type': 'bool', 'size_bytes': 1}, {'name': 'Color', 'type': '<LightHsbk>', 'size_bytes': 8}, {'name': 'Period', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Cycles', 'type': 'float32', 'size_bytes': 4}, {'name': 'SkewRatio', 'type': 'int16', 'size_bytes': 2}, {'name': 'Waveform', 'type': '<LightWaveform>', 'size_bytes': 1}, {'name': 'SetHue', 'type': 'bool', 'size_bytes': 1}, {'name': 'SetSaturation', 'type': 'bool', 'size_bytes': 1}, {'name': 'SetBrightness', 'type': 'bool', 'size_bytes': 1}, {'name': 'SetKelvin', 'type': 'bool', 'size_bytes': 1}]}
   // {'type': 'reserved', 'size_bytes': 1}
@@ -1209,7 +1209,7 @@ int lifxDecoder_DecodeLightSetWaveformOptional(lifxLightSetWaveformOptional_t* p
   // {'name': 'Transient', 'type': 'bool', 'size_bytes': 1}
   lifxBuffer_ReadBool(buff, &pkt->Transient);
   // {'name': 'Color', 'type': '<LightHsbk>', 'size_bytes': 8}
-  lifxDecoder_DecodeLightHsbk(&pkt->Color, buff);
+  lifxDecoder_DecodeLightHsbk(buff, &pkt->Color);
   // {'name': 'Period', 'type': 'uint32', 'size_bytes': 4}
   lifxBuffer_ReadUInt32(buff, &pkt->Period);
   // {'name': 'Cycles', 'type': 'float32', 'size_bytes': 4}
@@ -1229,7 +1229,7 @@ int lifxDecoder_DecodeLightSetWaveformOptional(lifxLightSetWaveformOptional_t* p
   return 0;
 }
 
-int lifxEncoder_EncodeLightSetWaveform(lifxLightSetWaveform_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeLightSetWaveform(lifxBuffer_t* buff, lifxLightSetWaveform_t const* pkt)
 {
   // {'pkt_type': 103, 'size_bytes': 21, 'fields': [{'type': 'reserved', 'size_bytes': 1}, {'name': 'Transient', 'type': 'bool', 'size_bytes': 1}, {'name': 'Color', 'type': '<LightHsbk>', 'size_bytes': 8}, {'name': 'Period', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Cycles', 'type': 'float32', 'size_bytes': 4}, {'name': 'SkewRatio', 'type': 'int16', 'size_bytes': 2}, {'name': 'Waveform', 'type': '<LightWaveform>', 'size_bytes': 1}]}
   // {'type': 'reserved', 'size_bytes': 1}
@@ -1237,7 +1237,7 @@ int lifxEncoder_EncodeLightSetWaveform(lifxLightSetWaveform_t const* pkt, lifxBu
   // {'name': 'Transient', 'type': 'bool', 'size_bytes': 1}
   lifxBuffer_WriteBool(buff, pkt->Transient);
   // {'name': 'Color', 'type': '<LightHsbk>', 'size_bytes': 8}
-  lifxEncoder_EncodeLightHsbk(&pkt->Color, buff);
+  lifxEncoder_EncodeLightHsbk(buff, &pkt->Color);
   // {'name': 'Period', 'type': 'uint32', 'size_bytes': 4}
   lifxBuffer_WriteUInt32(buff, pkt->Period);
   // {'name': 'Cycles', 'type': 'float32', 'size_bytes': 4}
@@ -1249,7 +1249,7 @@ int lifxEncoder_EncodeLightSetWaveform(lifxLightSetWaveform_t const* pkt, lifxBu
   return 0;
 }
 
-int lifxDecoder_DecodeLightSetWaveform(lifxLightSetWaveform_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeLightSetWaveform(lifxBuffer_t* buff, lifxLightSetWaveform_t* pkt)
 {
   // {'pkt_type': 103, 'size_bytes': 21, 'fields': [{'type': 'reserved', 'size_bytes': 1}, {'name': 'Transient', 'type': 'bool', 'size_bytes': 1}, {'name': 'Color', 'type': '<LightHsbk>', 'size_bytes': 8}, {'name': 'Period', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Cycles', 'type': 'float32', 'size_bytes': 4}, {'name': 'SkewRatio', 'type': 'int16', 'size_bytes': 2}, {'name': 'Waveform', 'type': '<LightWaveform>', 'size_bytes': 1}]}
   // {'type': 'reserved', 'size_bytes': 1}
@@ -1257,7 +1257,7 @@ int lifxDecoder_DecodeLightSetWaveform(lifxLightSetWaveform_t* pkt, lifxBuffer_t
   // {'name': 'Transient', 'type': 'bool', 'size_bytes': 1}
   lifxBuffer_ReadBool(buff, &pkt->Transient);
   // {'name': 'Color', 'type': '<LightHsbk>', 'size_bytes': 8}
-  lifxDecoder_DecodeLightHsbk(&pkt->Color, buff);
+  lifxDecoder_DecodeLightHsbk(buff, &pkt->Color);
   // {'name': 'Period', 'type': 'uint32', 'size_bytes': 4}
   lifxBuffer_ReadUInt32(buff, &pkt->Period);
   // {'name': 'Cycles', 'type': 'float32', 'size_bytes': 4}
@@ -1269,19 +1269,19 @@ int lifxDecoder_DecodeLightSetWaveform(lifxLightSetWaveform_t* pkt, lifxBuffer_t
   return 0;
 }
 
-int lifxEncoder_EncodeLightGetPower(lifxLightGetPower_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeLightGetPower(lifxBuffer_t* buff, lifxLightGetPower_t const* pkt)
 {
   // {'pkt_type': 116, 'size_bytes': 0, 'fields': []}
   return 0;
 }
 
-int lifxDecoder_DecodeLightGetPower(lifxLightGetPower_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeLightGetPower(lifxBuffer_t* buff, lifxLightGetPower_t* pkt)
 {
   // {'pkt_type': 116, 'size_bytes': 0, 'fields': []}
   return 0;
 }
 
-int lifxEncoder_EncodeLightSetPower(lifxLightSetPower_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeLightSetPower(lifxBuffer_t* buff, lifxLightSetPower_t const* pkt)
 {
   // {'pkt_type': 117, 'size_bytes': 6, 'fields': [{'name': 'Level', 'type': 'uint16', 'size_bytes': 2}, {'name': 'Duration', 'type': 'uint32', 'size_bytes': 4}]}
   // {'name': 'Level', 'type': 'uint16', 'size_bytes': 2}
@@ -1291,7 +1291,7 @@ int lifxEncoder_EncodeLightSetPower(lifxLightSetPower_t const* pkt, lifxBuffer_t
   return 0;
 }
 
-int lifxDecoder_DecodeLightSetPower(lifxLightSetPower_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeLightSetPower(lifxBuffer_t* buff, lifxLightSetPower_t* pkt)
 {
   // {'pkt_type': 117, 'size_bytes': 6, 'fields': [{'name': 'Level', 'type': 'uint16', 'size_bytes': 2}, {'name': 'Duration', 'type': 'uint32', 'size_bytes': 4}]}
   // {'name': 'Level', 'type': 'uint16', 'size_bytes': 2}
@@ -1301,7 +1301,7 @@ int lifxDecoder_DecodeLightSetPower(lifxLightSetPower_t* pkt, lifxBuffer_t* buff
   return 0;
 }
 
-int lifxEncoder_EncodeLightStatePower(lifxLightStatePower_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeLightStatePower(lifxBuffer_t* buff, lifxLightStatePower_t const* pkt)
 {
   // {'pkt_type': 118, 'size_bytes': 2, 'fields': [{'name': 'Level', 'type': 'uint16', 'size_bytes': 2}]}
   // {'name': 'Level', 'type': 'uint16', 'size_bytes': 2}
@@ -1309,7 +1309,7 @@ int lifxEncoder_EncodeLightStatePower(lifxLightStatePower_t const* pkt, lifxBuff
   return 0;
 }
 
-int lifxDecoder_DecodeLightStatePower(lifxLightStatePower_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeLightStatePower(lifxBuffer_t* buff, lifxLightStatePower_t* pkt)
 {
   // {'pkt_type': 118, 'size_bytes': 2, 'fields': [{'name': 'Level', 'type': 'uint16', 'size_bytes': 2}]}
   // {'name': 'Level', 'type': 'uint16', 'size_bytes': 2}
@@ -1317,11 +1317,11 @@ int lifxDecoder_DecodeLightStatePower(lifxLightStatePower_t* pkt, lifxBuffer_t* 
   return 0;
 }
 
-int lifxEncoder_EncodeLightState(lifxLightState_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeLightState(lifxBuffer_t* buff, lifxLightState_t const* pkt)
 {
   // {'pkt_type': 107, 'size_bytes': 52, 'fields': [{'name': 'Color', 'type': '<LightHsbk>', 'size_bytes': 8}, {'type': 'reserved', 'size_bytes': 2}, {'name': 'Power', 'type': 'uint16', 'size_bytes': 2}, {'name': 'Label', 'type': '[32]byte', 'size_bytes': 32}, {'type': 'reserved', 'size_bytes': 8}]}
   // {'name': 'Color', 'type': '<LightHsbk>', 'size_bytes': 8}
-  lifxEncoder_EncodeLightHsbk(&pkt->Color, buff);
+  lifxEncoder_EncodeLightHsbk(buff, &pkt->Color);
   // {'type': 'reserved', 'size_bytes': 2}
   lifxBuffer_Seek(buff, 2, kLifxBufferWhenceCurrent);
   // {'name': 'Power', 'type': 'uint16', 'size_bytes': 2}
@@ -1333,11 +1333,11 @@ int lifxEncoder_EncodeLightState(lifxLightState_t const* pkt, lifxBuffer_t* buff
   return 0;
 }
 
-int lifxDecoder_DecodeLightState(lifxLightState_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeLightState(lifxBuffer_t* buff, lifxLightState_t* pkt)
 {
   // {'pkt_type': 107, 'size_bytes': 52, 'fields': [{'name': 'Color', 'type': '<LightHsbk>', 'size_bytes': 8}, {'type': 'reserved', 'size_bytes': 2}, {'name': 'Power', 'type': 'uint16', 'size_bytes': 2}, {'name': 'Label', 'type': '[32]byte', 'size_bytes': 32}, {'type': 'reserved', 'size_bytes': 8}]}
   // {'name': 'Color', 'type': '<LightHsbk>', 'size_bytes': 8}
-  lifxDecoder_DecodeLightHsbk(&pkt->Color, buff);
+  lifxDecoder_DecodeLightHsbk(buff, &pkt->Color);
   // {'type': 'reserved', 'size_bytes': 2}
   lifxBuffer_Seek(buff, 2, kLifxBufferWhenceCurrent);
   // {'name': 'Power', 'type': 'uint16', 'size_bytes': 2}
@@ -1349,19 +1349,19 @@ int lifxDecoder_DecodeLightState(lifxLightState_t* pkt, lifxBuffer_t* buff)
   return 0;
 }
 
-int lifxEncoder_EncodeLightGetInfrared(lifxLightGetInfrared_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeLightGetInfrared(lifxBuffer_t* buff, lifxLightGetInfrared_t const* pkt)
 {
   // {'pkt_type': 120, 'size_bytes': 0, 'fields': []}
   return 0;
 }
 
-int lifxDecoder_DecodeLightGetInfrared(lifxLightGetInfrared_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeLightGetInfrared(lifxBuffer_t* buff, lifxLightGetInfrared_t* pkt)
 {
   // {'pkt_type': 120, 'size_bytes': 0, 'fields': []}
   return 0;
 }
 
-int lifxEncoder_EncodeLightStateInfrared(lifxLightStateInfrared_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeLightStateInfrared(lifxBuffer_t* buff, lifxLightStateInfrared_t const* pkt)
 {
   // {'pkt_type': 121, 'size_bytes': 2, 'fields': [{'name': 'Brightness', 'type': 'uint16', 'size_bytes': 2}]}
   // {'name': 'Brightness', 'type': 'uint16', 'size_bytes': 2}
@@ -1369,7 +1369,7 @@ int lifxEncoder_EncodeLightStateInfrared(lifxLightStateInfrared_t const* pkt, li
   return 0;
 }
 
-int lifxDecoder_DecodeLightStateInfrared(lifxLightStateInfrared_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeLightStateInfrared(lifxBuffer_t* buff, lifxLightStateInfrared_t* pkt)
 {
   // {'pkt_type': 121, 'size_bytes': 2, 'fields': [{'name': 'Brightness', 'type': 'uint16', 'size_bytes': 2}]}
   // {'name': 'Brightness', 'type': 'uint16', 'size_bytes': 2}
@@ -1377,7 +1377,7 @@ int lifxDecoder_DecodeLightStateInfrared(lifxLightStateInfrared_t* pkt, lifxBuff
   return 0;
 }
 
-int lifxEncoder_EncodeLightSetInfrared(lifxLightSetInfrared_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeLightSetInfrared(lifxBuffer_t* buff, lifxLightSetInfrared_t const* pkt)
 {
   // {'pkt_type': 122, 'size_bytes': 2, 'fields': [{'name': 'Brightness', 'type': 'uint16', 'size_bytes': 2}]}
   // {'name': 'Brightness', 'type': 'uint16', 'size_bytes': 2}
@@ -1385,7 +1385,7 @@ int lifxEncoder_EncodeLightSetInfrared(lifxLightSetInfrared_t const* pkt, lifxBu
   return 0;
 }
 
-int lifxDecoder_DecodeLightSetInfrared(lifxLightSetInfrared_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeLightSetInfrared(lifxBuffer_t* buff, lifxLightSetInfrared_t* pkt)
 {
   // {'pkt_type': 122, 'size_bytes': 2, 'fields': [{'name': 'Brightness', 'type': 'uint16', 'size_bytes': 2}]}
   // {'name': 'Brightness', 'type': 'uint16', 'size_bytes': 2}
@@ -1393,43 +1393,43 @@ int lifxDecoder_DecodeLightSetInfrared(lifxLightSetInfrared_t* pkt, lifxBuffer_t
   return 0;
 }
 
-int lifxEncoder_EncodeTileGetDeviceChain(lifxTileGetDeviceChain_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeTileGetDeviceChain(lifxBuffer_t* buff, lifxTileGetDeviceChain_t const* pkt)
 {
   // {'pkt_type': 701, 'size_bytes': 0, 'fields': []}
   return 0;
 }
 
-int lifxDecoder_DecodeTileGetDeviceChain(lifxTileGetDeviceChain_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeTileGetDeviceChain(lifxBuffer_t* buff, lifxTileGetDeviceChain_t* pkt)
 {
   // {'pkt_type': 701, 'size_bytes': 0, 'fields': []}
   return 0;
 }
 
-int lifxEncoder_EncodeTileStateDeviceChain(lifxTileStateDeviceChain_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeTileStateDeviceChain(lifxBuffer_t* buff, lifxTileStateDeviceChain_t const* pkt)
 {
   // {'pkt_type': 702, 'size_bytes': 882, 'fields': [{'name': 'StartIndex', 'type': 'uint8', 'size_bytes': 1}, {'name': 'TileDevices', 'type': '[16]<TileStateDevice>', 'size_bytes': 880}, {'name': 'TileDevicesCount', 'type': 'uint8', 'size_bytes': 1}]}
   // {'name': 'StartIndex', 'type': 'uint8', 'size_bytes': 1}
   lifxBuffer_WriteUInt8(buff, pkt->StartIndex);
   // {'name': 'TileDevices', 'type': '[16]<TileStateDevice>', 'size_bytes': 880}
-  lifxEncoder_EncodeTileStateDevice(&pkt->TileDevices, buff);
+  lifxEncoder_EncodeTileStateDevice(buff, &pkt->TileDevices);
   // {'name': 'TileDevicesCount', 'type': 'uint8', 'size_bytes': 1}
   lifxBuffer_WriteUInt8(buff, pkt->TileDevicesCount);
   return 0;
 }
 
-int lifxDecoder_DecodeTileStateDeviceChain(lifxTileStateDeviceChain_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeTileStateDeviceChain(lifxBuffer_t* buff, lifxTileStateDeviceChain_t* pkt)
 {
   // {'pkt_type': 702, 'size_bytes': 882, 'fields': [{'name': 'StartIndex', 'type': 'uint8', 'size_bytes': 1}, {'name': 'TileDevices', 'type': '[16]<TileStateDevice>', 'size_bytes': 880}, {'name': 'TileDevicesCount', 'type': 'uint8', 'size_bytes': 1}]}
   // {'name': 'StartIndex', 'type': 'uint8', 'size_bytes': 1}
   lifxBuffer_ReadUInt8(buff, &pkt->StartIndex);
   // {'name': 'TileDevices', 'type': '[16]<TileStateDevice>', 'size_bytes': 880}
-  lifxDecoder_DecodeTileStateDevice(&pkt->TileDevices, buff);
+  lifxDecoder_DecodeTileStateDevice(buff, &pkt->TileDevices);
   // {'name': 'TileDevicesCount', 'type': 'uint8', 'size_bytes': 1}
   lifxBuffer_ReadUInt8(buff, &pkt->TileDevicesCount);
   return 0;
 }
 
-int lifxEncoder_EncodeTileSetUserPosition(lifxTileSetUserPosition_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeTileSetUserPosition(lifxBuffer_t* buff, lifxTileSetUserPosition_t const* pkt)
 {
   // {'pkt_type': 703, 'size_bytes': 11, 'fields': [{'name': 'TileIndex', 'type': 'uint8', 'size_bytes': 1}, {'type': 'reserved', 'size_bytes': 2}, {'name': 'UserX', 'type': 'float32', 'size_bytes': 4}, {'name': 'UserY', 'type': 'float32', 'size_bytes': 4}]}
   // {'name': 'TileIndex', 'type': 'uint8', 'size_bytes': 1}
@@ -1443,7 +1443,7 @@ int lifxEncoder_EncodeTileSetUserPosition(lifxTileSetUserPosition_t const* pkt, 
   return 0;
 }
 
-int lifxDecoder_DecodeTileSetUserPosition(lifxTileSetUserPosition_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeTileSetUserPosition(lifxBuffer_t* buff, lifxTileSetUserPosition_t* pkt)
 {
   // {'pkt_type': 703, 'size_bytes': 11, 'fields': [{'name': 'TileIndex', 'type': 'uint8', 'size_bytes': 1}, {'type': 'reserved', 'size_bytes': 2}, {'name': 'UserX', 'type': 'float32', 'size_bytes': 4}, {'name': 'UserY', 'type': 'float32', 'size_bytes': 4}]}
   // {'name': 'TileIndex', 'type': 'uint8', 'size_bytes': 1}
@@ -1457,7 +1457,7 @@ int lifxDecoder_DecodeTileSetUserPosition(lifxTileSetUserPosition_t* pkt, lifxBu
   return 0;
 }
 
-int lifxEncoder_EncodeTileGet64(lifxTileGet64_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeTileGet64(lifxBuffer_t* buff, lifxTileGet64_t const* pkt)
 {
   // {'pkt_type': 707, 'size_bytes': 6, 'fields': [{'name': 'TileIndex', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Length', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Rect', 'type': '<TileBufferRect>', 'size_bytes': 4}]}
   // {'name': 'TileIndex', 'type': 'uint8', 'size_bytes': 1}
@@ -1465,11 +1465,11 @@ int lifxEncoder_EncodeTileGet64(lifxTileGet64_t const* pkt, lifxBuffer_t* buff)
   // {'name': 'Length', 'type': 'uint8', 'size_bytes': 1}
   lifxBuffer_WriteUInt8(buff, pkt->Length);
   // {'name': 'Rect', 'type': '<TileBufferRect>', 'size_bytes': 4}
-  lifxEncoder_EncodeTileBufferRect(&pkt->Rect, buff);
+  lifxEncoder_EncodeTileBufferRect(buff, &pkt->Rect);
   return 0;
 }
 
-int lifxDecoder_DecodeTileGet64(lifxTileGet64_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeTileGet64(lifxBuffer_t* buff, lifxTileGet64_t* pkt)
 {
   // {'pkt_type': 707, 'size_bytes': 6, 'fields': [{'name': 'TileIndex', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Length', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Rect', 'type': '<TileBufferRect>', 'size_bytes': 4}]}
   // {'name': 'TileIndex', 'type': 'uint8', 'size_bytes': 1}
@@ -1477,35 +1477,35 @@ int lifxDecoder_DecodeTileGet64(lifxTileGet64_t* pkt, lifxBuffer_t* buff)
   // {'name': 'Length', 'type': 'uint8', 'size_bytes': 1}
   lifxBuffer_ReadUInt8(buff, &pkt->Length);
   // {'name': 'Rect', 'type': '<TileBufferRect>', 'size_bytes': 4}
-  lifxDecoder_DecodeTileBufferRect(&pkt->Rect, buff);
+  lifxDecoder_DecodeTileBufferRect(buff, &pkt->Rect);
   return 0;
 }
 
-int lifxEncoder_EncodeTileState64(lifxTileState64_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeTileState64(lifxBuffer_t* buff, lifxTileState64_t const* pkt)
 {
   // {'pkt_type': 711, 'size_bytes': 517, 'fields': [{'name': 'TileIndex', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Rect', 'type': '<TileBufferRect>', 'size_bytes': 4}, {'name': 'Colors', 'type': '[64]<LightHsbk>', 'size_bytes': 512}]}
   // {'name': 'TileIndex', 'type': 'uint8', 'size_bytes': 1}
   lifxBuffer_WriteUInt8(buff, pkt->TileIndex);
   // {'name': 'Rect', 'type': '<TileBufferRect>', 'size_bytes': 4}
-  lifxEncoder_EncodeTileBufferRect(&pkt->Rect, buff);
+  lifxEncoder_EncodeTileBufferRect(buff, &pkt->Rect);
   // {'name': 'Colors', 'type': '[64]<LightHsbk>', 'size_bytes': 512}
-  lifxEncoder_EncodeLightHsbk(&pkt->Colors, buff);
+  lifxEncoder_EncodeLightHsbk(buff, &pkt->Colors);
   return 0;
 }
 
-int lifxDecoder_DecodeTileState64(lifxTileState64_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeTileState64(lifxBuffer_t* buff, lifxTileState64_t* pkt)
 {
   // {'pkt_type': 711, 'size_bytes': 517, 'fields': [{'name': 'TileIndex', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Rect', 'type': '<TileBufferRect>', 'size_bytes': 4}, {'name': 'Colors', 'type': '[64]<LightHsbk>', 'size_bytes': 512}]}
   // {'name': 'TileIndex', 'type': 'uint8', 'size_bytes': 1}
   lifxBuffer_ReadUInt8(buff, &pkt->TileIndex);
   // {'name': 'Rect', 'type': '<TileBufferRect>', 'size_bytes': 4}
-  lifxDecoder_DecodeTileBufferRect(&pkt->Rect, buff);
+  lifxDecoder_DecodeTileBufferRect(buff, &pkt->Rect);
   // {'name': 'Colors', 'type': '[64]<LightHsbk>', 'size_bytes': 512}
-  lifxDecoder_DecodeLightHsbk(&pkt->Colors, buff);
+  lifxDecoder_DecodeLightHsbk(buff, &pkt->Colors);
   return 0;
 }
 
-int lifxEncoder_EncodeTileSet64(lifxTileSet64_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeTileSet64(lifxBuffer_t* buff, lifxTileSet64_t const* pkt)
 {
   // {'pkt_type': 715, 'size_bytes': 522, 'fields': [{'name': 'TileIndex', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Length', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Rect', 'type': '<TileBufferRect>', 'size_bytes': 4}, {'name': 'Duration', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Colors', 'type': '[64]<LightHsbk>', 'size_bytes': 512}]}
   // {'name': 'TileIndex', 'type': 'uint8', 'size_bytes': 1}
@@ -1513,15 +1513,15 @@ int lifxEncoder_EncodeTileSet64(lifxTileSet64_t const* pkt, lifxBuffer_t* buff)
   // {'name': 'Length', 'type': 'uint8', 'size_bytes': 1}
   lifxBuffer_WriteUInt8(buff, pkt->Length);
   // {'name': 'Rect', 'type': '<TileBufferRect>', 'size_bytes': 4}
-  lifxEncoder_EncodeTileBufferRect(&pkt->Rect, buff);
+  lifxEncoder_EncodeTileBufferRect(buff, &pkt->Rect);
   // {'name': 'Duration', 'type': 'uint32', 'size_bytes': 4}
   lifxBuffer_WriteUInt32(buff, pkt->Duration);
   // {'name': 'Colors', 'type': '[64]<LightHsbk>', 'size_bytes': 512}
-  lifxEncoder_EncodeLightHsbk(&pkt->Colors, buff);
+  lifxEncoder_EncodeLightHsbk(buff, &pkt->Colors);
   return 0;
 }
 
-int lifxDecoder_DecodeTileSet64(lifxTileSet64_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeTileSet64(lifxBuffer_t* buff, lifxTileSet64_t* pkt)
 {
   // {'pkt_type': 715, 'size_bytes': 522, 'fields': [{'name': 'TileIndex', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Length', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Rect', 'type': '<TileBufferRect>', 'size_bytes': 4}, {'name': 'Duration', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Colors', 'type': '[64]<LightHsbk>', 'size_bytes': 512}]}
   // {'name': 'TileIndex', 'type': 'uint8', 'size_bytes': 1}
@@ -1529,15 +1529,15 @@ int lifxDecoder_DecodeTileSet64(lifxTileSet64_t* pkt, lifxBuffer_t* buff)
   // {'name': 'Length', 'type': 'uint8', 'size_bytes': 1}
   lifxBuffer_ReadUInt8(buff, &pkt->Length);
   // {'name': 'Rect', 'type': '<TileBufferRect>', 'size_bytes': 4}
-  lifxDecoder_DecodeTileBufferRect(&pkt->Rect, buff);
+  lifxDecoder_DecodeTileBufferRect(buff, &pkt->Rect);
   // {'name': 'Duration', 'type': 'uint32', 'size_bytes': 4}
   lifxBuffer_ReadUInt32(buff, &pkt->Duration);
   // {'name': 'Colors', 'type': '[64]<LightHsbk>', 'size_bytes': 512}
-  lifxDecoder_DecodeLightHsbk(&pkt->Colors, buff);
+  lifxDecoder_DecodeLightHsbk(buff, &pkt->Colors);
   return 0;
 }
 
-int lifxEncoder_EncodeTileGetEffect(lifxTileGetEffect_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeTileGetEffect(lifxBuffer_t* buff, lifxTileGetEffect_t const* pkt)
 {
   // {'pkt_type': 718, 'size_bytes': 2, 'fields': [{'name': 'Reserved0', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Reserved1', 'type': 'uint8', 'size_bytes': 1}]}
   // {'name': 'Reserved0', 'type': 'uint8', 'size_bytes': 1}
@@ -1547,7 +1547,7 @@ int lifxEncoder_EncodeTileGetEffect(lifxTileGetEffect_t const* pkt, lifxBuffer_t
   return 0;
 }
 
-int lifxDecoder_DecodeTileGetEffect(lifxTileGetEffect_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeTileGetEffect(lifxBuffer_t* buff, lifxTileGetEffect_t* pkt)
 {
   // {'pkt_type': 718, 'size_bytes': 2, 'fields': [{'name': 'Reserved0', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Reserved1', 'type': 'uint8', 'size_bytes': 1}]}
   // {'name': 'Reserved0', 'type': 'uint8', 'size_bytes': 1}
@@ -1557,7 +1557,7 @@ int lifxDecoder_DecodeTileGetEffect(lifxTileGetEffect_t* pkt, lifxBuffer_t* buff
   return 0;
 }
 
-int lifxEncoder_EncodeTileSetEffect(lifxTileSetEffect_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeTileSetEffect(lifxBuffer_t* buff, lifxTileSetEffect_t const* pkt)
 {
   // {'pkt_type': 719, 'size_bytes': 188, 'fields': [{'name': 'Reserved0', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Reserved1', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Settings', 'type': '<TileEffectSettings>', 'size_bytes': 186}]}
   // {'name': 'Reserved0', 'type': 'uint8', 'size_bytes': 1}
@@ -1565,11 +1565,11 @@ int lifxEncoder_EncodeTileSetEffect(lifxTileSetEffect_t const* pkt, lifxBuffer_t
   // {'name': 'Reserved1', 'type': 'uint8', 'size_bytes': 1}
   lifxBuffer_WriteUInt8(buff, pkt->Reserved1);
   // {'name': 'Settings', 'type': '<TileEffectSettings>', 'size_bytes': 186}
-  lifxEncoder_EncodeTileEffectSettings(&pkt->Settings, buff);
+  lifxEncoder_EncodeTileEffectSettings(buff, &pkt->Settings);
   return 0;
 }
 
-int lifxDecoder_DecodeTileSetEffect(lifxTileSetEffect_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeTileSetEffect(lifxBuffer_t* buff, lifxTileSetEffect_t* pkt)
 {
   // {'pkt_type': 719, 'size_bytes': 188, 'fields': [{'name': 'Reserved0', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Reserved1', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Settings', 'type': '<TileEffectSettings>', 'size_bytes': 186}]}
   // {'name': 'Reserved0', 'type': 'uint8', 'size_bytes': 1}
@@ -1577,31 +1577,31 @@ int lifxDecoder_DecodeTileSetEffect(lifxTileSetEffect_t* pkt, lifxBuffer_t* buff
   // {'name': 'Reserved1', 'type': 'uint8', 'size_bytes': 1}
   lifxBuffer_ReadUInt8(buff, &pkt->Reserved1);
   // {'name': 'Settings', 'type': '<TileEffectSettings>', 'size_bytes': 186}
-  lifxDecoder_DecodeTileEffectSettings(&pkt->Settings, buff);
+  lifxDecoder_DecodeTileEffectSettings(buff, &pkt->Settings);
   return 0;
 }
 
-int lifxEncoder_EncodeTileStateEffect(lifxTileStateEffect_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeTileStateEffect(lifxBuffer_t* buff, lifxTileStateEffect_t const* pkt)
 {
   // {'pkt_type': 720, 'size_bytes': 187, 'fields': [{'name': 'Reserved0', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Settings', 'type': '<TileEffectSettings>', 'size_bytes': 186}]}
   // {'name': 'Reserved0', 'type': 'uint8', 'size_bytes': 1}
   lifxBuffer_WriteUInt8(buff, pkt->Reserved0);
   // {'name': 'Settings', 'type': '<TileEffectSettings>', 'size_bytes': 186}
-  lifxEncoder_EncodeTileEffectSettings(&pkt->Settings, buff);
+  lifxEncoder_EncodeTileEffectSettings(buff, &pkt->Settings);
   return 0;
 }
 
-int lifxDecoder_DecodeTileStateEffect(lifxTileStateEffect_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeTileStateEffect(lifxBuffer_t* buff, lifxTileStateEffect_t* pkt)
 {
   // {'pkt_type': 720, 'size_bytes': 187, 'fields': [{'name': 'Reserved0', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Settings', 'type': '<TileEffectSettings>', 'size_bytes': 186}]}
   // {'name': 'Reserved0', 'type': 'uint8', 'size_bytes': 1}
   lifxBuffer_ReadUInt8(buff, &pkt->Reserved0);
   // {'name': 'Settings', 'type': '<TileEffectSettings>', 'size_bytes': 186}
-  lifxDecoder_DecodeTileEffectSettings(&pkt->Settings, buff);
+  lifxDecoder_DecodeTileEffectSettings(buff, &pkt->Settings);
   return 0;
 }
 
-int lifxEncoder_EncodeMultiZoneSetColorZones(lifxMultiZoneSetColorZones_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeMultiZoneSetColorZones(lifxBuffer_t* buff, lifxMultiZoneSetColorZones_t const* pkt)
 {
   // {'pkt_type': 501, 'size_bytes': 15, 'fields': [{'name': 'StartIndex', 'type': 'uint8', 'size_bytes': 1}, {'name': 'EndIndex', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Color', 'type': '<LightHsbk>', 'size_bytes': 8}, {'name': 'Duration', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Apply', 'type': '<MultiZoneApplicationRequest>', 'size_bytes': 1}]}
   // {'name': 'StartIndex', 'type': 'uint8', 'size_bytes': 1}
@@ -1609,7 +1609,7 @@ int lifxEncoder_EncodeMultiZoneSetColorZones(lifxMultiZoneSetColorZones_t const*
   // {'name': 'EndIndex', 'type': 'uint8', 'size_bytes': 1}
   lifxBuffer_WriteUInt8(buff, pkt->EndIndex);
   // {'name': 'Color', 'type': '<LightHsbk>', 'size_bytes': 8}
-  lifxEncoder_EncodeLightHsbk(&pkt->Color, buff);
+  lifxEncoder_EncodeLightHsbk(buff, &pkt->Color);
   // {'name': 'Duration', 'type': 'uint32', 'size_bytes': 4}
   lifxBuffer_WriteUInt32(buff, pkt->Duration);
   // {'name': 'Apply', 'type': '<MultiZoneApplicationRequest>', 'size_bytes': 1}
@@ -1617,7 +1617,7 @@ int lifxEncoder_EncodeMultiZoneSetColorZones(lifxMultiZoneSetColorZones_t const*
   return 0;
 }
 
-int lifxDecoder_DecodeMultiZoneSetColorZones(lifxMultiZoneSetColorZones_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeMultiZoneSetColorZones(lifxBuffer_t* buff, lifxMultiZoneSetColorZones_t* pkt)
 {
   // {'pkt_type': 501, 'size_bytes': 15, 'fields': [{'name': 'StartIndex', 'type': 'uint8', 'size_bytes': 1}, {'name': 'EndIndex', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Color', 'type': '<LightHsbk>', 'size_bytes': 8}, {'name': 'Duration', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Apply', 'type': '<MultiZoneApplicationRequest>', 'size_bytes': 1}]}
   // {'name': 'StartIndex', 'type': 'uint8', 'size_bytes': 1}
@@ -1625,7 +1625,7 @@ int lifxDecoder_DecodeMultiZoneSetColorZones(lifxMultiZoneSetColorZones_t* pkt, 
   // {'name': 'EndIndex', 'type': 'uint8', 'size_bytes': 1}
   lifxBuffer_ReadUInt8(buff, &pkt->EndIndex);
   // {'name': 'Color', 'type': '<LightHsbk>', 'size_bytes': 8}
-  lifxDecoder_DecodeLightHsbk(&pkt->Color, buff);
+  lifxDecoder_DecodeLightHsbk(buff, &pkt->Color);
   // {'name': 'Duration', 'type': 'uint32', 'size_bytes': 4}
   lifxBuffer_ReadUInt32(buff, &pkt->Duration);
   // {'name': 'Apply', 'type': '<MultiZoneApplicationRequest>', 'size_bytes': 1}
@@ -1633,7 +1633,7 @@ int lifxDecoder_DecodeMultiZoneSetColorZones(lifxMultiZoneSetColorZones_t* pkt, 
   return 0;
 }
 
-int lifxEncoder_EncodeMultiZoneGetColorZones(lifxMultiZoneGetColorZones_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeMultiZoneGetColorZones(lifxBuffer_t* buff, lifxMultiZoneGetColorZones_t const* pkt)
 {
   // {'pkt_type': 502, 'size_bytes': 2, 'fields': [{'name': 'StartIndex', 'type': 'uint8', 'size_bytes': 1}, {'name': 'EndIndex', 'type': 'uint8', 'size_bytes': 1}]}
   // {'name': 'StartIndex', 'type': 'uint8', 'size_bytes': 1}
@@ -1643,7 +1643,7 @@ int lifxEncoder_EncodeMultiZoneGetColorZones(lifxMultiZoneGetColorZones_t const*
   return 0;
 }
 
-int lifxDecoder_DecodeMultiZoneGetColorZones(lifxMultiZoneGetColorZones_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeMultiZoneGetColorZones(lifxBuffer_t* buff, lifxMultiZoneGetColorZones_t* pkt)
 {
   // {'pkt_type': 502, 'size_bytes': 2, 'fields': [{'name': 'StartIndex', 'type': 'uint8', 'size_bytes': 1}, {'name': 'EndIndex', 'type': 'uint8', 'size_bytes': 1}]}
   // {'name': 'StartIndex', 'type': 'uint8', 'size_bytes': 1}
@@ -1653,7 +1653,7 @@ int lifxDecoder_DecodeMultiZoneGetColorZones(lifxMultiZoneGetColorZones_t* pkt, 
   return 0;
 }
 
-int lifxEncoder_EncodeMultiZoneStateZone(lifxMultiZoneStateZone_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeMultiZoneStateZone(lifxBuffer_t* buff, lifxMultiZoneStateZone_t const* pkt)
 {
   // {'pkt_type': 503, 'size_bytes': 10, 'fields': [{'name': 'Count', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Index', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Color', 'type': '<LightHsbk>', 'size_bytes': 8}]}
   // {'name': 'Count', 'type': 'uint8', 'size_bytes': 1}
@@ -1661,11 +1661,11 @@ int lifxEncoder_EncodeMultiZoneStateZone(lifxMultiZoneStateZone_t const* pkt, li
   // {'name': 'Index', 'type': 'uint8', 'size_bytes': 1}
   lifxBuffer_WriteUInt8(buff, pkt->Index);
   // {'name': 'Color', 'type': '<LightHsbk>', 'size_bytes': 8}
-  lifxEncoder_EncodeLightHsbk(&pkt->Color, buff);
+  lifxEncoder_EncodeLightHsbk(buff, &pkt->Color);
   return 0;
 }
 
-int lifxDecoder_DecodeMultiZoneStateZone(lifxMultiZoneStateZone_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeMultiZoneStateZone(lifxBuffer_t* buff, lifxMultiZoneStateZone_t* pkt)
 {
   // {'pkt_type': 503, 'size_bytes': 10, 'fields': [{'name': 'Count', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Index', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Color', 'type': '<LightHsbk>', 'size_bytes': 8}]}
   // {'name': 'Count', 'type': 'uint8', 'size_bytes': 1}
@@ -1673,11 +1673,11 @@ int lifxDecoder_DecodeMultiZoneStateZone(lifxMultiZoneStateZone_t* pkt, lifxBuff
   // {'name': 'Index', 'type': 'uint8', 'size_bytes': 1}
   lifxBuffer_ReadUInt8(buff, &pkt->Index);
   // {'name': 'Color', 'type': '<LightHsbk>', 'size_bytes': 8}
-  lifxDecoder_DecodeLightHsbk(&pkt->Color, buff);
+  lifxDecoder_DecodeLightHsbk(buff, &pkt->Color);
   return 0;
 }
 
-int lifxEncoder_EncodeMultiZoneStateMultiZone(lifxMultiZoneStateMultiZone_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeMultiZoneStateMultiZone(lifxBuffer_t* buff, lifxMultiZoneStateMultiZone_t const* pkt)
 {
   // {'pkt_type': 506, 'size_bytes': 66, 'fields': [{'name': 'Count', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Index', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Colors', 'type': '[8]<LightHsbk>', 'size_bytes': 64}]}
   // {'name': 'Count', 'type': 'uint8', 'size_bytes': 1}
@@ -1685,11 +1685,11 @@ int lifxEncoder_EncodeMultiZoneStateMultiZone(lifxMultiZoneStateMultiZone_t cons
   // {'name': 'Index', 'type': 'uint8', 'size_bytes': 1}
   lifxBuffer_WriteUInt8(buff, pkt->Index);
   // {'name': 'Colors', 'type': '[8]<LightHsbk>', 'size_bytes': 64}
-  lifxEncoder_EncodeLightHsbk(&pkt->Colors, buff);
+  lifxEncoder_EncodeLightHsbk(buff, &pkt->Colors);
   return 0;
 }
 
-int lifxDecoder_DecodeMultiZoneStateMultiZone(lifxMultiZoneStateMultiZone_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeMultiZoneStateMultiZone(lifxBuffer_t* buff, lifxMultiZoneStateMultiZone_t* pkt)
 {
   // {'pkt_type': 506, 'size_bytes': 66, 'fields': [{'name': 'Count', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Index', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Colors', 'type': '[8]<LightHsbk>', 'size_bytes': 64}]}
   // {'name': 'Count', 'type': 'uint8', 'size_bytes': 1}
@@ -1697,55 +1697,55 @@ int lifxDecoder_DecodeMultiZoneStateMultiZone(lifxMultiZoneStateMultiZone_t* pkt
   // {'name': 'Index', 'type': 'uint8', 'size_bytes': 1}
   lifxBuffer_ReadUInt8(buff, &pkt->Index);
   // {'name': 'Colors', 'type': '[8]<LightHsbk>', 'size_bytes': 64}
-  lifxDecoder_DecodeLightHsbk(&pkt->Colors, buff);
+  lifxDecoder_DecodeLightHsbk(buff, &pkt->Colors);
   return 0;
 }
 
-int lifxEncoder_EncodeMultiZoneGetEffect(lifxMultiZoneGetEffect_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeMultiZoneGetEffect(lifxBuffer_t* buff, lifxMultiZoneGetEffect_t const* pkt)
 {
   // {'pkt_type': 507, 'size_bytes': 0, 'fields': []}
   return 0;
 }
 
-int lifxDecoder_DecodeMultiZoneGetEffect(lifxMultiZoneGetEffect_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeMultiZoneGetEffect(lifxBuffer_t* buff, lifxMultiZoneGetEffect_t* pkt)
 {
   // {'pkt_type': 507, 'size_bytes': 0, 'fields': []}
   return 0;
 }
 
-int lifxEncoder_EncodeMultiZoneSetEffect(lifxMultiZoneSetEffect_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeMultiZoneSetEffect(lifxBuffer_t* buff, lifxMultiZoneSetEffect_t const* pkt)
 {
   // {'pkt_type': 508, 'size_bytes': 59, 'fields': [{'name': 'Settings', 'type': '<MultiZoneEffectSettings>', 'size_bytes': 59}]}
   // {'name': 'Settings', 'type': '<MultiZoneEffectSettings>', 'size_bytes': 59}
-  lifxEncoder_EncodeMultiZoneEffectSettings(&pkt->Settings, buff);
+  lifxEncoder_EncodeMultiZoneEffectSettings(buff, &pkt->Settings);
   return 0;
 }
 
-int lifxDecoder_DecodeMultiZoneSetEffect(lifxMultiZoneSetEffect_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeMultiZoneSetEffect(lifxBuffer_t* buff, lifxMultiZoneSetEffect_t* pkt)
 {
   // {'pkt_type': 508, 'size_bytes': 59, 'fields': [{'name': 'Settings', 'type': '<MultiZoneEffectSettings>', 'size_bytes': 59}]}
   // {'name': 'Settings', 'type': '<MultiZoneEffectSettings>', 'size_bytes': 59}
-  lifxDecoder_DecodeMultiZoneEffectSettings(&pkt->Settings, buff);
+  lifxDecoder_DecodeMultiZoneEffectSettings(buff, &pkt->Settings);
   return 0;
 }
 
-int lifxEncoder_EncodeMultiZoneStateEffect(lifxMultiZoneStateEffect_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeMultiZoneStateEffect(lifxBuffer_t* buff, lifxMultiZoneStateEffect_t const* pkt)
 {
   // {'pkt_type': 509, 'size_bytes': 59, 'fields': [{'name': 'Settings', 'type': '<MultiZoneEffectSettings>', 'size_bytes': 59}]}
   // {'name': 'Settings', 'type': '<MultiZoneEffectSettings>', 'size_bytes': 59}
-  lifxEncoder_EncodeMultiZoneEffectSettings(&pkt->Settings, buff);
+  lifxEncoder_EncodeMultiZoneEffectSettings(buff, &pkt->Settings);
   return 0;
 }
 
-int lifxDecoder_DecodeMultiZoneStateEffect(lifxMultiZoneStateEffect_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeMultiZoneStateEffect(lifxBuffer_t* buff, lifxMultiZoneStateEffect_t* pkt)
 {
   // {'pkt_type': 509, 'size_bytes': 59, 'fields': [{'name': 'Settings', 'type': '<MultiZoneEffectSettings>', 'size_bytes': 59}]}
   // {'name': 'Settings', 'type': '<MultiZoneEffectSettings>', 'size_bytes': 59}
-  lifxDecoder_DecodeMultiZoneEffectSettings(&pkt->Settings, buff);
+  lifxDecoder_DecodeMultiZoneEffectSettings(buff, &pkt->Settings);
   return 0;
 }
 
-int lifxEncoder_EncodeMultiZoneExtendedSetColorZones(lifxMultiZoneExtendedSetColorZones_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeMultiZoneExtendedSetColorZones(lifxBuffer_t* buff, lifxMultiZoneExtendedSetColorZones_t const* pkt)
 {
   // {'pkt_type': 510, 'size_bytes': 664, 'fields': [{'name': 'Duration', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Apply', 'type': '<MultiZoneExtendedApplicationRequest>', 'size_bytes': 1}, {'name': 'Index', 'type': 'uint16', 'size_bytes': 2}, {'name': 'ColorsCount', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Colors', 'type': '[82]<LightHsbk>', 'size_bytes': 656}]}
   // {'name': 'Duration', 'type': 'uint32', 'size_bytes': 4}
@@ -1757,11 +1757,11 @@ int lifxEncoder_EncodeMultiZoneExtendedSetColorZones(lifxMultiZoneExtendedSetCol
   // {'name': 'ColorsCount', 'type': 'uint8', 'size_bytes': 1}
   lifxBuffer_WriteUInt8(buff, pkt->ColorsCount);
   // {'name': 'Colors', 'type': '[82]<LightHsbk>', 'size_bytes': 656}
-  lifxEncoder_EncodeLightHsbk(&pkt->Colors, buff);
+  lifxEncoder_EncodeLightHsbk(buff, &pkt->Colors);
   return 0;
 }
 
-int lifxDecoder_DecodeMultiZoneExtendedSetColorZones(lifxMultiZoneExtendedSetColorZones_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeMultiZoneExtendedSetColorZones(lifxBuffer_t* buff, lifxMultiZoneExtendedSetColorZones_t* pkt)
 {
   // {'pkt_type': 510, 'size_bytes': 664, 'fields': [{'name': 'Duration', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Apply', 'type': '<MultiZoneExtendedApplicationRequest>', 'size_bytes': 1}, {'name': 'Index', 'type': 'uint16', 'size_bytes': 2}, {'name': 'ColorsCount', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Colors', 'type': '[82]<LightHsbk>', 'size_bytes': 656}]}
   // {'name': 'Duration', 'type': 'uint32', 'size_bytes': 4}
@@ -1773,23 +1773,23 @@ int lifxDecoder_DecodeMultiZoneExtendedSetColorZones(lifxMultiZoneExtendedSetCol
   // {'name': 'ColorsCount', 'type': 'uint8', 'size_bytes': 1}
   lifxBuffer_ReadUInt8(buff, &pkt->ColorsCount);
   // {'name': 'Colors', 'type': '[82]<LightHsbk>', 'size_bytes': 656}
-  lifxDecoder_DecodeLightHsbk(&pkt->Colors, buff);
+  lifxDecoder_DecodeLightHsbk(buff, &pkt->Colors);
   return 0;
 }
 
-int lifxEncoder_EncodeMultiZoneExtendedGetColorZones(lifxMultiZoneExtendedGetColorZones_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeMultiZoneExtendedGetColorZones(lifxBuffer_t* buff, lifxMultiZoneExtendedGetColorZones_t const* pkt)
 {
   // {'pkt_type': 511, 'size_bytes': 0, 'fields': []}
   return 0;
 }
 
-int lifxDecoder_DecodeMultiZoneExtendedGetColorZones(lifxMultiZoneExtendedGetColorZones_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeMultiZoneExtendedGetColorZones(lifxBuffer_t* buff, lifxMultiZoneExtendedGetColorZones_t* pkt)
 {
   // {'pkt_type': 511, 'size_bytes': 0, 'fields': []}
   return 0;
 }
 
-int lifxEncoder_EncodeMultiZoneExtendedStateMultiZone(lifxMultiZoneExtendedStateMultiZone_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeMultiZoneExtendedStateMultiZone(lifxBuffer_t* buff, lifxMultiZoneExtendedStateMultiZone_t const* pkt)
 {
   // {'pkt_type': 512, 'size_bytes': 661, 'fields': [{'name': 'Count', 'type': 'uint16', 'size_bytes': 2}, {'name': 'Index', 'type': 'uint16', 'size_bytes': 2}, {'name': 'ColorsCount', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Colors', 'type': '[82]<LightHsbk>', 'size_bytes': 656}]}
   // {'name': 'Count', 'type': 'uint16', 'size_bytes': 2}
@@ -1799,11 +1799,11 @@ int lifxEncoder_EncodeMultiZoneExtendedStateMultiZone(lifxMultiZoneExtendedState
   // {'name': 'ColorsCount', 'type': 'uint8', 'size_bytes': 1}
   lifxBuffer_WriteUInt8(buff, pkt->ColorsCount);
   // {'name': 'Colors', 'type': '[82]<LightHsbk>', 'size_bytes': 656}
-  lifxEncoder_EncodeLightHsbk(&pkt->Colors, buff);
+  lifxEncoder_EncodeLightHsbk(buff, &pkt->Colors);
   return 0;
 }
 
-int lifxDecoder_DecodeMultiZoneExtendedStateMultiZone(lifxMultiZoneExtendedStateMultiZone_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeMultiZoneExtendedStateMultiZone(lifxBuffer_t* buff, lifxMultiZoneExtendedStateMultiZone_t* pkt)
 {
   // {'pkt_type': 512, 'size_bytes': 661, 'fields': [{'name': 'Count', 'type': 'uint16', 'size_bytes': 2}, {'name': 'Index', 'type': 'uint16', 'size_bytes': 2}, {'name': 'ColorsCount', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Colors', 'type': '[82]<LightHsbk>', 'size_bytes': 656}]}
   // {'name': 'Count', 'type': 'uint16', 'size_bytes': 2}
@@ -1813,11 +1813,11 @@ int lifxDecoder_DecodeMultiZoneExtendedStateMultiZone(lifxMultiZoneExtendedState
   // {'name': 'ColorsCount', 'type': 'uint8', 'size_bytes': 1}
   lifxBuffer_ReadUInt8(buff, &pkt->ColorsCount);
   // {'name': 'Colors', 'type': '[82]<LightHsbk>', 'size_bytes': 656}
-  lifxDecoder_DecodeLightHsbk(&pkt->Colors, buff);
+  lifxDecoder_DecodeLightHsbk(buff, &pkt->Colors);
   return 0;
 }
 
-int lifxEncoder_EncodeLightHsbk(lifxLightHsbk_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeLightHsbk(lifxBuffer_t* buff, lifxLightHsbk_t const* pkt)
 {
   // {'size_bytes': 8, 'fields': [{'name': 'Hue', 'type': 'uint16', 'size_bytes': 2}, {'name': 'Saturation', 'type': 'uint16', 'size_bytes': 2}, {'name': 'Brightness', 'type': 'uint16', 'size_bytes': 2}, {'name': 'Kelvin', 'type': 'uint16', 'size_bytes': 2}]}
   // {'name': 'Hue', 'type': 'uint16', 'size_bytes': 2}
@@ -1831,7 +1831,7 @@ int lifxEncoder_EncodeLightHsbk(lifxLightHsbk_t const* pkt, lifxBuffer_t* buff)
   return 0;
 }
 
-int lifxDecoder_DecodeLightHsbk(lifxLightHsbk_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeLightHsbk(lifxBuffer_t* buff, lifxLightHsbk_t* pkt)
 {
   // {'size_bytes': 8, 'fields': [{'name': 'Hue', 'type': 'uint16', 'size_bytes': 2}, {'name': 'Saturation', 'type': 'uint16', 'size_bytes': 2}, {'name': 'Brightness', 'type': 'uint16', 'size_bytes': 2}, {'name': 'Kelvin', 'type': 'uint16', 'size_bytes': 2}]}
   // {'name': 'Hue', 'type': 'uint16', 'size_bytes': 2}
@@ -1845,7 +1845,7 @@ int lifxDecoder_DecodeLightHsbk(lifxLightHsbk_t* pkt, lifxBuffer_t* buff)
   return 0;
 }
 
-int lifxEncoder_EncodeMultiZoneEffectParameter(lifxMultiZoneEffectParameter_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeMultiZoneEffectParameter(lifxBuffer_t* buff, lifxMultiZoneEffectParameter_t const* pkt)
 {
   // {'size_bytes': 32, 'fields': [{'name': 'Parameter0', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Parameter1', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Parameter2', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Parameter3', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Parameter4', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Parameter5', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Parameter6', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Parameter7', 'type': 'uint32', 'size_bytes': 4}]}
   // {'name': 'Parameter0', 'type': 'uint32', 'size_bytes': 4}
@@ -1867,7 +1867,7 @@ int lifxEncoder_EncodeMultiZoneEffectParameter(lifxMultiZoneEffectParameter_t co
   return 0;
 }
 
-int lifxDecoder_DecodeMultiZoneEffectParameter(lifxMultiZoneEffectParameter_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeMultiZoneEffectParameter(lifxBuffer_t* buff, lifxMultiZoneEffectParameter_t* pkt)
 {
   // {'size_bytes': 32, 'fields': [{'name': 'Parameter0', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Parameter1', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Parameter2', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Parameter3', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Parameter4', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Parameter5', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Parameter6', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Parameter7', 'type': 'uint32', 'size_bytes': 4}]}
   // {'name': 'Parameter0', 'type': 'uint32', 'size_bytes': 4}
@@ -1889,7 +1889,7 @@ int lifxDecoder_DecodeMultiZoneEffectParameter(lifxMultiZoneEffectParameter_t* p
   return 0;
 }
 
-int lifxEncoder_EncodeMultiZoneEffectSettings(lifxMultiZoneEffectSettings_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeMultiZoneEffectSettings(lifxBuffer_t* buff, lifxMultiZoneEffectSettings_t const* pkt)
 {
   // {'size_bytes': 59, 'fields': [{'name': 'Instanceid', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Type', 'type': '<MultiZoneEffectType>', 'size_bytes': 1}, {'type': 'reserved', 'size_bytes': 2}, {'name': 'Speed', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Duration', 'type': 'uint64', 'size_bytes': 8}, {'type': 'reserved', 'size_bytes': 4}, {'type': 'reserved', 'size_bytes': 4}, {'name': 'Parameter', 'type': '<MultiZoneEffectParameter>', 'size_bytes': 32}]}
   // {'name': 'Instanceid', 'type': 'uint32', 'size_bytes': 4}
@@ -1907,11 +1907,11 @@ int lifxEncoder_EncodeMultiZoneEffectSettings(lifxMultiZoneEffectSettings_t cons
   // {'type': 'reserved', 'size_bytes': 4}
   lifxBuffer_Seek(buff, 4, kLifxBufferWhenceCurrent);
   // {'name': 'Parameter', 'type': '<MultiZoneEffectParameter>', 'size_bytes': 32}
-  lifxEncoder_EncodeMultiZoneEffectParameter(&pkt->Parameter, buff);
+  lifxEncoder_EncodeMultiZoneEffectParameter(buff, &pkt->Parameter);
   return 0;
 }
 
-int lifxDecoder_DecodeMultiZoneEffectSettings(lifxMultiZoneEffectSettings_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeMultiZoneEffectSettings(lifxBuffer_t* buff, lifxMultiZoneEffectSettings_t* pkt)
 {
   // {'size_bytes': 59, 'fields': [{'name': 'Instanceid', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Type', 'type': '<MultiZoneEffectType>', 'size_bytes': 1}, {'type': 'reserved', 'size_bytes': 2}, {'name': 'Speed', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Duration', 'type': 'uint64', 'size_bytes': 8}, {'type': 'reserved', 'size_bytes': 4}, {'type': 'reserved', 'size_bytes': 4}, {'name': 'Parameter', 'type': '<MultiZoneEffectParameter>', 'size_bytes': 32}]}
   // {'name': 'Instanceid', 'type': 'uint32', 'size_bytes': 4}
@@ -1929,11 +1929,11 @@ int lifxDecoder_DecodeMultiZoneEffectSettings(lifxMultiZoneEffectSettings_t* pkt
   // {'type': 'reserved', 'size_bytes': 4}
   lifxBuffer_Seek(buff, 4, kLifxBufferWhenceCurrent);
   // {'name': 'Parameter', 'type': '<MultiZoneEffectParameter>', 'size_bytes': 32}
-  lifxDecoder_DecodeMultiZoneEffectParameter(&pkt->Parameter, buff);
+  lifxDecoder_DecodeMultiZoneEffectParameter(buff, &pkt->Parameter);
   return 0;
 }
 
-int lifxEncoder_EncodeTileAccelMeas(lifxTileAccelMeas_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeTileAccelMeas(lifxBuffer_t* buff, lifxTileAccelMeas_t const* pkt)
 {
   // {'size_bytes': 6, 'fields': [{'name': 'X', 'type': 'int16', 'size_bytes': 2}, {'name': 'Y', 'type': 'int16', 'size_bytes': 2}, {'name': 'Z', 'type': 'int16', 'size_bytes': 2}]}
   // {'name': 'X', 'type': 'int16', 'size_bytes': 2}
@@ -1945,7 +1945,7 @@ int lifxEncoder_EncodeTileAccelMeas(lifxTileAccelMeas_t const* pkt, lifxBuffer_t
   return 0;
 }
 
-int lifxDecoder_DecodeTileAccelMeas(lifxTileAccelMeas_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeTileAccelMeas(lifxBuffer_t* buff, lifxTileAccelMeas_t* pkt)
 {
   // {'size_bytes': 6, 'fields': [{'name': 'X', 'type': 'int16', 'size_bytes': 2}, {'name': 'Y', 'type': 'int16', 'size_bytes': 2}, {'name': 'Z', 'type': 'int16', 'size_bytes': 2}]}
   // {'name': 'X', 'type': 'int16', 'size_bytes': 2}
@@ -1957,11 +1957,11 @@ int lifxDecoder_DecodeTileAccelMeas(lifxTileAccelMeas_t* pkt, lifxBuffer_t* buff
   return 0;
 }
 
-int lifxEncoder_EncodeTileStateDevice(lifxTileStateDevice_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeTileStateDevice(lifxBuffer_t* buff, lifxTileStateDevice_t const* pkt)
 {
   // {'size_bytes': 55, 'fields': [{'name': 'AccelMeas', 'type': '<TileAccelMeas>', 'size_bytes': 6}, {'type': 'reserved', 'size_bytes': 2}, {'name': 'UserX', 'type': 'float32', 'size_bytes': 4}, {'name': 'UserY', 'type': 'float32', 'size_bytes': 4}, {'name': 'Width', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Height', 'type': 'uint8', 'size_bytes': 1}, {'type': 'reserved', 'size_bytes': 1}, {'name': 'DeviceVersion', 'type': '<DeviceStateVersion>', 'size_bytes': 12}, {'name': 'Firmware', 'type': '<DeviceStateHostFirmware>', 'size_bytes': 20}, {'type': 'reserved', 'size_bytes': 4}]}
   // {'name': 'AccelMeas', 'type': '<TileAccelMeas>', 'size_bytes': 6}
-  lifxEncoder_EncodeTileAccelMeas(&pkt->AccelMeas, buff);
+  lifxEncoder_EncodeTileAccelMeas(buff, &pkt->AccelMeas);
   // {'type': 'reserved', 'size_bytes': 2}
   lifxBuffer_Seek(buff, 2, kLifxBufferWhenceCurrent);
   // {'name': 'UserX', 'type': 'float32', 'size_bytes': 4}
@@ -1975,19 +1975,19 @@ int lifxEncoder_EncodeTileStateDevice(lifxTileStateDevice_t const* pkt, lifxBuff
   // {'type': 'reserved', 'size_bytes': 1}
   lifxBuffer_Seek(buff, 1, kLifxBufferWhenceCurrent);
   // {'name': 'DeviceVersion', 'type': '<DeviceStateVersion>', 'size_bytes': 12}
-  lifxEncoder_EncodeDeviceStateVersion(&pkt->DeviceVersion, buff);
+  lifxEncoder_EncodeDeviceStateVersion(buff, &pkt->DeviceVersion);
   // {'name': 'Firmware', 'type': '<DeviceStateHostFirmware>', 'size_bytes': 20}
-  lifxEncoder_EncodeDeviceStateHostFirmware(&pkt->Firmware, buff);
+  lifxEncoder_EncodeDeviceStateHostFirmware(buff, &pkt->Firmware);
   // {'type': 'reserved', 'size_bytes': 4}
   lifxBuffer_Seek(buff, 4, kLifxBufferWhenceCurrent);
   return 0;
 }
 
-int lifxDecoder_DecodeTileStateDevice(lifxTileStateDevice_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeTileStateDevice(lifxBuffer_t* buff, lifxTileStateDevice_t* pkt)
 {
   // {'size_bytes': 55, 'fields': [{'name': 'AccelMeas', 'type': '<TileAccelMeas>', 'size_bytes': 6}, {'type': 'reserved', 'size_bytes': 2}, {'name': 'UserX', 'type': 'float32', 'size_bytes': 4}, {'name': 'UserY', 'type': 'float32', 'size_bytes': 4}, {'name': 'Width', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Height', 'type': 'uint8', 'size_bytes': 1}, {'type': 'reserved', 'size_bytes': 1}, {'name': 'DeviceVersion', 'type': '<DeviceStateVersion>', 'size_bytes': 12}, {'name': 'Firmware', 'type': '<DeviceStateHostFirmware>', 'size_bytes': 20}, {'type': 'reserved', 'size_bytes': 4}]}
   // {'name': 'AccelMeas', 'type': '<TileAccelMeas>', 'size_bytes': 6}
-  lifxDecoder_DecodeTileAccelMeas(&pkt->AccelMeas, buff);
+  lifxDecoder_DecodeTileAccelMeas(buff, &pkt->AccelMeas);
   // {'type': 'reserved', 'size_bytes': 2}
   lifxBuffer_Seek(buff, 2, kLifxBufferWhenceCurrent);
   // {'name': 'UserX', 'type': 'float32', 'size_bytes': 4}
@@ -2001,15 +2001,15 @@ int lifxDecoder_DecodeTileStateDevice(lifxTileStateDevice_t* pkt, lifxBuffer_t* 
   // {'type': 'reserved', 'size_bytes': 1}
   lifxBuffer_Seek(buff, 1, kLifxBufferWhenceCurrent);
   // {'name': 'DeviceVersion', 'type': '<DeviceStateVersion>', 'size_bytes': 12}
-  lifxDecoder_DecodeDeviceStateVersion(&pkt->DeviceVersion, buff);
+  lifxDecoder_DecodeDeviceStateVersion(buff, &pkt->DeviceVersion);
   // {'name': 'Firmware', 'type': '<DeviceStateHostFirmware>', 'size_bytes': 20}
-  lifxDecoder_DecodeDeviceStateHostFirmware(&pkt->Firmware, buff);
+  lifxDecoder_DecodeDeviceStateHostFirmware(buff, &pkt->Firmware);
   // {'type': 'reserved', 'size_bytes': 4}
   lifxBuffer_Seek(buff, 4, kLifxBufferWhenceCurrent);
   return 0;
 }
 
-int lifxEncoder_EncodeTileBufferRect(lifxTileBufferRect_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeTileBufferRect(lifxBuffer_t* buff, lifxTileBufferRect_t const* pkt)
 {
   // {'size_bytes': 4, 'fields': [{'type': 'reserved', 'size_bytes': 1}, {'name': 'X', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Y', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Width', 'type': 'uint8', 'size_bytes': 1}]}
   // {'type': 'reserved', 'size_bytes': 1}
@@ -2023,7 +2023,7 @@ int lifxEncoder_EncodeTileBufferRect(lifxTileBufferRect_t const* pkt, lifxBuffer
   return 0;
 }
 
-int lifxDecoder_DecodeTileBufferRect(lifxTileBufferRect_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeTileBufferRect(lifxBuffer_t* buff, lifxTileBufferRect_t* pkt)
 {
   // {'size_bytes': 4, 'fields': [{'type': 'reserved', 'size_bytes': 1}, {'name': 'X', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Y', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Width', 'type': 'uint8', 'size_bytes': 1}]}
   // {'type': 'reserved', 'size_bytes': 1}
@@ -2037,7 +2037,7 @@ int lifxDecoder_DecodeTileBufferRect(lifxTileBufferRect_t* pkt, lifxBuffer_t* bu
   return 0;
 }
 
-int lifxEncoder_EncodeTileEffectParameter(lifxTileEffectParameter_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeTileEffectParameter(lifxBuffer_t* buff, lifxTileEffectParameter_t const* pkt)
 {
   // {'size_bytes': 32, 'fields': [{'name': 'Parameter0', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Parameter1', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Parameter2', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Parameter3', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Parameter4', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Parameter5', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Parameter6', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Parameter7', 'type': 'uint32', 'size_bytes': 4}]}
   // {'name': 'Parameter0', 'type': 'uint32', 'size_bytes': 4}
@@ -2059,7 +2059,7 @@ int lifxEncoder_EncodeTileEffectParameter(lifxTileEffectParameter_t const* pkt, 
   return 0;
 }
 
-int lifxDecoder_DecodeTileEffectParameter(lifxTileEffectParameter_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeTileEffectParameter(lifxBuffer_t* buff, lifxTileEffectParameter_t* pkt)
 {
   // {'size_bytes': 32, 'fields': [{'name': 'Parameter0', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Parameter1', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Parameter2', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Parameter3', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Parameter4', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Parameter5', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Parameter6', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Parameter7', 'type': 'uint32', 'size_bytes': 4}]}
   // {'name': 'Parameter0', 'type': 'uint32', 'size_bytes': 4}
@@ -2081,7 +2081,7 @@ int lifxDecoder_DecodeTileEffectParameter(lifxTileEffectParameter_t* pkt, lifxBu
   return 0;
 }
 
-int lifxEncoder_EncodeTileEffectSettings(lifxTileEffectSettings_t const* pkt, lifxBuffer_t* buff)
+int lifxEncoder_EncodeTileEffectSettings(lifxBuffer_t* buff, lifxTileEffectSettings_t const* pkt)
 {
   // {'size_bytes': 186, 'fields': [{'name': 'Instanceid', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Type', 'type': '<TileEffectType>', 'size_bytes': 1}, {'name': 'Speed', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Duration', 'type': 'uint64', 'size_bytes': 8}, {'name': 'Reserved0', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Reserved1', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Parameter', 'type': '<TileEffectParameter>', 'size_bytes': 32}, {'name': 'PaletteCount', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Palette', 'type': '[16]<LightHsbk>', 'size_bytes': 128}]}
   // {'name': 'Instanceid', 'type': 'uint32', 'size_bytes': 4}
@@ -2097,15 +2097,15 @@ int lifxEncoder_EncodeTileEffectSettings(lifxTileEffectSettings_t const* pkt, li
   // {'name': 'Reserved1', 'type': 'uint32', 'size_bytes': 4}
   lifxBuffer_WriteUInt32(buff, pkt->Reserved1);
   // {'name': 'Parameter', 'type': '<TileEffectParameter>', 'size_bytes': 32}
-  lifxEncoder_EncodeTileEffectParameter(&pkt->Parameter, buff);
+  lifxEncoder_EncodeTileEffectParameter(buff, &pkt->Parameter);
   // {'name': 'PaletteCount', 'type': 'uint8', 'size_bytes': 1}
   lifxBuffer_WriteUInt8(buff, pkt->PaletteCount);
   // {'name': 'Palette', 'type': '[16]<LightHsbk>', 'size_bytes': 128}
-  lifxEncoder_EncodeLightHsbk(&pkt->Palette, buff);
+  lifxEncoder_EncodeLightHsbk(buff, &pkt->Palette);
   return 0;
 }
 
-int lifxDecoder_DecodeTileEffectSettings(lifxTileEffectSettings_t* pkt, lifxBuffer_t* buff)
+int lifxDecoder_DecodeTileEffectSettings(lifxBuffer_t* buff, lifxTileEffectSettings_t* pkt)
 {
   // {'size_bytes': 186, 'fields': [{'name': 'Instanceid', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Type', 'type': '<TileEffectType>', 'size_bytes': 1}, {'name': 'Speed', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Duration', 'type': 'uint64', 'size_bytes': 8}, {'name': 'Reserved0', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Reserved1', 'type': 'uint32', 'size_bytes': 4}, {'name': 'Parameter', 'type': '<TileEffectParameter>', 'size_bytes': 32}, {'name': 'PaletteCount', 'type': 'uint8', 'size_bytes': 1}, {'name': 'Palette', 'type': '[16]<LightHsbk>', 'size_bytes': 128}]}
   // {'name': 'Instanceid', 'type': 'uint32', 'size_bytes': 4}
@@ -2121,11 +2121,11 @@ int lifxDecoder_DecodeTileEffectSettings(lifxTileEffectSettings_t* pkt, lifxBuff
   // {'name': 'Reserved1', 'type': 'uint32', 'size_bytes': 4}
   lifxBuffer_ReadUInt32(buff, &pkt->Reserved1);
   // {'name': 'Parameter', 'type': '<TileEffectParameter>', 'size_bytes': 32}
-  lifxDecoder_DecodeTileEffectParameter(&pkt->Parameter, buff);
+  lifxDecoder_DecodeTileEffectParameter(buff, &pkt->Parameter);
   // {'name': 'PaletteCount', 'type': 'uint8', 'size_bytes': 1}
   lifxBuffer_ReadUInt8(buff, &pkt->PaletteCount);
   // {'name': 'Palette', 'type': '[16]<LightHsbk>', 'size_bytes': 128}
-  lifxDecoder_DecodeLightHsbk(&pkt->Palette, buff);
+  lifxDecoder_DecodeLightHsbk(buff, &pkt->Palette);
   return 0;
 }
 
