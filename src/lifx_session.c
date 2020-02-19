@@ -16,26 +16,34 @@
 #include "lifx_internal.h"
 #include "lifx_encoders.h"
 
-#include <errno.h>
-#include <string.h>
 #include <arpa/inet.h>
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <stdlib.h>
 
 static uint16_t const kLifxProtocolNumber = 0x400; // 1024
 
 static void* lifxSession_Dispatcher(void* argp)
 {
   int ret;
+  bool done;
   struct lifxSession* lifx = (struct lifxSession *) argp;
 
-  while (true)
+  done = false;
+  while (!done)
   {
     ret = lifxSession_Dispatch(lifx, 1);
-    lxLog_Info(lifx, "lifxSession_Dispatch:%d", ret);
+    if ((ret != 0) && (ret != ETIMEDOUT))
+    {
+      lxLog_Error(lifx, "lifxSession_Dispatch:%d", ret);
+      done = true;
+    }
   }
+
   return NULL;
 }
 
@@ -86,8 +94,9 @@ lifxDevice_t* lifxSession_CreateDevice(
         uint16_t port;
         char buff[256];
         lifxSockaddr_ToString(source, buff, sizeof(buff), &port);
-        lxLog_Info(lifx, "adding new device %s:%d to database", buff, port);
-        lxLog_Info(lifx, "mac:%02x%02x%02x%02x%02x%02x",
+        lxLog_Info(lifx, "adding new device %s:%d [%02x:%02x:%02x:%02x:%02x:%02x] to database",
+          buff,
+          port,
           lifx->DeviceDatabase[i]->DeviceId.Octets[0],
           lifx->DeviceDatabase[i]->DeviceId.Octets[1],
           lifx->DeviceDatabase[i]->DeviceId.Octets[2],
@@ -116,10 +125,21 @@ lifxSession_t* lifxSession_Open(lifxSessionConfig_t const* conf)
 
   memset(lifx, 0, sizeof(struct lifxSession));
 
+  pthread_mutex_init(&lifx->SessionLock, NULL);
+
   // set this as early as possible to avoid uninitialized reads
-  lifx->LogLevel = kLifxLogLevelInfo;
+  lifx->Config.LogLevel = kLifxLogLevelInfo;
   if (conf)
-    lifx->LogLevel = conf->LogLevel;
+  {
+    lifxSessionConfig_Copy(&lifx->Config, conf);
+  }
+  else
+  {
+    // TODO: set default config
+  }
+
+  lxLog_Info(lifx, "liblifx %s", lifx_Version());
+
   lifx->Socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
   if (lifx->Socket == -1)
   {
@@ -146,32 +166,29 @@ lifxSession_t* lifxSession_Open(lifxSessionConfig_t const* conf)
     return NULL;
   }
 
-  if (conf)
+  if (lifx->Config.BindInterface)
   {
-    if (conf->BindInterface)
+    struct sockaddr_in bind_addr;
+    socklen_t bind_addr_length;
+
+    bind_addr_length = sizeof(struct sockaddr_in);
+    memset(&bind_addr, 0, sizeof(struct sockaddr_in));
+    inet_pton(AF_INET, conf->BindInterface, &bind_addr);
+
+    lxLog_Info(lifx, "binding to %s", conf->BindInterface);
+
+    ret = bind(lifx->Socket, (struct sockaddr *) &bind_addr, bind_addr_length);
+    if (ret != 0)
     {
-      struct sockaddr_in bind_addr;
-      socklen_t bind_addr_length;
-
-      bind_addr_length = sizeof(struct sockaddr_in);
-      memset(&bind_addr, 0, sizeof(struct sockaddr_in));
-      inet_pton(AF_INET, conf->BindInterface, &bind_addr);
-
-      lxLog_Info(lifx, "binding to %s", conf->BindInterface);
-
-      ret = bind(lifx->Socket, (struct sockaddr *) &bind_addr, bind_addr_length);
-      if (ret != 0)
-      {
-        int err = errno;
-        lxLog_Warn(lifx, "bind:%s", lifxError_ToString(err));
-      }
+      int err = errno;
+      lxLog_Warn(lifx, "bind:%s", lifxError_ToString(err));
     }
+  }
 
-    if (conf->UseBackgroundDispatchThread)
-    {
-      lifx->MessageHandler = conf->MessageHandler;
-      pthread_create(&lifx->BackgroundDispatchThread, NULL, lifxSession_Dispatcher, lifx);
-    }
+  if (lifx->Config.UseBackgroundDispatchThread)
+  {
+    lxLog_Info(lifx, "creating background dispatch thread");
+    pthread_create(&lifx->BackgroundDispatchThread, NULL, lifxSession_Dispatcher, lifx);
   }
 
   return lifx;
@@ -187,9 +204,19 @@ int lifxSession_Close(lifxSession_t* lifx)
   if (lifx->Socket != -1)
     close(lifx->Socket);
 
+  if (lifx->Config.BindInterface)
+    free(lifx->Config.BindInterface);
+
   lifxBuffer_Destroy(&lifx->ReadBuffer);
   lifxBuffer_Destroy(&lifx->WriteBuffer);
   free(lifx);
+
+  // TODO: stop background dispatcher thread
+  // create a pipe()
+  // dispatcher selects() on socket and pipe
+  // shutdown write on pipe
+  // thread exits
+  // this thread joins/waits for disptacher thread to exit
 
   for (i = 0; i < kLifxMaxDevices; ++i)
   {
@@ -200,47 +227,104 @@ int lifxSession_Close(lifxSession_t* lifx)
   return 0;
 }
 
+bool lifxSession_IsDiscoveryEnabled(lifxSession_t* lifx)
+{
+  bool enabled = false;
+  pthread_mutex_lock(&lifx->SessionLock);
+  enabled = lifx->RunDiscovery;
+  pthread_mutex_unlock(&lifx->SessionLock);
+  return enabled;
+}
+
+int lifxSession_StartDiscovery(lifxSession_t* lifx)
+{
+  pthread_mutex_lock(&lifx->SessionLock);
+  lifx->RunDiscovery = true;
+  pthread_mutex_unlock(&lifx->SessionLock);
+  return 0;
+}
+
+int lifxSession_StopDiscovery(lifxSession_t* lifx)
+{
+  pthread_mutex_lock(&lifx->SessionLock);
+  lifx->RunDiscovery = false;
+  pthread_mutex_unlock(&lifx->SessionLock);
+  return 0;
+}
+
 int
 lifxSession_Dispatch(lifxSession_t* lifx, int timeout)
 {
   int                     ret;
-  int                     elapsed;
-  struct timeval          time;
   bool                    done;
+  struct timeval          begin;
+  struct timeval          last_discovery_sent;
+  struct timeval          elapsed;
   lifxMessage_t           message;
   struct sockaddr_storage source_addr;
+  
 
   ret = 0;
-  elapsed = 0;
-  gettimeofday(&time, NULL);
   done = false;
+  timerclear(&begin);
+  timerclear(&last_discovery_sent);
+  timerclear(&elapsed);
+  memset(&message, 0, sizeof(lifxMessage_t));
+  memset(&source_addr, 0, sizeof(struct sockaddr_storage));
 
   while (!done)
   {
+    struct timeval now;
+    gettimeofday(&now, NULL);
+    if (!timerisset(&begin))
+      begin = now;
+
+    if (lifxSession_IsDiscoveryEnabled(lifx))
+    {
+      timersub(&now, &last_discovery_sent, &elapsed);
+      if (elapsed.tv_sec > 1)
+      {
+        lifxDeviceGetService_t get_service;
+        lifxSession_SendTo(lifx, kLifxDeviceAll, &get_service, kLifxPacketTypeDeviceGetService);
+        last_discovery_sent = now;
+      }
+    }
+
     memset(&message, 0, sizeof(lifxMessage_t));
-
     ret = lifxSession_RecvFromInternal(lifx, &message, &source_addr, 1000);
-    if ((ret != 0) && (ret != ETIMEDOUT))
-      done = true;
+    if (ret != 0)
+    {
+      if (ret != ETIMEDOUT)
+      {
+        done = true;
+      }
+    }
 
+    gettimeofday(&now, NULL);
+    timersub(&now, &begin, &elapsed);
 
-    if ((timeout != kLifxWaitForever) && (elapsed >= timeout))
+    if ((timeout != kLifxWaitForever) && (elapsed.tv_sec >= timeout))
       done = true;
 
     if (!done && (ret == 0))
     {
       lifxDeviceId_t deviceId;
+      memcpy(deviceId.Octets, message.Header.Target, 6);
 
       // response to a device disovery, cache the device in db
       if (message.Header.Type == kLifxPacketTypeDeviceStateService)
       {
         lifxDevice_t* device;
         if ((device = lifxSession_FindDevice(lifx, deviceId)) == NULL)
+        {
           device = lifxSession_CreateDevice(lifx, &message, &source_addr);
+          if (lifx->Config.DeviceDiscovered)
+          {
+            memcpy(&deviceId.Octets, &message.Header.Target, 6);
+            lifx->Config.DeviceDiscovered(lifx, deviceId);
+          }
+        }
       }
-
-      memcpy(&deviceId.Octets, &message.Header.Target, 6);
-      lifx->MessageHandler(lifx, &message, deviceId);
     }
   }
 
@@ -313,7 +397,7 @@ lifxSession_SendTo(
     char addr[64];
     struct sockaddr_in* v4 = (struct sockaddr_in *) &dest;
     inet_ntop(AF_INET, &v4->sin_addr, addr, sizeof(addr));
-    lxLog_Info(lifx, "sendto:%s:%d", addr, ntohs(v4->sin_port));
+    lxLog_Debug(lifx, "sendto:%s:%d", addr, ntohs(v4->sin_port));
   }
 
   lxLog_Debug(lifx, "sending message:%d type:%d", header.Size, header.Type);
@@ -341,7 +425,6 @@ int lifxSession_RecvFrom(
   struct sockaddr_storage source_addr;
   return lifxSession_RecvFromInternal(lifx, message, &source_addr, timeout);
 }
-
 
 int lifxSession_RecvFromInternal(
   lifxSession_t*              lifx,
@@ -418,4 +501,58 @@ int lifxSession_RecvFromInternal(
 int lifxDeviceId_Compare(lifxDeviceId_t const* dev1, lifxDeviceId_t const* dev2)
 {
   return memcmp(dev1->Octets, dev2->Octets, 6);
+}
+
+int lifxDeviceId_ToString(lifxDeviceId_t const* deviceId, char* buff, int n)
+{
+  if (!deviceId)
+    return EINVAL;
+  if (!buff)
+    return EINVAL;
+  if (n < 30)
+    return ENOMEM;
+
+  memset(buff, 0, n);
+  snprintf(buff, n, "lifx_id://mac/%02hhx:%02hhx:%02hhx:%02hhx:%02hhx:%02hhx", 
+    deviceId->Octets[0],
+    deviceId->Octets[1],
+    deviceId->Octets[2],
+    deviceId->Octets[3],
+    deviceId->Octets[4],
+    deviceId->Octets[5]);
+  return 0;
+}
+
+int lifxDeviceId_FromString(lifxDeviceId_t* deviceId, char const* buff)
+{
+  if (!deviceId)
+    return EINVAL;
+  if (!buff)
+    return EINVAL;
+
+  sscanf(buff, "lifx_id://mac/%02hhx:%02hhx:%02hhx:%02hhx:%02hhx:%02hhx",
+    &deviceId->Octets[0],
+    &deviceId->Octets[1],
+    &deviceId->Octets[2],
+    &deviceId->Octets[3],
+    &deviceId->Octets[4],
+    &deviceId->Octets[5]);
+  return 0;
+}
+
+int lifxSessionConfig_Copy(lifxSessionConfig_t* dest, lifxSessionConfig_t const* src)
+{
+  if (!dest)
+    return EINVAL;
+  if (!src)
+    return EINVAL;
+
+  memcpy(dest, src, sizeof(lifxSessionConfig_t));
+
+  if (src->BindInterface)
+    dest->BindInterface = strdup(src->BindInterface);
+  else
+    dest->BindInterface = NULL;
+
+  return 0;
 }

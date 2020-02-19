@@ -63,7 +63,7 @@ lifxError_GetThreadSpecific()
 
 void lifxDumpBuffer(lifxSession_t* lifx, uint8_t* p, int n)
 {
-  if (kLifxLogLevelDebug < lifx->LogLevel)
+  if (kLifxLogLevelDebug < lifx->Config.LogLevel)
     return;
 
   int i;

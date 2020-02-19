@@ -18,81 +18,31 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdbool.h>
+#include <string.h>
 #include <pthread.h>
 
-static lifxDeviceId_t dev = kLifxDeviceInvalidInitializer;
-static bool device_found = false;
-static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-static pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
-
-void message_handler(lifxSession_t const* lifx, lifxMessage_t const* const message,
-  lifxDeviceId_t deviceId)
+void discovery_callback(lifxSession_t const* lifx, lifxDeviceId_t deviceId)
 {
-  printf("message_type:%d\n", message->Header.Type);
-  if ((lifxDeviceId_Compare(&dev, &kLifxDeviceInvalid) == 0) && (message->Header.Type == kLifxPacketTypeDeviceStateService))
-  {
-    dev = deviceId;
-    printf("device found\n");
-
-    pthread_mutex_lock(&mutex);
-    device_found = true;
-    pthread_cond_signal(&cond);
-    pthread_mutex_unlock(&mutex);
-  }
-  if (message->Header.Type == kLifxPacketTypeDeviceStateLabel)
-  {
-    printf("Label:%s\n", message->Packet.DeviceStateLabel.Label);
-  }
+  char mac[64];
+  lifxDeviceId_ToString(&deviceId, mac, sizeof(mac));
+  printf("new device:%s\n", mac);
 }
 
 int main(int argc, char* argv[])
 {
+  lifxSession_t* lifx;
   lifxSessionConfig_t conf;
 
-  // TODO: would be convenient to be able to supply interface
-  // name here
-  conf.BindInterface = NULL; // "10.26.52.112";
+  memset(&conf, 0, sizeof(lifxSessionConfig_t));
   conf.UseBackgroundDispatchThread = true;
-  conf.MessageHandler = &message_handler;
-  conf.LogLevel = kLifxLogLevelDebug;
-  conf.ReportDuplicateDevices = false;
-  lifxSession_t* lifx = lifxSession_Open(&conf);
+  conf.LogLevel = kLifxLogLevelInfo;
+  conf.DeviceDiscovered = discovery_callback;
 
-  printf("version:%s\n", lifx_Version());
-
-  while (!device_found)
-  {
-
-    lifxDeviceGetService_t get_service;
-    lifxSession_SendTo(lifx, kLifxDeviceAll, &get_service, kLifxPacketTypeDeviceGetService);
-
-    pthread_mutex_lock(&mutex);
-    while (!device_found) {
-      struct timespec wait_time;
-      clock_gettime(CLOCK_REALTIME, &wait_time);
-      wait_time.tv_sec += 1;
-      printf("waiting for device to be found\n");
-      pthread_cond_timedwait(&cond, &mutex, &wait_time);
-    }
-    pthread_mutex_unlock(&mutex);
-  }
-
-  // not required, but let the smoke clear
-  sleep(1);
-
-  if (device_found)
-  {
-    lifxDeviceGetLabel_t get_label;
-    lifxSession_SendTo(lifx, dev, &get_label, kLifxPacketTypeDeviceGetLabel);
-  }
-
-  while (true)
-  {
-    sleep(1);
-  }
-
-
+  lifx = lifxSession_Open(&conf);
+  lifxSession_StartDiscovery(lifx);
+  sleep(20);
+  lifxSession_StopDiscovery(lifx);
   lifxSession_Close(lifx);
+
   return 0;
 }
-

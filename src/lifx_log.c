@@ -66,16 +66,16 @@ lxLog_Printf(lifxSession_t* lifx, lifxLogLevel_t level, char const* format, ...)
 {
   va_list argp;
 
-  if (level < lifx->LogLevel)
+  if (level < lifx->Config.LogLevel)
     return;
 
   va_start(argp, format);
 
-  if (lifx->LogCallback)
+  if (lifx->Config.LogCallback)
   {
     char buff[512];
     vsnprintf(buff, sizeof(buff), format, argp);
-    lifx->LogCallback(lifx, level, buff);
+    lifx->Config.LogCallback(lifx, level, buff);
   }
   else
   {

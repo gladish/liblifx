@@ -1,7 +1,7 @@
 include(ExternalProject)
 include(GoogleTest)
 
-find_packete(Threads)
+find_package(Threads)
 
 ExternalProject_Add(
   gtest
@@ -32,9 +32,11 @@ add_custom_target(test_memcheck
 
 # testGroup.lifxBuffer
 add_executable(testGroup.lifxBuffer lifxBufferTests.cpp main.cpp)
+add_executable(testGroup.lifxDeviceId lifxDeviceIdTests.cpp main.cpp)
 target_link_libraries(testGroup.lifxBuffer libgtest libgmock lifx ${CMAKE_THREAD_LIBS_INIT})
-
+target_link_libraries(testGroup.lifxDeviceId libgtest libgmock lifx ${CMAKE_THREAD_LIBS_INIT})
 
 gtest_discover_tests(testGroup.lifxBuffer)
+gtest_discover_tests(testGroup.lifxDeviceId)
 
 

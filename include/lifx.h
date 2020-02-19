@@ -45,13 +45,6 @@ extern "C" {
 #define lifxLittleToHostInt64(n) le64toh(n)
 #endif
 
-#ifdef __GNUC__
-#define lifxInterlockedIncrement(X) __atomic_fetch_add((X), 1, __ATOMIC_SEQ_CST)
-#define lifxInterlockedDecrement(X) __atomic_fetch_sub((X), 1, __ATOMIC_SEQ_CST)
-#else
-#error "Implement me!"
-#endif
-
 #define kLifxDefaultBroadcastPort (56700)
 #define kLifxWaitForever (-1)
 #define kLifxDeviceIdSize (6)
@@ -68,8 +61,6 @@ typedef struct
 
 static lifxDeviceId_t const kLifxDeviceAll = kLifxDeviceAllInitializer;
 static lifxDeviceId_t const kLifxDeviceInvalid = kLifxDeviceInvalidInitializer;
-
-int lifxDeviceId_Compare(lifxDeviceId_t const* a, lifxDeviceId_t const* b);
 
 #pragma pack(push, 1)
 typedef struct
@@ -94,7 +85,7 @@ typedef struct
   uint64_t  :64;
   uint16_t  Type;
   uint16_t  :16;
-} LIFX_EXPORT lifxProtocolHeader_t;
+} lifxProtocolHeader_t;
 #pragma pack(pop)
 
 /**
@@ -121,7 +112,7 @@ typedef struct
 {
   lifxProtocolHeader_t  Header;
   lifxPacket_t          Packet;
-} LIFX_EXPORT lifxMessage_t;
+} lifxMessage_t;
 
 /**
  *
@@ -136,18 +127,23 @@ typedef void (*lifxMessageHandler_t)(
   lifxMessage_t const* const message,
   lifxDeviceId_t device);
 
+typedef void (*lifxDeviceDiscoveryHandler_t)(
+  lifxSession_t const* lifx,
+  lifxDeviceId_t deviceId);
+
 /**
  *
  */
 typedef struct
 {
-  char*                 BindInterface;
-  lifxLogHandler_t      LogCallback;
-  lifxLogLevel_t        LogLevel;
-  bool                  UseBackgroundDispatchThread;
-  lifxMessageHandler_t  MessageHandler;
-  bool                  ReportDuplicateDevices;
-} LIFX_EXPORT lifxSessionConfig_t;
+  char*                         BindInterface;
+  lifxLogHandler_t              LogCallback;
+  lifxLogLevel_t                LogLevel;
+  bool                          UseBackgroundDispatchThread;
+  lifxMessageHandler_t          MessageHandler;
+  lifxDeviceDiscoveryHandler_t  DeviceDiscovered;
+  bool                          ReportDuplicateDevices;
+} lifxSessionConfig_t;
 
 /**
  *
@@ -157,7 +153,7 @@ typedef struct
   uint8_t*  Data;
   int       Size;
   int       Position;
-} LIFX_EXPORT lifxBuffer_t;
+} lifxBuffer_t;
 
 /**
  *
@@ -178,6 +174,8 @@ LIFX_EXPORT lifxSession_t* lifxSession_Open(lifxSessionConfig_t const* conf);
  *
  */
 LIFX_EXPORT int lifxSession_Close(lifxSession_t* lifx);
+LIFX_EXPORT int lifxSession_StartDiscovery(lifxSession_t* lifx);
+LIFX_EXPORT int lifxSession_StopDiscovery(lifxSession_t* lifx);
 
 /**
  *
@@ -223,6 +221,10 @@ LIFX_EXPORT int lifxBuffer_ReadUInt32(lifxBuffer_t* buff, uint32_t* n);
 LIFX_EXPORT int lifxBuffer_ReadUInt64(lifxBuffer_t* buff, uint64_t* n);
 LIFX_EXPORT int lifxBuffer_ReadFloat(lifxBuffer_t* buff, float* f);
 LIFX_EXPORT int lifxBuffer_ReadBool(lifxBuffer_t* buff, bool* b);
+
+LIFX_EXPORT int lifxDeviceId_Compare(lifxDeviceId_t const* a, lifxDeviceId_t const* b);
+LIFX_EXPORT int lifxDeviceId_ToString(lifxDeviceId_t const* deviceId, char* buff, int n);
+LIFX_EXPORT int lifxDeviceId_FromString(lifxDeviceId_t* deviceId, char const* buff);
 
 #ifdef __cplusplus
 }

@@ -27,8 +27,11 @@ extern "C" {
 
 #ifdef __GNUC__
 #define LIFX_PRINTF_FORMAT(IDX, FIRST) __attribute__ ((format (printf, IDX, FIRST)))
+#define lifxInterlockedIncrement(X) __atomic_fetch_add((X), 1, __ATOMIC_SEQ_CST)
+#define lifxInterlockedDecrement(X) __atomic_fetch_sub((X), 1, __ATOMIC_SEQ_CST)
 #else
 #define LIFX_PRINTF_FORMAT(IDX, FIRST)
+#error "Not supported"
 #endif
 
 #define kLifxErrorMessageMaxLength (256)
@@ -43,18 +46,20 @@ typedef struct
 
 LIFX_IMPORT struct lifxSession
 {
-  int                   Socket;
-  uint32_t              SourceId;
-  uint8_t               SequenceNumber;
-  lifxBuffer_t          ReadBuffer;
-  lifxBuffer_t          WriteBuffer;
-  lifxLogLevel_t        LogLevel;
-  lifxLogHandler_t      LogCallback;
-  lifxMessageHandler_t  MessageHandler;
-  pthread_t             BackgroundDispatchThread;
-  pthread_mutex_t       LogMutex;
-  lifxDevice_t*         DeviceDatabase[kLifxMaxDevices];
+  int                     Socket;
+  uint32_t                SourceId;
+  uint8_t                 SequenceNumber;
+  lifxBuffer_t            ReadBuffer;
+  lifxBuffer_t            WriteBuffer;
+  pthread_t               BackgroundDispatchThread;
+  pthread_mutex_t         SessionLock;
+  lifxDevice_t*           DeviceDatabase[kLifxMaxDevices];
+  lifxSessionConfig_t     Config;
+  bool                    RunDiscovery;
 };
+
+LIFX_IMPORT int lifxSessionConfig_Copy(lifxSessionConfig_t* dest, lifxSessionConfig_t const* src);
+
 
 /**
  *
@@ -91,7 +96,6 @@ LIFX_IMPORT void lifxDumpBuffer(lifxSession_t* lifx, uint8_t* p, int n);
 LIFX_IMPORT void lifxSockaddr_ToString(struct sockaddr_storage* ss, char* buff, int n, uint16_t* port);
 
 #define lxLog_Print(SESS, LEVEL, FORMAT, ...) do { lxLog_Printf(SESS, LEVEL, FORMAT, ## __VA_ARGS__); } while (0)
-
 #define lxLog_Debug(SESS, FORMAT, ...) lxLog_Print(SESS, kLifxLogLevelDebug, FORMAT, ## __VA_ARGS__)
 #define lxLog_Info(SESS, FORMAT, ...) lxLog_Print(SESS, kLifxLogLevelInfo, FORMAT, ## __VA_ARGS__)
 #define lxLog_Warn(SESS, FORMAT, ...) lxLog_Print(SESS, kLifxLogLevelWarn, FORMAT, ## __VA_ARGS__)
