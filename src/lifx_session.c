@@ -556,3 +556,11 @@ int lifxSessionConfig_Copy(lifxSessionConfig_t* dest, lifxSessionConfig_t const*
 
   return 0;
 }
+
+int lifxSessionConfig_Init(lifxSessionConfig_t* conf)
+{
+  if (!conf)
+    return EINVAL;
+  memset(conf, 0, sizeof(lifxSessionConfig_t));
+  return 0;
+}

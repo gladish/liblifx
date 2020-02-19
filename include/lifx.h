@@ -145,6 +145,8 @@ typedef struct
   bool                          ReportDuplicateDevices;
 } lifxSessionConfig_t;
 
+LIFX_EXPORT int lifxSessionConfig_Init(lifxSessionConfig_t* conf);
+
 /**
  *
  */

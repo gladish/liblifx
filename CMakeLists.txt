@@ -97,6 +97,10 @@ add_executable(findbulbs examples/findbulbs.c)
 add_dependencies(findbulbs lifx)
 target_link_libraries(findbulbs lifx)
 
+add_executable(sendreq examples/sendreq.c)
+add_dependencies(sendreq lifx)
+target_link_libraries(sendreq lifx)
+
 if (ENABLE_UNIT_TESTS)
   add_subdirectory(tests)
 endif()
