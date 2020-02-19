@@ -1,5 +1,5 @@
 //
-// DO NOT EDIT - AUTO-GENERATE:2020-02-17 21:03:16.979302
+// DO NOT EDIT - AUTO-GENERATE:2020-02-19 16:08:32.932733
 //
 #ifndef __LIFX_FIELDS_H__
 #define __LIFX_FIELDS_H__
@@ -174,7 +174,7 @@ typedef struct {
   // {'name': 'PaletteCount', 'type': 'uint8', 'size_bytes': 1}
   uint8_t PaletteCount;
   // {'name': 'Palette', 'type': '[16]<LightHsbk>', 'size_bytes': 128}
-  lifxLightHsbk_t Palette;
+  lifxLightHsbk_t Palette[16];
 } lifxTileEffectSettings_t;
 
 #ifdef __cplusplus

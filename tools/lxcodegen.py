@@ -199,9 +199,19 @@ class CodeGenerator:
           if self.is_enum(user_defined_type_name):
             self.write("lifxBuffer_ReadUInt8(buff, (uint8_t *) &pkt->%s);\n" % ( name))
           elif self.is_packet(user_defined_type_name):
-            self.write("lifxDecoder_Decode%s(buff, &pkt->%s);\n" % (user_defined_type_name, name))
+            is_array = re.search("\[(\d+)\]", type)
+            if is_array:
+              for i in range(int(is_array.group(1))):
+                self.write("lifxDecoder_Decode%s(buff, &pkt->%s[%d]);\n" % (user_defined_type_name, name, i))
+            else:
+              self.write("lifxDecoder_Decode%s(buff, &pkt->%s);\n" % (user_defined_type_name, name))
           elif self.is_field(user_defined_type_name):
-            self.write("lifxDecoder_Decode%s(buff, &pkt->%s);\n" % (user_defined_type_name, name))
+            is_array = re.search("\[(\d+)\]", type)
+            if is_array:
+              for i in range(int(is_array.group(1))):
+                self.write("lifxDecoder_Decode%s(buff, &pkt->%s[%d]);\n" % (user_defined_type_name, name, i))
+            else:
+              self.write("lifxDecoder_Decode%s(buff, &pkt->%s);\n" % (user_defined_type_name, name))
           else:
             raise Exception("unsupported type %s/%s" % (type, user_defined_type_name))
         else:
@@ -245,9 +255,19 @@ class CodeGenerator:
           if self.is_enum(user_defined_type_name):
             self.write("lifxBuffer_WriteUInt8(buff, (uint8_t) pkt->%s);\n" % ( name))
           elif self.is_packet(user_defined_type_name):
-            self.write("lifxEncoder_Encode%s(buff, &pkt->%s);\n" % (user_defined_type_name, name))
+            is_array = re.search("\[(\d+)\]", type)
+            if is_array:
+              for i in range(int(is_array.group(1))):
+                self.write("lifxEncoder_Encode%s(buff, &pkt->%s[%d]);\n" % (user_defined_type_name, name, i))
+            else:
+              self.write("lifxEncoder_Encode%s(buff, &pkt->%s);\n" % (user_defined_type_name, name))
           elif self.is_field(user_defined_type_name):
-            self.write("lifxEncoder_Encode%s(buff, &pkt->%s);\n" % (user_defined_type_name, name))
+            is_array = re.search("\[(\d+)\]", type)
+            if is_array:
+              for i in range(int(is_array.group(1))):
+                self.write("lifxEncoder_Encode%s(buff, &pkt->%s[%d]);\n" % (user_defined_type_name, name, i ))
+            else:
+              self.write("lifxEncoder_Encode%s(buff, &pkt->%s);\n" % (user_defined_type_name, name))
           else:
             raise Exception("unsupported type %s/%s" % (type, user_defined_type_name))
         else:
@@ -447,7 +467,11 @@ class CodeGenerator:
 
     match = re.search("\<([^>]+)\>", type)
     if match:
-      return "%s%s_t %s" % (self.prefix, match.group(1), name)
+      is_array = re.search("\[(\d+)\]", type)
+      if is_array:
+        return "%s%s_t %s[%d]" % (self.prefix, match.group(1), name, int(is_array.group(1)))
+      else:
+        return "%s%s_t %s" % (self.prefix, match.group(1), name)
 
     match = re.search("\[(\d+)\]byte", type)
     if match:

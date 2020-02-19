@@ -1,5 +1,5 @@
 //
-// DO NOT EDIT - AUTO-GENERATE:2020-02-17 21:03:16.980101
+// DO NOT EDIT - AUTO-GENERATE:2020-02-19 16:08:32.933687
 //
 #ifndef __LIFX_PACKETS_H__
 #define __LIFX_PACKETS_H__
@@ -372,7 +372,7 @@ typedef struct {
   // {'name': 'StartIndex', 'type': 'uint8', 'size_bytes': 1}
   uint8_t StartIndex;
   // {'name': 'TileDevices', 'type': '[16]<TileStateDevice>', 'size_bytes': 880}
-  lifxTileStateDevice_t TileDevices;
+  lifxTileStateDevice_t TileDevices[16];
   // {'name': 'TileDevicesCount', 'type': 'uint8', 'size_bytes': 1}
   uint8_t TileDevicesCount;
 } lifxTileStateDeviceChain_t;
@@ -406,7 +406,7 @@ typedef struct {
   // {'name': 'Rect', 'type': '<TileBufferRect>', 'size_bytes': 4}
   lifxTileBufferRect_t Rect;
   // {'name': 'Colors', 'type': '[64]<LightHsbk>', 'size_bytes': 512}
-  lifxLightHsbk_t Colors;
+  lifxLightHsbk_t Colors[64];
 } lifxTileState64_t;
 
 // {'pkt_type': 715, 'size_bytes': 522}
@@ -420,7 +420,7 @@ typedef struct {
   // {'name': 'Duration', 'type': 'uint32', 'size_bytes': 4}
   uint32_t Duration;
   // {'name': 'Colors', 'type': '[64]<LightHsbk>', 'size_bytes': 512}
-  lifxLightHsbk_t Colors;
+  lifxLightHsbk_t Colors[64];
 } lifxTileSet64_t;
 
 // {'pkt_type': 718, 'size_bytes': 2}
@@ -488,7 +488,7 @@ typedef struct {
   // {'name': 'Index', 'type': 'uint8', 'size_bytes': 1}
   uint8_t Index;
   // {'name': 'Colors', 'type': '[8]<LightHsbk>', 'size_bytes': 64}
-  lifxLightHsbk_t Colors;
+  lifxLightHsbk_t Colors[8];
 } lifxMultiZoneStateMultiZone_t;
 
 // {'pkt_type': 507, 'size_bytes': 0}
@@ -518,7 +518,7 @@ typedef struct {
   // {'name': 'ColorsCount', 'type': 'uint8', 'size_bytes': 1}
   uint8_t ColorsCount;
   // {'name': 'Colors', 'type': '[82]<LightHsbk>', 'size_bytes': 656}
-  lifxLightHsbk_t Colors;
+  lifxLightHsbk_t Colors[82];
 } lifxMultiZoneExtendedSetColorZones_t;
 
 // {'pkt_type': 511, 'size_bytes': 0}
@@ -534,7 +534,7 @@ typedef struct {
   // {'name': 'ColorsCount', 'type': 'uint8', 'size_bytes': 1}
   uint8_t ColorsCount;
   // {'name': 'Colors', 'type': '[82]<LightHsbk>', 'size_bytes': 656}
-  lifxLightHsbk_t Colors;
+  lifxLightHsbk_t Colors[82];
 } lifxMultiZoneExtendedStateMultiZone_t;
 
 typedef union
