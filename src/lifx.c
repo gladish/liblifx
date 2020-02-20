@@ -117,3 +117,76 @@ char const* lifxError_ToString(int errnum)
 
   return buff;
 }
+
+
+lifxFuture_t* lifxFuture_Create(lifxSequence_t seqno)
+{
+  lifxFuture_t* f = malloc(sizeof(struct lifxFuture));
+  pthread_mutex_init(&f->Mutex, NULL);
+  pthread_cond_init(&f->Cond, NULL);
+  memset(&f->Result, 0, sizeof(lifxPacket_t));
+  f->ErrorCode = 0;
+  f->ReferenceCount = 1;
+  f->Complete = false;
+  f->SequenceNumber = seqno;
+  return f;
+}
+
+int lifxFuture_Retain(struct lifxFuture* f)
+{
+  lifxInterlockedIncrement(&f->ReferenceCount);
+  return 0;
+}
+
+int lifxFuture_Release(struct lifxFuture* f)
+{
+  int n = lifxInterlockedDecrement(&f->ReferenceCount);
+  if (n == 1)
+  {
+    // TODO: signal any waiters
+    pthread_mutex_destroy(&f->Mutex);
+    pthread_cond_destroy(&f->Cond);
+    free(f);
+  }
+  return 0;
+}
+
+int lifxFuture_Wait(struct lifxFuture* f, int millis)
+{
+  int ret;
+
+  pthread_mutex_lock(&f->Mutex);
+  while (!f->Complete)
+  {
+    // TODO: proper timeout handling
+    struct timespec timeout;
+    clock_gettime(CLOCK_REALTIME, &timeout);
+    timeout.tv_sec += (millis / 1000);
+    ret = pthread_cond_timedwait(&f->Cond, &f->Mutex, &timeout);
+    f->Complete = true;
+    f->ErrorCode = ret;
+  }
+  pthread_mutex_unlock(&f->Mutex);
+  return f->ErrorCode;
+}
+
+int lifxFuture_Get(lifxFuture_t* f, lifxPacket_t* packet, int millis)
+{
+  int ret = lifxFuture_Wait(f, millis);
+  if (ret == 0)
+    *packet = f->Result;
+  return ret;
+}
+
+int lifxFuture_SetComplete(lifxFuture_t* f, int error, lifxPacket_t* p)
+{
+  printf("set completed\n");
+  pthread_mutex_lock(&f->Mutex);
+  if (p)
+    f->Result = *p;
+  f->ErrorCode = error;
+  f->Complete = true;
+  pthread_mutex_unlock(&f->Mutex);
+  pthread_cond_broadcast(&f->Cond);
+  return 0;
+}

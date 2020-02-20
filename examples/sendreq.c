@@ -16,39 +16,12 @@
 #include <lifx.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // JUST PROTOTYPING API 
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-// lifx.h -- lifx.c
-typedef struct
-{
-} lifxFuture_t;
-
-// lifx.h -- lifx.c
-int lifxFuture_Get(lifxFuture_t* future, lifxPacket_t* packet)
-{
-  return 0;
-}
-
-// lifx.h -- lifx.c
-int lifxFuture_WaitUntil(lifxFuture_t* future, int millis)
-{
-  return 0;
-}
-
-// lifx.h -- lifx.c
-int lifxFuture_Retain(lifxFuture_t* future)
-{
-  return 0;
-}
-
-// lifx.h -- lifx.c
-int lifxFuture_Release(lifxFuture_t* future)
-{
-  return 0;
-}
 
 // lifx.h -- lifx.c
 int lifxStringCopy(char* dest, int destLength, uint8_t const* source, int sourceLength)
@@ -61,23 +34,8 @@ int lifxStringCopy(char* dest, int destLength, uint8_t const* source, int source
   return 0;
 }
 
-
 // lifx.h -- lifx_session.c
-lifxFuture_t* lifxSession_SendRequest(lifxSession_t* lifx, lifxDeviceId_t deviceId, void* request, lifxPacketType_t packet_type)
-{
-  lifxFuture_t* future = NULL;
-
-  // queue up future
-
-  // call sendto
-
-  // lifxSession_Dispatch() will dispatch waiter based on sequence number from header
-
-  return future;
-}
-
-// lifx.h -- lifx_session.c
-int lifxSession_SendRequestAndWait(
+int lifxSession_SendRequest(
   lifxSession_t*    lifx,
   lifxDeviceId_t    deviceId,
   void*             request,
@@ -86,11 +44,11 @@ int lifxSession_SendRequestAndWait(
   int               millis)
 {
   int ret;
-  lifxFuture_t* future = lifxSession_SendRequest(lifx, deviceId, request, packetType);
-  ret = lifxFuture_WaitUntil(future, millis);
+  lifxFuture_t* future = lifxSession_BeginSendRequest(lifx, deviceId, request, packetType);
+  ret = lifxFuture_Wait(future, millis);
   if (ret == 0)
   {
-    lifxFuture_Get(future, response);
+    ret = lifxFuture_Get(future, response, 2000);
   }
   lifxFuture_Release(future);
   return ret;
@@ -108,7 +66,7 @@ int lifxDevice_GetLabel(lifxSession_t* lifx, lifxDeviceId_t deviceId, char* buff
   lifxPacket_t response;
   lifxDeviceGetLabel_t getLabel;
 
-  ret = lifxSession_SendRequestAndWait(lifx, deviceId, &getLabel, kLifxPacketTypeDeviceGetLabel,
+  ret = lifxSession_SendRequest(lifx, deviceId, &getLabel, kLifxPacketTypeDeviceGetLabel,
     &response, 1000);
   if (ret == 0)
   {
@@ -131,15 +89,15 @@ int main(int argc, char* argv[])
   conf.UseBackgroundDispatchThread = true;
   conf.LogLevel = kLifxLogLevelInfo;
 
-  lifxDeviceId_FromString(&deviceId, "lifx_id://mac/d0:73:d5:40:4d:61");
 
   lifx = lifxSession_Open(&conf);
+  lifxSession_StartDiscovery(lifx);
+  sleep(2);
+
+  lifxDeviceId_FromString(&deviceId, "lifx_id://mac/d0:73:d5:40:4d:61");
   ret = lifxDevice_GetLabel(lifx, deviceId, buff, sizeof(buff));
   if (ret == 0)
-  {
     printf("label:%s\n", buff);
-  }
-
   lifxSession_Close(lifx);
 
   return 0;

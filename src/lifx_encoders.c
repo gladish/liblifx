@@ -1,7 +1,7 @@
 //
-// DO NOT EDIT - AUTO-GENERATE:2020-02-19 16:08:32.936207
+// DO NOT EDIT - AUTO-GENERATE:2020-02-19 16:33:19.085869
 //
-#include "lifx.h"
+#include "lifx_internal.h"
 #include "lifx_encoders.h"
 
 int lifxDecoder_DecodePacket(lifxBuffer_t* buff, lifxPacketType_t type, lifxPacket_t* pkt)

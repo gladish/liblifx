@@ -310,7 +310,7 @@ class CodeGenerator:
     self.out.close()
 
     self.open_file("lifx_encoders.c")
-    self.write("#include \"lifx.h\"\n")
+    self.write("#include \"lifx_internal.h\"\n")
     self.write("#include \"lifx_encoders.h\"\n\n")
 
     self.write("int lifxDecoder_DecodePacket(lifxBuffer_t* buff, lifxPacketType_t type, lifxPacket_t* pkt)\n")

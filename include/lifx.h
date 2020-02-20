@@ -27,24 +27,6 @@ extern "C" {
 #define LIFX_IMPORT __attribute__ ((visibility ("internal")))
 #define LIFX_EXPORT __attribute__ ((visibility ("default")))
 
-#ifdef __APPLE__
-#include <libkern/OSByteOrder.h>
-#define lifxHostToLittleInt16(n) OSSwapHostToLittleInt16(n)
-#define lifxLittleToHostInt16(n) OSSwapHostToLittleInt16(x)
-#define lifxHostToLittleInt32(n) OSSwapHostToLittleInt32(n)
-#define lifxLittleToHostInt32(n) OSSwapHostToLittleInt32(x)
-#define lifxHostToLittleInt64(n) OSSwapHostToLittleInt64(n)
-#define lifxLittleToHostInt64(n) OSSwapHostToLittleInt64(x)
-#else
-#include <endian.h>
-#define lifxHostToLittleInt16(n) htole16(n)
-#define lifxLittleToHostInt16(n) le16toh(n)
-#define lifxHostToLittleInt32(n) htole32(n)
-#define lifxLittleToHostInt32(n) le32toh(n)
-#define lifxHostToLittleInt64(n) htole64(n)
-#define lifxLittleToHostInt64(n) le64toh(n)
-#endif
-
 #define kLifxDefaultBroadcastPort (56700)
 #define kLifxWaitForever (-1)
 #define kLifxDeviceIdSize (6)
@@ -52,7 +34,10 @@ extern "C" {
 #define kLifxDeviceInvalidInitializer {{0xff, 0xff, 0xff, 0xff, 0xff, 0xff}}
 
 struct lifxSession;
+struct lifxFuture;
+
 typedef struct lifxSession lifxSession_t;
+typedef struct lifxFuture lifxFuture_t;
 
 typedef struct
 {
@@ -61,6 +46,11 @@ typedef struct
 
 static lifxDeviceId_t const kLifxDeviceAll = kLifxDeviceAllInitializer;
 static lifxDeviceId_t const kLifxDeviceInvalid = kLifxDeviceInvalidInitializer;
+
+int lifxFuture_Retain(lifxFuture_t* f);
+int lifxFuture_Release(lifxFuture_t* f);
+int lifxFuture_Wait(lifxFuture_t* f, int millis);
+int lifxFuture_Get(lifxFuture_t* f, lifxPacket_t* packet, int millis);
 
 #pragma pack(push, 1)
 typedef struct
@@ -191,9 +181,15 @@ LIFX_EXPORT int lifxSession_SendTo(
 /**
  */
 LIFX_EXPORT int lifxSession_RecvFrom(
-  lifxSession_t*   lifx,
-  lifxMessage_t*   message,
-  int              timeout);
+  lifxSession_t*    lifx,
+  lifxMessage_t*    message,
+  int               timeout);
+
+LIFX_EXPORT lifxFuture_t* lifxSession_BeginSendRequest(
+  lifxSession_t*    lifx,
+  lifxDeviceId_t    deviceId,
+  void*             request,
+  lifxPacketType_t  packetType);
 
 /**
  *
@@ -201,28 +197,6 @@ LIFX_EXPORT int lifxSession_RecvFrom(
 LIFX_EXPORT int lifxSession_Dispatch(
   lifxSession_t* lifx,
   int timeout);
-
-LIFX_EXPORT int lifxBuffer_Init(lifxBuffer_t* buff, int n);
-LIFX_EXPORT int lifxBuffer_Destroy(lifxBuffer_t* buff);
-LIFX_EXPORT int lifxBuffer_Seek(lifxBuffer_t* buff, int offset, lifxBufferWhence whence);
-LIFX_EXPORT int lifxBuffer_Write(lifxBuffer_t* buff, void const* data, int len);
-LIFX_EXPORT int lifxBuffer_WriteUInt8(lifxBuffer_t* buff, uint8_t n);
-LIFX_EXPORT int lifxBuffer_WriteBool(lifxBuffer_t* buff, bool b);
-LIFX_EXPORT int lifxBuffer_WriteInt16(lifxBuffer_t* buff, int16_t n);
-LIFX_EXPORT int lifxBuffer_WriteUInt16(lifxBuffer_t* buff, uint16_t n);
-LIFX_EXPORT int lifxBuffer_WriteInt32(lifxBuffer_t* buff, int32_t n);
-LIFX_EXPORT int lifxBuffer_WriteUInt32(lifxBuffer_t* buff, uint32_t n);
-LIFX_EXPORT int lifxBuffer_WriteUInt64(lifxBuffer_t* buff, uint64_t n);
-LIFX_EXPORT int lifxBuffer_WriteFloat(lifxBuffer_t* buff, float n);
-LIFX_EXPORT int lifxBuffer_Read(lifxBuffer_t* buff, void* data, int len);
-LIFX_EXPORT int lifxBuffer_ReadUInt8(lifxBuffer_t* buff, uint8_t* n);
-LIFX_EXPORT int lifxBuffer_ReadInt16(lifxBuffer_t* buff, int16_t* n);
-LIFX_EXPORT int lifxBuffer_ReadUInt16(lifxBuffer_t* buff, uint16_t* n);
-LIFX_EXPORT int lifxBuffer_ReadInt32(lifxBuffer_t* buff, int32_t* n);
-LIFX_EXPORT int lifxBuffer_ReadUInt32(lifxBuffer_t* buff, uint32_t* n);
-LIFX_EXPORT int lifxBuffer_ReadUInt64(lifxBuffer_t* buff, uint64_t* n);
-LIFX_EXPORT int lifxBuffer_ReadFloat(lifxBuffer_t* buff, float* f);
-LIFX_EXPORT int lifxBuffer_ReadBool(lifxBuffer_t* buff, bool* b);
 
 LIFX_EXPORT int lifxDeviceId_Compare(lifxDeviceId_t const* a, lifxDeviceId_t const* b);
 LIFX_EXPORT int lifxDeviceId_ToString(lifxDeviceId_t const* deviceId, char* buff, int n);

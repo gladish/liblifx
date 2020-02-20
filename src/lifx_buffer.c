@@ -15,6 +15,7 @@
 // limitations under the License.
 //
 #include "lifx.h"
+#include "lifx_internal.h"
 
 #include <errno.h>
 #include <stdlib.h>
