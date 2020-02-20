@@ -20,8 +20,8 @@
 #include <sys/time.h>
 
 #ifdef __linux__
-#include <unistd.h>
 #include <sys/syscall.h>
+#include <unistd.h>
 #endif
 
 #ifdef __APPLE__

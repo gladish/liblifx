@@ -14,20 +14,20 @@
 // limitations under the License.
 //
 #include "lifx.h"
-#include "lifx_version.h"
 #include "lifx_encoders.h"
 #include "lifx_internal.h"
+#include "lifx_version.h"
 
-#include <errno.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include <arpa/inet.h>
+#include <errno.h>
 #include <netinet/in.h>
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/socket.h>
 #include <sys/time.h>
 #include <unistd.h>
-#include <pthread.h>
 
 static pthread_once_t error_once = PTHREAD_ONCE_INIT;
 static pthread_key_t  error_key;

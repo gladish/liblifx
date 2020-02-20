@@ -89,10 +89,10 @@ lifxBuffer_Seek(lifxBuffer_t* buff, int offset, lifxBufferWhence whence)
 }
 
 int
-lifxBuffer_Write(lifxBuffer_t* buff, void const* data, int len)
+lifxBuffer_Write(lifxBuffer_t* buff, void const* data, int n)
 {
-  memcpy(&buff->Data[buff->Position], data, len);
-  buff->Position += len;
+  memcpy(&buff->Data[buff->Position], data, n);
+  buff->Position += n;
   return 0;
 }
 

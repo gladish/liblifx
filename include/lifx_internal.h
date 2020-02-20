@@ -157,7 +157,7 @@ LIFX_IMPORT void lifxSockaddr_ToString(struct sockaddr_storage* ss, char* buff, 
 LIFX_IMPORT int lifxBuffer_Init(lifxBuffer_t* buff, int n);
 LIFX_IMPORT int lifxBuffer_Destroy(lifxBuffer_t* buff);
 LIFX_IMPORT int lifxBuffer_Seek(lifxBuffer_t* buff, int offset, lifxBufferWhence whence);
-LIFX_IMPORT int lifxBuffer_Write(lifxBuffer_t* buff, void const* data, int len);
+LIFX_IMPORT int lifxBuffer_Write(lifxBuffer_t* buff, void const* data, int n);
 LIFX_IMPORT int lifxBuffer_WriteUInt8(lifxBuffer_t* buff, uint8_t n);
 LIFX_IMPORT int lifxBuffer_WriteBool(lifxBuffer_t* buff, bool b);
 LIFX_IMPORT int lifxBuffer_WriteInt16(lifxBuffer_t* buff, int16_t n);
@@ -166,7 +166,7 @@ LIFX_IMPORT int lifxBuffer_WriteInt32(lifxBuffer_t* buff, int32_t n);
 LIFX_IMPORT int lifxBuffer_WriteUInt32(lifxBuffer_t* buff, uint32_t n);
 LIFX_IMPORT int lifxBuffer_WriteUInt64(lifxBuffer_t* buff, uint64_t n);
 LIFX_IMPORT int lifxBuffer_WriteFloat(lifxBuffer_t* buff, float n);
-LIFX_IMPORT int lifxBuffer_Read(lifxBuffer_t* buff, void* data, int len);
+LIFX_IMPORT int lifxBuffer_Read(lifxBuffer_t* buff, void* data, int n);
 LIFX_IMPORT int lifxBuffer_ReadUInt8(lifxBuffer_t* buff, uint8_t* n);
 LIFX_IMPORT int lifxBuffer_ReadInt16(lifxBuffer_t* buff, int16_t* n);
 LIFX_IMPORT int lifxBuffer_ReadUInt16(lifxBuffer_t* buff, uint16_t* n);

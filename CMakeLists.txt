@@ -17,6 +17,10 @@ set(CMAKE_CXX_FLAGS_DEBUG "-Wall -Wextra -g -O0 -fno-inline") # -Weffc++ ")
 set(CMAKE_CXX_FLAGS_RELEASE "-Werror -Wall -Wextra") # -Weffc++")
 enable_testing()
 
+if (ENABLE_TIDY)
+  set(CMAKE_C_CLANG_TIDY "clang-tidy;-checks=*")
+endif()
+
 ########################################################
 # generates sources using lxcodegen with protocol.yml
 set(LIFX_YAML ${CMAKE_CURRENT_BINARY_DIR}/deps/src/lifx_yaml_file/protocol.yml)
