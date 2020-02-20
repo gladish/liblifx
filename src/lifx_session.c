@@ -641,3 +641,21 @@ lifxFuture_t* lifxSession_BeginSendRequest(
   return future;
 }
 
+int lifxSession_SendRequest(
+  lifxSession_t*    lifx,
+  lifxDeviceId_t    deviceId,
+  void*             request,
+  lifxPacketType_t  packetType,
+  lifxPacket_t*     response,
+  int               millis)
+{
+  int ret;
+  lifxFuture_t* future = lifxSession_BeginSendRequest(lifx, deviceId, request, packetType);
+
+  ret = lifxFuture_Wait(future, millis);
+  if (ret == 0)
+    ret = lifxFuture_Get(future, response, 2000);
+  lifxFuture_Release(future);
+
+  return ret;
+}

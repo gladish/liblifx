@@ -24,6 +24,7 @@
 
 
 // lifx.h -- lifx.c
+// won't need this
 int lifxStringCopy(char* dest, int destLength, uint8_t const* source, int sourceLength)
 {
   int n = (destLength - 1);
@@ -34,44 +35,21 @@ int lifxStringCopy(char* dest, int destLength, uint8_t const* source, int source
   return 0;
 }
 
-// lifx.h -- lifx_session.c
-int lifxSession_SendRequest(
-  lifxSession_t*    lifx,
-  lifxDeviceId_t    deviceId,
-  void*             request,
-  lifxPacketType_t  packetType,
-  lifxPacket_t*     response,
-  int               millis)
+// this is generatable from protocol.yml for all packets that match
+// get. Not sure about set.
+int lifxDevice_GetLabel(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDeviceStateLabel_t* res)
 {
   int ret;
-  lifxFuture_t* future = lifxSession_BeginSendRequest(lifx, deviceId, request, packetType);
-  ret = lifxFuture_Wait(future, millis);
-  if (ret == 0)
-  {
-    ret = lifxFuture_Get(future, response, 2000);
-  }
-  lifxFuture_Release(future);
-  return ret;
-}
-
-// application layer foo. trying to make this as short as possible
-// is it possible that the protocol.yml is consistent enough where we can 
-// match up all the reqeust/response messages?
-// maybe keep a table in the lxcodegen.py? "DeviceGetLabel" => "DeviceStateLabel"
-// or possible just return an out param as lifxDeviceStateLabel_t
-int lifxDevice_GetLabel(lifxSession_t* lifx, lifxDeviceId_t deviceId, char* buff, int n)
-{
-  int ret;
-
+  int timeoutMillis;
   lifxPacket_t response;
-  lifxDeviceGetLabel_t getLabel;
+  lifxDeviceGetLabel_t request;
 
-  ret = lifxSession_SendRequest(lifx, deviceId, &getLabel, kLifxPacketTypeDeviceGetLabel,
-    &response, 1000);
-  if (ret == 0)
-  {
-    lifxStringCopy(buff, n, response.DeviceStateLabel.Label, sizeof(response.DeviceStateLabel.Label));
-  }
+  timeoutMillis = 2000; // TODO: get this from lifxSession_t as configuration param
+
+  ret = lifxSession_SendRequest(lifx, deviceId, &request, kLifxPacketTypeDeviceGetLabel, &response, timeoutMillis);
+  if ((ret == 0) && (res != NULL))
+    *res = response.DeviceStateLabel;
+
   return ret;
 }
 
@@ -79,25 +57,26 @@ int lifxDevice_GetLabel(lifxSession_t* lifx, lifxDeviceId_t deviceId, char* buff
 int main(int argc, char* argv[])
 {
   int ret;
-  char buff[64];
 
   lifxSession_t* lifx;
   lifxSessionConfig_t conf;
   lifxDeviceId_t deviceId;
+  lifxDeviceStateLabel_t label;
 
   lifxSessionConfig_Init(&conf);
   conf.UseBackgroundDispatchThread = true;
   conf.LogLevel = kLifxLogLevelInfo;
-
 
   lifx = lifxSession_Open(&conf);
   lifxSession_StartDiscovery(lifx);
   sleep(2);
 
   lifxDeviceId_FromString(&deviceId, "lifx_id://mac/d0:73:d5:40:4d:61");
-  ret = lifxDevice_GetLabel(lifx, deviceId, buff, sizeof(buff));
+
+  // XXX: fails right now if we haven't first discovered this device
+  ret = lifxDevice_GetLabel(lifx, deviceId, &label);
   if (ret == 0)
-    printf("label:%s\n", buff);
+    printf("label:%s\n", label.Label);
   lifxSession_Close(lifx);
 
   return 0;

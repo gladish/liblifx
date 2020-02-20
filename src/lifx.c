@@ -180,7 +180,6 @@ int lifxFuture_Get(lifxFuture_t* f, lifxPacket_t* packet, int millis)
 
 int lifxFuture_SetComplete(lifxFuture_t* f, int error, lifxPacket_t* p)
 {
-  printf("set completed\n");
   pthread_mutex_lock(&f->Mutex);
   if (p)
     f->Result = *p;

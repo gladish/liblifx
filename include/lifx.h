@@ -24,7 +24,6 @@
 extern "C" {
 #endif
 
-#define LIFX_IMPORT __attribute__ ((visibility ("internal")))
 #define LIFX_EXPORT __attribute__ ((visibility ("default")))
 
 #define kLifxDefaultBroadcastPort (56700)
@@ -47,10 +46,10 @@ typedef struct
 static lifxDeviceId_t const kLifxDeviceAll = kLifxDeviceAllInitializer;
 static lifxDeviceId_t const kLifxDeviceInvalid = kLifxDeviceInvalidInitializer;
 
-int lifxFuture_Retain(lifxFuture_t* f);
-int lifxFuture_Release(lifxFuture_t* f);
-int lifxFuture_Wait(lifxFuture_t* f, int millis);
-int lifxFuture_Get(lifxFuture_t* f, lifxPacket_t* packet, int millis);
+LIFX_EXPORT int lifxFuture_Retain(lifxFuture_t* f);
+LIFX_EXPORT int lifxFuture_Release(lifxFuture_t* f);
+LIFX_EXPORT int lifxFuture_Wait(lifxFuture_t* f, int millis);
+LIFX_EXPORT int lifxFuture_Get(lifxFuture_t* f, lifxPacket_t* packet, int millis);
 
 #pragma pack(push, 1)
 typedef struct
@@ -176,7 +175,7 @@ LIFX_EXPORT int lifxSession_SendTo(
   lifxSession_t*     lifx,
   lifxDeviceId_t     device,
   void*              packet,
-  lifxPacketType_t   packet_type);
+  lifxPacketType_t   packetType);
 
 /**
  */
@@ -190,6 +189,14 @@ LIFX_EXPORT lifxFuture_t* lifxSession_BeginSendRequest(
   lifxDeviceId_t    deviceId,
   void*             request,
   lifxPacketType_t  packetType);
+
+LIFX_EXPORT int lifxSession_SendRequest(
+  lifxSession_t*    lifx,
+  lifxDeviceId_t    deviceId,
+  void*             request,
+  lifxPacketType_t  packetType,
+  lifxPacket_t*     response, 
+  int               millis);
 
 /**
  *
