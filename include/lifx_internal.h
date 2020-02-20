@@ -112,15 +112,15 @@ LIFX_IMPORT char const* lifxError_ToString(int errnum);
  *
  */
 LIFX_IMPORT int lifxSession_RegisterRequest(
-  lifxSession_t*  lifx,
-  lifxFuture_t*   future);
+  lifxSession_t*                  lifx,
+  lifxFuture_t*                   future);
 
 /**
  *
  */
 LIFX_IMPORT lifxDevice_t* lifxSession_FindDevice(
-  lifxSession_t*  lifx,
-  lifxDeviceId_t  deviceId);
+  lifxSession_t*                  lifx,
+  lifxDeviceId_t                  deviceId);
 
 /**
  *
@@ -134,25 +134,51 @@ LIFX_IMPORT lifxDevice_t* lifxSession_CreateDevice(
  *
  */
 LIFX_IMPORT int lifxSession_RecvFromInternal(
-  lifxSession_t*              lifx,
-  lifxMessage_t*              message,
-  struct sockaddr_storage*    source,
-  int                         timeout);
+  lifxSession_t*                  lifx,
+  lifxMessage_t*                  message,
+  struct sockaddr_storage*        source,
+  int                             timeout);
 
 /**
  *
  */
 LIFX_IMPORT int lifxSession_SendToInternal(
-  lifxSession_t*              lifx,
-  lifxDeviceId_t              deviceId,
-  void*                       packet,
-  lifxPacketType_t            packetType,
-  uint8_t                     seqno);
+  lifxSession_t*                  lifx,
+  lifxDeviceId_t                  deviceId,
+  void*                           packet,
+  lifxPacketType_t                packetType,
+  uint8_t                         seqno);
 
-LIFX_IMPORT lifxFuture_t* lifxFuture_Create(lifxSequence_t seqno);
-LIFX_IMPORT int lifxFuture_SetComplete(lifxFuture_t* f, int error, lifxPacket_t* p);
-LIFX_IMPORT void lifxDumpBuffer(lifxSession_t* lifx, uint8_t* p, int n);
-LIFX_IMPORT void lifxSockaddr_ToString(struct sockaddr_storage* ss, char* buff, int n, uint16_t* port);
+/**
+ *
+ */
+LIFX_IMPORT lifxFuture_t* lifxFuture_Create(
+  lifxSequence_t                  sequenceNumber);
+
+/**
+ *
+ */
+LIFX_IMPORT int lifxFuture_SetComplete(
+  lifxFuture_t*                   future,
+  int                             status,
+  lifxPacket_t*                   packet);
+
+/**
+ *
+ */
+LIFX_IMPORT void lifxDumpBuffer(
+  lifxSession_t*                  lifx,
+  uint8_t*                        p,
+  int                             n);
+
+/**
+ *
+ */
+LIFX_IMPORT void lifxSockaddr_ToString(
+  struct sockaddr_storage*        socketAddress,
+  char*                           buff,
+  int                             n,
+  uint16_t*                       port);
 
 LIFX_IMPORT int lifxBuffer_Init(lifxBuffer_t* buff, int n);
 LIFX_IMPORT int lifxBuffer_Destroy(lifxBuffer_t* buff);
@@ -180,9 +206,9 @@ LIFX_IMPORT int lifxBuffer_ReadBool(lifxBuffer_t* buff, bool* b);
  *
  */
 LIFX_IMPORT void lxLog_Printf(
-  lifxSession_t*  lifx,
-  lifxLogLevel_t  level,
-  const char*     format, ...) LIFX_PRINTF_FORMAT(3, 4);
+  lifxSession_t*                lifx,
+  lifxLogLevel_t                level,
+  const char*                   format, ...) LIFX_PRINTF_FORMAT(3, 4);
 
 #define lxLog_Print(SESS, LEVEL, FORMAT, ...) do { lxLog_Printf(SESS, LEVEL, FORMAT, ## __VA_ARGS__); } while (0)
 #define lxLog_Debug(SESS, FORMAT, ...) lxLog_Print(SESS, kLifxLogLevelDebug, FORMAT, ## __VA_ARGS__)

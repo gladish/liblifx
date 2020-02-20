@@ -526,12 +526,17 @@ int lifxSession_RecvFromInternal(
   return 0;
 }
 
-int lifxDeviceId_Compare(lifxDeviceId_t const* dev1, lifxDeviceId_t const* dev2)
+int lifxDeviceId_Compare(
+  lifxDeviceId_t const* deviceId1,
+  lifxDeviceId_t const* deviceId2)
 {
-  return memcmp(dev1->Octets, dev2->Octets, 6);
+  return memcmp(deviceId1->Octets, deviceId2->Octets, 6);
 }
 
-int lifxDeviceId_ToString(lifxDeviceId_t const* deviceId, char* buff, int n)
+int lifxDeviceId_ToString(
+  lifxDeviceId_t const* deviceId,
+  char*                 buff,
+  int                   n)
 {
   if (!deviceId)
     return EINVAL;
@@ -551,7 +556,9 @@ int lifxDeviceId_ToString(lifxDeviceId_t const* deviceId, char* buff, int n)
   return 0;
 }
 
-int lifxDeviceId_FromString(lifxDeviceId_t* deviceId, char const* buff)
+int lifxDeviceId_FromString(
+  lifxDeviceId_t*       deviceId,
+  char const*           buff)
 {
   if (!deviceId)
     return EINVAL;

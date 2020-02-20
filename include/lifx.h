@@ -46,11 +46,6 @@ typedef struct
 static lifxDeviceId_t const kLifxDeviceAll = kLifxDeviceAllInitializer;
 static lifxDeviceId_t const kLifxDeviceInvalid = kLifxDeviceInvalidInitializer;
 
-LIFX_EXPORT int lifxFuture_Retain(lifxFuture_t* f);
-LIFX_EXPORT int lifxFuture_Release(lifxFuture_t* f);
-LIFX_EXPORT int lifxFuture_Wait(lifxFuture_t* f, int millis);
-LIFX_EXPORT int lifxFuture_Get(lifxFuture_t* f, lifxPacket_t* packet, int millis);
-
 #pragma pack(push, 1)
 typedef struct
 {
@@ -92,11 +87,6 @@ typedef enum
 /**
  *
  */
-LIFX_EXPORT char const* lifx_Version();
-
-/**
- *
- */
 typedef struct
 {
   lifxProtocolHeader_t  Header;
@@ -134,7 +124,6 @@ typedef struct
   bool                          ReportDuplicateDevices;
 } lifxSessionConfig_t;
 
-LIFX_EXPORT int lifxSessionConfig_Init(lifxSessionConfig_t* conf);
 
 /**
  *
@@ -159,58 +148,125 @@ typedef enum
 /**
  *
  */
-LIFX_EXPORT lifxSession_t* lifxSession_Open(lifxSessionConfig_t const* conf);
+LIFX_EXPORT char const* lifx_Version();
 
 /**
  *
  */
-LIFX_EXPORT int lifxSession_Close(lifxSession_t* lifx);
-LIFX_EXPORT int lifxSession_StartDiscovery(lifxSession_t* lifx);
-LIFX_EXPORT int lifxSession_StopDiscovery(lifxSession_t* lifx);
+LIFX_EXPORT int lifxSessionConfig_Init(
+  lifxSessionConfig_t*  conf);
+
+/**
+ *
+ */
+LIFX_EXPORT lifxSession_t* lifxSession_Open(
+  lifxSessionConfig_t const*  conf);
+
+/**
+ *
+ */
+LIFX_EXPORT int lifxSession_Close(
+  lifxSession_t*        lifx);
+
+/**
+ *
+ */
+LIFX_EXPORT int lifxSession_StartDiscovery(
+  lifxSession_t*        lifx);
+
+/**
+ *
+ */
+LIFX_EXPORT int lifxSession_StopDiscovery(
+  lifxSession_t*        lifx);
 
 /**
  *
  */
 LIFX_EXPORT int lifxSession_SendTo(
-  lifxSession_t*     lifx,
-  lifxDeviceId_t     device,
-  void*              packet,
-  lifxPacketType_t   packetType);
+  lifxSession_t*        lifx,
+  lifxDeviceId_t        device,
+  void*                 packet,
+  lifxPacketType_t      packetType);
 
 /**
  */
 LIFX_EXPORT int lifxSession_RecvFrom(
-  lifxSession_t*    lifx,
-  lifxMessage_t*    message,
-  int               timeout);
+  lifxSession_t*        lifx,
+  lifxMessage_t*        message,
+  int                   timeout);
 
 LIFX_EXPORT lifxFuture_t* lifxSession_BeginSendRequest(
-  lifxSession_t*    lifx,
-  lifxDeviceId_t    deviceId,
-  void*             request,
-  lifxPacketType_t  packetType);
+  lifxSession_t*        lifx,
+  lifxDeviceId_t        deviceId,
+  void*                 request,
+  lifxPacketType_t      packetType);
 
 LIFX_EXPORT int lifxSession_SendRequest(
-  lifxSession_t*    lifx,
-  lifxDeviceId_t    deviceId,
-  void*             request,
-  lifxPacketType_t  packetType,
-  lifxPacket_t*     response, 
-  int               millis);
+  lifxSession_t*        lifx,
+  lifxDeviceId_t        deviceId,
+  void*                 request,
+  lifxPacketType_t      packetType,
+  lifxPacket_t*         response,
+  int                   millis);
 
 /**
  *
  */
 LIFX_EXPORT int lifxSession_Dispatch(
-  lifxSession_t* lifx,
-  int timeout);
+  lifxSession_t*        lifx,
+  int                   timeout);
 
-LIFX_EXPORT int lifxDeviceId_Compare(lifxDeviceId_t const* a, lifxDeviceId_t const* b);
-LIFX_EXPORT int lifxDeviceId_ToString(lifxDeviceId_t const* deviceId, char* buff, int n);
-LIFX_EXPORT int lifxDeviceId_FromString(lifxDeviceId_t* deviceId, char const* buff);
+/**
+ *
+ */
+LIFX_EXPORT int lifxDeviceId_Compare(
+  lifxDeviceId_t const* deviceId1,
+  lifxDeviceId_t const* deviceId2);
+
+/**
+ *
+ */
+LIFX_EXPORT int lifxDeviceId_ToString(
+  lifxDeviceId_t const* deviceId,
+  char*                 buff,
+  int                   n);
+
+/**
+ *
+ */
+LIFX_EXPORT int lifxDeviceId_FromString(
+  lifxDeviceId_t*       deviceId,
+  char const*           buff);
+
+/**
+ *
+ */
+LIFX_EXPORT int lifxFuture_Retain(
+  lifxFuture_t*         future);
+
+/**
+ *
+ */
+LIFX_EXPORT int lifxFuture_Release(
+  lifxFuture_t*         future);
+
+/**
+ *
+ */
+LIFX_EXPORT int lifxFuture_Wait(
+  lifxFuture_t*         future,
+  int                   millis);
+
+/**
+ *
+ */
+LIFX_EXPORT int lifxFuture_Get(
+  lifxFuture_t*         future,
+  lifxPacket_t*         packet,
+  int                   millis);
 
 #ifdef __cplusplus
 }
 #endif
-
 #endif
