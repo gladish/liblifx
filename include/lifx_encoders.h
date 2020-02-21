@@ -1,8 +1,8 @@
 //
-// DO NOT EDIT - AUTO-GENERATE:2020-02-21 13:45:06.407483
+// DO NOT EDIT - AUTO-GENERATE:2020-02-21 15:04:04.599403
 //
-#ifndef __LIFX_ENCODERS_H__
-#define __LIFX_ENCODERS_H__
+#ifndef LIFX_ENCODERS_H
+#define LIFX_ENCODERS_H
 
 #ifdef __cplusplus
 extern "C" {

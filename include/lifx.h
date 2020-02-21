@@ -13,8 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-#ifndef __LIFX_H__
-#define __LIFX_H__
+#ifndef LIFX_H
+#define LIFX_H
 
 #include <lifx_common.h>
 #include <lifx_enums.h>
@@ -167,7 +167,7 @@ LIFX_EXPORT lifxStatus_t lifxSession_StopDiscovery(
  */
 LIFX_EXPORT lifxStatus_t lifxSession_SendTo(
   lifxSession_t*        lifx,
-  lifxDeviceId_t        device,
+  lifxDeviceId_t        deviceId,
   void*                 packet,
   lifxPacketType_t      packetType);
 
@@ -184,7 +184,7 @@ LIFX_EXPORT lifxStatus_t lifxSession_RecvFrom(
 LIFX_EXPORT lifxFuture_t* lifxSession_BeginSendRequest(
   lifxSession_t*        lifx,
   lifxDeviceId_t        deviceId,
-  void*                 request,
+  void*                 packet,
   lifxPacketType_t      packetType);
 
 /**

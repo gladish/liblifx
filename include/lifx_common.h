@@ -13,8 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-#ifndef __LIFX_DEFINES_H__
-#define __LIFX_DEFINES_H__
+#ifndef LIFX_COMMON_H
+#define LIFX_COMMON_H
 
 #include <stdint.h>
 

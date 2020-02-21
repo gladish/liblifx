@@ -1,8 +1,8 @@
 //
-// DO NOT EDIT - AUTO-GENERATE:2020-02-21 13:45:06.405158
+// DO NOT EDIT - AUTO-GENERATE:2020-02-21 15:04:04.597814
 //
-#ifndef __LIFX_ENUMS_H__
-#define __LIFX_ENUMS_H__
+#ifndef LIFX_ENUMS_H
+#define LIFX_ENUMS_H
 
 #ifdef __cplusplus
 extern "C" {

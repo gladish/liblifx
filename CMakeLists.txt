@@ -18,7 +18,10 @@ set(CMAKE_CXX_FLAGS_RELEASE "-Werror -Wall -Wextra") # -Weffc++")
 enable_testing()
 
 if (ENABLE_TIDY)
-  set(CMAKE_C_CLANG_TIDY "clang-tidy;-checks=*")
+  set(CMAKE_C_CLANG_TIDY
+  clang-tidy;
+  -checks=*,-google-readability-braces-around-statements,-hicpp-braces-around-statements,-readability-braces-around-statements;
+  -header-filter=.;)
 endif()
 
 ########################################################

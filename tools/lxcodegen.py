@@ -71,7 +71,7 @@ class CodeGenerator:
   def gen_enums(self, enums):
     # self.out = open("lifx_enums.h", "w")
     self.open_file("lifx_enums.h")
-    self.emit_guard_prefix("__LIFX_ENUMS_H__")
+    self.emit_guard_prefix("LIFX_ENUMS_H")
     self.write("#include <stdint.h>\n")
     self.write("\n")
     for key, value in enums.items():
@@ -156,9 +156,9 @@ class CodeGenerator:
   def gen_fields(self, doc, fields):
     #self.out = open("lifx_fields.h", "w")
     self.open_file("lifx_fields.h")
-    self.emit_guard_prefix("__LIFX_FIELDS_H__")
-    self.write("#include <stdbool.h>\n")
+    self.emit_guard_prefix("LIFX_FIELDS_H")
     self.write("#include <lifx_enums.h>\n\n")
+    self.write("#include <stdbool.h>\n")
 
     # XXX: hack for now. The fields reference two of the packets, so 
     # they need to be defined in this file
@@ -317,7 +317,7 @@ class CodeGenerator:
   def gen_gets(self, pkts, fields):
     requests = {}
     self.open_file("lifx_requests.h")
-    self.emit_guard_prefix("__LIFX_REQUESTS_H__")
+    self.emit_guard_prefix("LIFX_REQUESTS_H")
     self.write("#include <lifx_common.h>\n")
     self.write("#include <lifx_packets.h>\n")
     self.write("\n")
@@ -384,7 +384,7 @@ class CodeGenerator:
 
   def gen_encoders(self, pkts, fields):
     self.open_file("lifx_encoders.h")
-    self.emit_guard_prefix("__LIFX_ENCODERS_H__")
+    self.emit_guard_prefix("LIFX_ENCODERS_H")
     self.write("#include <lifx.h>\n")
     self.write("#include <lifx_fields.h>\n")
     self.write("#include <lifx_packets.h>\n")
@@ -491,10 +491,10 @@ class CodeGenerator:
   def gen_pkts(self, pkts):
     #self.out = open("lifx_packets.h", "w")
     self.open_file("lifx_packets.h")
-    self.emit_guard_prefix("__LIFX_PACKETS_H__")
-    self.write("#include <stdbool.h>\n")
+    self.emit_guard_prefix("LIFX_PACKETS_H")
     self.write("#include <lifx_enums.h>\n")
     self.write("#include <lifx_fields.h>\n")
+    self.write("#include <stdbool.h>\n")
     self.gen_pkt_type_enum(pkts)
     for key, val in pkts["device"].items():
       if key == "DeviceStateVersion":

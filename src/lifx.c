@@ -75,12 +75,17 @@ void lifxDumpBuffer(lifxSession_t* lifx, uint8_t* p, int n)
   printf("\n");
 }
 
-void lifxSockaddr_ToString(struct sockaddr_storage* ss, char* buff, int n, uint16_t* port)
+void lifxSockaddr_ToString(
+  struct sockaddr_storage const*  socket_address,
+  char*                           buff,
+  int                             n,
+  uint16_t*                       port)
 {
-  if (ss->ss_family == AF_INET)
+  // TODO(jacobgladish@yahoo.com): ipv6 support
+  if (socket_address->ss_family == AF_INET)
   {
-    struct sockaddr_in* v4 = (struct sockaddr_in *) ss;
-    inet_ntop(ss->ss_family, &v4->sin_addr, buff, n);
+    struct sockaddr_in* v4 = (struct sockaddr_in *) socket_address;
+    inet_ntop(socket_address->ss_family, &v4->sin_addr, buff, n);
     if (port)
       *port = ntohs(v4->sin_port);
   }
@@ -91,7 +96,7 @@ char const* lifx_Version()
   return "v" LIFX_PROJECT_VER;
 }
 
-char const* lifxError_ToString(lifxSystemError_t sys_error)
+char const* lifxError_ToString(lifxSystemError_t system_error)
 {
   int n;
   char const* buff;
@@ -103,20 +108,20 @@ char const* lifxError_ToString(lifxSystemError_t sys_error)
   if (specific)
   {
     #ifdef __linux__
-    n = strerror_r(sys_error, specific->LastErrorMessage, kLifxErrorMessageMaxLength - 1);
+    n = strerror_r(system_error, specific->LastErrorMessage, kLifxErrorMessageMaxLength - 1);
     if (!n)
       buff = specific->LastErrorMessage;
     #else
-    buff = strerror(sys_error);
+    buff = strerror(system_error);
     #endif
-    specific->LastError = sys_error;
+    specific->LastError = system_error;
   }
 
   return buff;
 }
 
 
-lifxFuture_t* lifxFuture_Create(lifxSequence_t seqno)
+lifxFuture_t* lifxFuture_Create(lifxSequence_t sequence_number)
 {
   lifxFuture_t* f = malloc(sizeof(struct lifxFuture));
   lifxMutex_Init(&f->Mutex);
@@ -125,60 +130,63 @@ lifxFuture_t* lifxFuture_Create(lifxSequence_t seqno)
   f->Status = kLifxStatusOk;
   f->ReferenceCount = 1;
   f->Complete = false;
-  f->SequenceNumber = seqno;
+  f->SequenceNumber = sequence_number;
   return f;
 }
 
-lifxStatus_t lifxFuture_Retain(struct lifxFuture* f)
+lifxStatus_t lifxFuture_Retain(struct lifxFuture* future)
 {
-  lifxInterlockedIncrement(&f->ReferenceCount);
+  lifxInterlockedIncrement(&future->ReferenceCount);
   return kLifxStatusOk;
 }
 
-lifxStatus_t lifxFuture_Release(struct lifxFuture* f)
+lifxStatus_t lifxFuture_Release(struct lifxFuture* future)
 {
-  int n = lifxInterlockedDecrement(&f->ReferenceCount);
+  int n = lifxInterlockedDecrement(&future->ReferenceCount);
   if (n == 1)
   {
-    // TODO: signal any waiters
-    lifxMutex_Destroy(&f->Mutex);
-    lifxCond_Destroy(&f->Cond);
-    free(f);
+    // TODO(jacobgladish@yahoo.com): signal any waiters
+    lifxMutex_Destroy(&future->Mutex);
+    lifxCond_Destroy(&future->Cond);
+    free(future);
   }
   return kLifxStatusOk;
 }
 
-lifxStatus_t lifxFuture_Wait(struct lifxFuture* f, int millis)
+lifxStatus_t lifxFuture_Wait(struct lifxFuture* future, int millis)
 {
   lifxStatus_t status = kLifxStatusOk;
-  lifxMutex_Lock(&f->Mutex);
-  while (!f->Complete)
+  lifxMutex_Lock(&future->Mutex);
+  while (!future->Complete)
   {
-    status = lifxCond_TimedWait(&f->Cond, &f->Mutex, millis);
-    f->Complete = true;
-    f->Status = status;
+    status = lifxCond_TimedWait(&future->Cond, &future->Mutex, millis);
+    future->Complete = true;
+    future->Status = status;
   }
-  lifxMutex_Unlock(&f->Mutex);
-  return f->Status;
+  lifxMutex_Unlock(&future->Mutex);
+  return future->Status;
 }
 
-lifxStatus_t lifxFuture_Get(lifxFuture_t* f, lifxPacket_t* packet, int millis)
+lifxStatus_t lifxFuture_Get(lifxFuture_t* future, lifxPacket_t* packet, int millis)
 {
-  lifxStatus_t status = lifxFuture_Wait(f, millis);
+  lifxStatus_t status = lifxFuture_Wait(future, millis);
   if (status == kLifxStatusOk)
-    *packet = f->Result;
+    *packet = future->Result;
   return status;
 }
 
-lifxStatus_t lifxFuture_SetComplete(lifxFuture_t* f, lifxStatus_t status, lifxPacket_t* p)
+lifxStatus_t lifxFuture_SetComplete(
+  lifxFuture_t*       future, 
+  lifxStatus_t        status, 
+  lifxPacket_t*       packet)
 {
-  lifxMutex_Lock(&f->Mutex);
-  if (p)
-    f->Result = *p;
-  f->Status = status;
-  f->Complete = true;
-  lifxMutex_Unlock(&f->Mutex);
-  lifxCond_NotifyAll(&f->Cond);
+  lifxMutex_Lock(&future->Mutex);
+  if (packet)
+    future->Result = *packet;
+  future->Status = status;
+  future->Complete = true;
+  lifxMutex_Unlock(&future->Mutex);
+  lifxCond_NotifyAll(&future->Cond);
   return kLifxStatusOk;
 }
 
@@ -218,16 +226,18 @@ void lifxCond_NotifyAll(lifxCond_t* cond)
   pthread_cond_broadcast(cond);
 }
 
-lifxStatus_t lifxCond_TimedWait(lifxCond_t* cond, lifxMutex_t* mutex, int millis)
+lifxStatus_t lifxCond_TimedWait(
+  lifxCond_t*             cond,
+  lifxMutex_t*            mutex,
+  int                     timeout_millis)
 {
   int ret;
   struct timespec timeout;
   lifxStatus_t status;
 
-  // TODO: proper timeout handling
+  // TODO(jacobgladish@yahoo.com): proper timeout handling
   clock_gettime(CLOCK_REALTIME, &timeout);
-  timeout.tv_sec += (millis / 1000);
-  status = kLifxStatusOk;
+  timeout.tv_sec += (timeout_millis / 1000);
 
   ret = pthread_cond_timedwait(cond, mutex, &timeout);
   if (ret == 0)
@@ -244,7 +254,7 @@ lifxStatus_t lifxCond_TimedWait(lifxCond_t* cond, lifxMutex_t* mutex, int millis
   return status;
 }
 
-void lifxThread_Create(lifxThread_t* thread, lifxThreadFunc_t func, void* argp)
+void lifxThread_Create(lifxThread_t* thread, lifxThreadFunc_t startRoutine, void* argp)
 {
-  pthread_create(thread, NULL, func, argp);
+  pthread_create(thread, NULL, startRoutine, argp);
 }

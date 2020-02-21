@@ -1,8 +1,8 @@
 //
-// DO NOT EDIT - AUTO-GENERATE:2020-02-21 13:45:06.412240
+// DO NOT EDIT - AUTO-GENERATE:2020-02-21 15:04:04.603124
 //
-#ifndef __LIFX_REQUESTS_H__
-#define __LIFX_REQUESTS_H__
+#ifndef LIFX_REQUESTS_H
+#define LIFX_REQUESTS_H
 
 #ifdef __cplusplus
 extern "C" {

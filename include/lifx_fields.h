@@ -1,16 +1,16 @@
 //
-// DO NOT EDIT - AUTO-GENERATE:2020-02-21 13:45:06.405646
+// DO NOT EDIT - AUTO-GENERATE:2020-02-21 15:04:04.598018
 //
-#ifndef __LIFX_FIELDS_H__
-#define __LIFX_FIELDS_H__
+#ifndef LIFX_FIELDS_H
+#define LIFX_FIELDS_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <stdbool.h>
 #include <lifx_enums.h>
 
+#include <stdbool.h>
 // XXX: Hack These are actually packets, but are
 //      referenced in the fields structures
 // {'pkt_type': 33, 'size_bytes': 12}

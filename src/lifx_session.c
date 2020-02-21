@@ -70,7 +70,7 @@ lifxDevice_t* lifxSession_FindDevice(lifxSession_t* lifx, lifxDeviceId_t deviceI
 lifxDevice_t* lifxSession_CreateDevice(
   lifxSession_t*                  lifx,
   lifxMessage_t const*            message,
-  struct sockaddr_storage* const  source)
+  struct sockaddr_storage const*  source_address)
 {
   int i;
   lifxDevice_t* new_device;
@@ -83,7 +83,7 @@ lifxDevice_t* lifxSession_CreateDevice(
     {
       new_device = malloc(sizeof(lifxDevice_t));
       memcpy(new_device->DeviceId.Octets, message->Header.Target, 6);
-      memcpy(&new_device->Endpoint, source, sizeof(struct sockaddr_storage));
+      memcpy(&new_device->Endpoint, source_address, sizeof(struct sockaddr_storage));
       lifx->DeviceDatabase[i] = new_device;
 
       // XXX: always assumes ipv4
@@ -95,7 +95,7 @@ lifxDevice_t* lifxSession_CreateDevice(
       {
         uint16_t port;
         char buff[256];
-        lifxSockaddr_ToString(source, buff, sizeof(buff), &port);
+        lifxSockaddr_ToString(source_address, buff, sizeof(buff), &port);
         lxLog_Info(lifx, "adding new device %s:%d [%02x:%02x:%02x:%02x:%02x:%02x] to database",
           buff,
           port,
@@ -137,7 +137,7 @@ lifxSession_t* lifxSession_Open(lifxSessionConfig_t const* conf)
   }
   else
   {
-    // TODO: set default config
+    // TODO(jacob_gladish@yahoo.com): set default config
   }
 
   memset(lifx->LastErrorMessage, 0, kLifxErrorMessageMax);
@@ -214,9 +214,8 @@ lifxStatus_t lifxSession_Close(lifxSession_t* lifx)
 
   lifxBuffer_Destroy(&lifx->ReadBuffer);
   lifxBuffer_Destroy(&lifx->WriteBuffer);
-  free(lifx);
 
-  // TODO: stop background dispatcher thread
+  // TODO(jacobgladish@yahoo.com): stop background dispatcher thread
   // create a pipe()
   // dispatcher selects() on socket and pipe
   // shutdown write on pipe
@@ -228,6 +227,8 @@ lifxStatus_t lifxSession_Close(lifxSession_t* lifx)
     if (lifx->DeviceDatabase[i] != NULL)
       free(lifx->DeviceDatabase[i]);
   }
+
+  free(lifx);
 
   return kLifxStatusOk;
 }
@@ -267,14 +268,14 @@ lifxStatus_t lifxSession_Dispatch(
   struct timeval          elapsed;
   lifxMessage_t           message;
   lifxStatus_t            status;
-  struct sockaddr_storage source_addr;
+  struct sockaddr_storage source_address;
   
   done = false;
   timerclear(&begin);
   timerclear(&last_discovery_sent);
   timerclear(&elapsed);
   memset(&message, 0, sizeof(lifxMessage_t));
-  memset(&source_addr, 0, sizeof(struct sockaddr_storage));
+  memset(&source_address, 0, sizeof(struct sockaddr_storage));
   status = kLifxStatusOk;
   lifxSession_SetLastError(lifx, kLifxStatusOk, NULL);
 
@@ -297,7 +298,7 @@ lifxStatus_t lifxSession_Dispatch(
     }
 
     memset(&message, 0, sizeof(lifxMessage_t));
-    status = lifxSession_RecvFromInternal(lifx, &message, &source_addr, 1000);
+    status = lifxSession_RecvFromInternal(lifx, &message, &source_address, 1000);
     if (status != kLifxStatusOk)
     {
       lxLog_Info(lifx, "lifxSession_RecvFromInternal:%d", status);
@@ -322,7 +323,7 @@ lifxStatus_t lifxSession_Dispatch(
         lifxDevice_t* device;
         if ((device = lifxSession_FindDevice(lifx, deviceId)) == NULL)
         {
-          device = lifxSession_CreateDevice(lifx, &message, &source_addr);
+          lifxSession_CreateDevice(lifx, &message, &source_address);
           if (lifx->Config.DeviceDiscovered)
           {
             memcpy(&deviceId.Octets, &message.Header.Target, 6);
@@ -382,7 +383,7 @@ lifxStatus_t lifxSession_SendToInternal(
   int n;
 
   memset(&header, 0, kLifxSizeofHeader);
-  // TODO: we could utilize the lifxBuffer for this. currently the lifxBuffer_Write
+  // TODO(jacobgladish@yahoo.com): we could utilize the lifxBuffer for this. currently the lifxBuffer_Write
   // functions return zero on ok. they could return the bytes written which 
   // would then also be returned from the lifxEncoder_EncodePacket(). this would
   // allow us to avoid switch'ing on the packet_type twice.
@@ -464,8 +465,8 @@ lifxStatus_t lifxSession_RecvFrom(
   lifxMessage_t*  message,
   int             timeout)
 {
-  struct sockaddr_storage source_addr;
-  return lifxSession_RecvFromInternal(lifx, message, &source_addr, timeout);
+  struct sockaddr_storage source_address;
+  return lifxSession_RecvFromInternal(lifx, message, &source_address, timeout);
 }
 
 lifxStatus_t lifxSession_RecvFromInternal(
@@ -479,7 +480,6 @@ lifxStatus_t lifxSession_RecvFromInternal(
   struct timeval  wait_time;
   lifxStatus_t    status;
 
-  n = 0;
   wait_time.tv_sec = timeout / 1000;
   wait_time.tv_usec = (timeout % 1000) * 1000;
   memset(message, 0, sizeof(lifxMessage_t));

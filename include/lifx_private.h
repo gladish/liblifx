@@ -13,14 +13,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-#ifndef __LIFX_INTERNAL_H__
-#define __LIFX_INTERNAL_H__
+#ifndef LIFX_PRIVATE_H
+#define LIFX_PRIVATE_H
 
 #include "lifx.h"
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <pthread.h>
+
 #include <errno.h>
+#include <netinet/in.h>
+#include <pthread.h>
+#include <sys/socket.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -123,7 +124,7 @@ LIFX_IMPORT void lifxCond_NotifyAll(
 LIFX_IMPORT lifxStatus_t lifxCond_TimedWait(
   lifxCond_t*             cond,
   lifxMutex_t*            mutex,
-  int                     timeoutMillis);
+  int                     timeout_millis);
 
 /**
  *
@@ -176,7 +177,8 @@ LIFX_IMPORT int lifxSessionConfig_Copy(
 /**
  *
  */
-LIFX_IMPORT char const* lifxError_ToString(lifxSystemError_t sys_err);
+LIFX_IMPORT char const* lifxError_ToString(
+  lifxSystemError_t               system_error);
 
 /**
  *
@@ -206,7 +208,7 @@ LIFX_IMPORT lifxDevice_t* lifxSession_FindDevice(
 LIFX_IMPORT lifxDevice_t* lifxSession_CreateDevice(
   lifxSession_t*                  lifx,
   lifxMessage_t const*            message,
-  struct sockaddr_storage* const  source);
+  struct sockaddr_storage const*  source_address);
 
 /**
  *
@@ -231,7 +233,7 @@ LIFX_IMPORT lifxStatus_t lifxSession_SendToInternal(
  *
  */
 LIFX_IMPORT lifxFuture_t* lifxFuture_Create(
-  lifxSequence_t                  sequenceNumber);
+  lifxSequence_t                  sequence_number);
 
 /**
  *
@@ -253,7 +255,7 @@ LIFX_IMPORT void lifxDumpBuffer(
  *
  */
 LIFX_IMPORT void lifxSockaddr_ToString(
-  struct sockaddr_storage*        socketAddress,
+  struct sockaddr_storage const*  socket_address,
   char*                           buff,
   int                             n,
   uint16_t*                       port);

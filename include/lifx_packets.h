@@ -1,16 +1,16 @@
 //
-// DO NOT EDIT - AUTO-GENERATE:2020-02-21 13:45:06.406305
+// DO NOT EDIT - AUTO-GENERATE:2020-02-21 15:04:04.598536
 //
-#ifndef __LIFX_PACKETS_H__
-#define __LIFX_PACKETS_H__
+#ifndef LIFX_PACKETS_H
+#define LIFX_PACKETS_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <stdbool.h>
 #include <lifx_enums.h>
 #include <lifx_fields.h>
+#include <stdbool.h>
 
 typedef enum {
   kLifxPacketTypeDeviceGetService = 2,

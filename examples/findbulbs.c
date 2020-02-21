@@ -16,10 +16,8 @@
 #include <lifx.h>
 
 #include <stdio.h>
-#include <unistd.h>
-#include <stdbool.h>
 #include <string.h>
-#include <pthread.h>
+#include <unistd.h>
 
 void discovery_callback(lifxSession_t const* lifx, lifxDeviceId_t deviceId)
 {
