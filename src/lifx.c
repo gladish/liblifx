@@ -20,7 +20,6 @@
 
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -120,8 +119,8 @@ char const* lifxError_ToString(lifxSystemError_t sys_error)
 lifxFuture_t* lifxFuture_Create(lifxSequence_t seqno)
 {
   lifxFuture_t* f = malloc(sizeof(struct lifxFuture));
-  pthread_mutex_init(&f->Mutex, NULL);
-  pthread_cond_init(&f->Cond, NULL);
+  lifxMutex_Init(&f->Mutex);
+  lifxCond_Init(&f->Cond);
   memset(&f->Result, 0, sizeof(lifxPacket_t));
   f->Status = kLifxStatusOk;
   f->ReferenceCount = 1;
@@ -142,8 +141,8 @@ lifxStatus_t lifxFuture_Release(struct lifxFuture* f)
   if (n == 1)
   {
     // TODO: signal any waiters
-    pthread_mutex_destroy(&f->Mutex);
-    pthread_cond_destroy(&f->Cond);
+    lifxMutex_Destroy(&f->Mutex);
+    lifxCond_Destroy(&f->Cond);
     free(f);
   }
   return kLifxStatusOk;
@@ -152,28 +151,14 @@ lifxStatus_t lifxFuture_Release(struct lifxFuture* f)
 lifxStatus_t lifxFuture_Wait(struct lifxFuture* f, int millis)
 {
   lifxStatus_t status = kLifxStatusOk;
-  pthread_mutex_lock(&f->Mutex);
+  lifxMutex_Lock(&f->Mutex);
   while (!f->Complete)
   {
-    // TODO: proper timeout handling
-    int ret;
-    struct timespec timeout;
-    clock_gettime(CLOCK_REALTIME, &timeout);
-    timeout.tv_sec += (millis / 1000);
-    ret = pthread_cond_timedwait(&f->Cond, &f->Mutex, &timeout);
-    if (ret != 0)
-    {
-      if (ret == ETIMEDOUT)
-        status = kLifxStatusOperationTimedout;
-      else if (ret == EINVAL)
-        status = kLifxStatusInvalidArgument;
-      else if (ret == EPERM)
-        status = kLifxStatusPermissionDenied;
-    }
+    status = lifxCond_TimedWait(&f->Cond, &f->Mutex, millis);
     f->Complete = true;
     f->Status = status;
   }
-  pthread_mutex_unlock(&f->Mutex);
+  lifxMutex_Unlock(&f->Mutex);
   return f->Status;
 }
 
@@ -187,12 +172,79 @@ lifxStatus_t lifxFuture_Get(lifxFuture_t* f, lifxPacket_t* packet, int millis)
 
 lifxStatus_t lifxFuture_SetComplete(lifxFuture_t* f, lifxStatus_t status, lifxPacket_t* p)
 {
-  pthread_mutex_lock(&f->Mutex);
+  lifxMutex_Lock(&f->Mutex);
   if (p)
     f->Result = *p;
   f->Status = status;
   f->Complete = true;
-  pthread_mutex_unlock(&f->Mutex);
-  pthread_cond_broadcast(&f->Cond);
+  lifxMutex_Unlock(&f->Mutex);
+  lifxCond_NotifyAll(&f->Cond);
   return kLifxStatusOk;
+}
+
+// thread stuff
+void lifxMutex_Init(lifxMutex_t* mutex)
+{
+  pthread_mutex_init(mutex, NULL);
+}
+
+void lifxMutex_Destroy(lifxMutex_t* mutex)
+{
+  pthread_mutex_destroy(mutex);
+}
+
+void lifxMutex_Lock(lifxMutex_t* mutex)
+{
+  pthread_mutex_lock(mutex);
+}
+
+void lifxMutex_Unlock(lifxMutex_t* mutex)
+{
+  pthread_mutex_unlock(mutex);
+}
+
+void lifxCond_Init(lifxCond_t* cond)
+{
+  pthread_cond_init(cond, NULL);
+}
+
+void lifxCond_Destroy(lifxCond_t* cond)
+{
+  pthread_cond_destroy(cond);
+}
+
+void lifxCond_NotifyAll(lifxCond_t* cond)
+{
+  pthread_cond_broadcast(cond);
+}
+
+lifxStatus_t lifxCond_TimedWait(lifxCond_t* cond, lifxMutex_t* mutex, int millis)
+{
+  int ret;
+  struct timespec timeout;
+  lifxStatus_t status;
+
+  // TODO: proper timeout handling
+  clock_gettime(CLOCK_REALTIME, &timeout);
+  timeout.tv_sec += (millis / 1000);
+  status = kLifxStatusOk;
+
+  ret = pthread_cond_timedwait(cond, mutex, &timeout);
+  if (ret == 0)
+    status = kLifxStatusOk;
+  else if (ret == ETIMEDOUT)
+    status = kLifxStatusOperationTimedout;
+  else if (ret == EINVAL)
+    status = kLifxStatusInvalidArgument;
+  else if (ret == EPERM)
+    status = kLifxStatusPermissionDenied;
+  else
+    status = kLifxStatusFailed;
+
+  return status;
+}
+
+void lifxThread_Create(lifxThread_t* thread, lifxThreadFunc_t func, void* argp)
+{
+  pthread_create(thread, NULL, func, argp);
 }

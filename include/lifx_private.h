@@ -28,11 +28,29 @@ extern "C" {
 
 // errno
 typedef int lifxSystemError_t;
-
 static inline lifxSystemError_t lifxError_GetSystemError()
 {
   return errno;
 }
+
+// threads
+typedef pthread_t lifxThread_t;
+typedef pthread_mutex_t lifxMutex_t;
+typedef pthread_cond_t lifxCond_t;
+typedef void* (lifxThreadFunc_t)(void*);
+
+LIFX_IMPORT void lifxThread_Create(lifxThread_t* thread, lifxThreadFunc_t func, void* argp);
+LIFX_IMPORT void lifxMutex_Init(lifxMutex_t* mutex);
+LIFX_IMPORT void lifxMutex_Destroy(lifxMutex_t* mutex);
+LIFX_IMPORT void lifxMutex_Lock(lifxMutex_t* mutex);
+LIFX_IMPORT void lifxMutex_Unlock(lifxMutex_t* mutex);
+LIFX_IMPORT void lifxCond_Init(lifxCond_t* cond);
+LIFX_IMPORT void lifxCond_Destroy(lifxCond_t* cond);
+LIFX_IMPORT void lifxCond_NotifyAll(lifxCond_t* cond);
+LIFX_IMPORT lifxStatus_t lifxCond_TimedWait(
+  lifxCond_t*  cond,
+  lifxMutex_t*  mutex,
+  int          timeoutMillis);
 
 LIFX_IMPORT struct lifxDevice
 {
@@ -45,8 +63,8 @@ typedef struct lifxDevice lifxDevice_t;
 
 LIFX_IMPORT struct lifxFuture
 {
-  pthread_mutex_t         Mutex;
-  pthread_cond_t          Cond;
+  lifxMutex_t             Mutex;
+  lifxCond_t              Cond;
   lifxPacket_t            Result;
   lifxStatus_t            Status;
   int                     ReferenceCount;
@@ -62,8 +80,8 @@ LIFX_IMPORT struct lifxSession
   uint8_t                 SequenceNumber;
   lifxBuffer_t            ReadBuffer;
   lifxBuffer_t            WriteBuffer;
-  pthread_t               BackgroundDispatchThread;
-  pthread_mutex_t         SessionLock;
+  lifxThread_t            BackgroundDispatchThread;
+  lifxMutex_t             SessionLock;
   lifxDevice_t*           DeviceDatabase[kLifxMaxDevices];
   lifxSessionConfig_t     Config;
   bool                    RunDiscovery;

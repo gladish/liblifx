@@ -37,9 +37,11 @@ static void* lifxSession_Dispatcher(void* argp)
   while (!done)
   {
     ret = lifxSession_Dispatch(lifx, 1);
-    if ((ret != 0) && (ret != ETIMEDOUT))
+    if ((ret != 0) && (ret != kLifxStatusOperationTimedout))
     {
-      lxLog_Error(lifx, "lifxSession_Dispatch:%d", ret);
+      char buff[64];
+      lifxSession_GetLastError(lifx, buff, sizeof(buff));
+      lxLog_Error(lifx, "lifxSession_Dispatch:%s", buff);
       done = true;
     }
   }
@@ -125,7 +127,7 @@ lifxSession_t* lifxSession_Open(lifxSessionConfig_t const* conf)
 
   memset(lifx, 0, sizeof(struct lifxSession));
 
-  pthread_mutex_init(&lifx->SessionLock, NULL);
+  lifxMutex_Init(&lifx->SessionLock);
 
   // set this as early as possible to avoid uninitialized reads
   lifx->Config.LogLevel = kLifxLogLevelInfo;
@@ -191,7 +193,7 @@ lifxSession_t* lifxSession_Open(lifxSessionConfig_t const* conf)
   if (lifx->Config.UseBackgroundDispatchThread)
   {
     lxLog_Info(lifx, "creating background dispatch thread");
-    pthread_create(&lifx->BackgroundDispatchThread, NULL, lifxSession_Dispatcher, lifx);
+    lifxThread_Create(&lifx->BackgroundDispatchThread, lifxSession_Dispatcher, lifx);
   }
 
   return lifx;
@@ -233,25 +235,25 @@ lifxStatus_t lifxSession_Close(lifxSession_t* lifx)
 bool lifxSession_IsDiscoveryEnabled(lifxSession_t* lifx)
 {
   bool enabled = false;
-  pthread_mutex_lock(&lifx->SessionLock);
+  lifxMutex_Lock(&lifx->SessionLock);
   enabled = lifx->RunDiscovery;
-  pthread_mutex_unlock(&lifx->SessionLock);
+  lifxMutex_Unlock(&lifx->SessionLock);
   return enabled;
 }
 
 lifxStatus_t lifxSession_StartDiscovery(lifxSession_t* lifx)
 {
-  pthread_mutex_lock(&lifx->SessionLock);
+  lifxMutex_Lock(&lifx->SessionLock);
   lifx->RunDiscovery = true;
-  pthread_mutex_unlock(&lifx->SessionLock);
+  lifxMutex_Unlock(&lifx->SessionLock);
   return lifxSession_SetLastError(lifx, kLifxStatusOk, NULL);
 }
 
 lifxStatus_t lifxSession_StopDiscovery(lifxSession_t* lifx)
 {
-  pthread_mutex_lock(&lifx->SessionLock);
+  lifxMutex_Lock(&lifx->SessionLock);
   lifx->RunDiscovery = false;
-  pthread_mutex_unlock(&lifx->SessionLock);
+  lifxMutex_Unlock(&lifx->SessionLock);
   return lifxSession_SetLastError(lifx, kLifxStatusOk, NULL);
 }
 
@@ -298,6 +300,7 @@ lifxStatus_t lifxSession_Dispatch(
     status = lifxSession_RecvFromInternal(lifx, &message, &source_addr, 1000);
     if (status != kLifxStatusOk)
     {
+      lxLog_Info(lifx, "lifxSession_RecvFromInternal:%d", status);
       if (status != kLifxStatusOperationTimedout)
         done = true;
       else
@@ -333,7 +336,7 @@ lifxStatus_t lifxSession_Dispatch(
         int i;
         lifxFuture_t* future;
 
-        pthread_mutex_lock(&lifx->SessionLock);
+        lifxMutex_Lock(&lifx->SessionLock);
         for (i = 0; i < kLifxRequestsMax; ++i)
         {
           future = lifx->OutstandingRequests[i];
@@ -342,11 +345,11 @@ lifxStatus_t lifxSession_Dispatch(
             lifxFuture_SetComplete(future, 0, &message.Packet);
             lifxFuture_Release(future);
             lifx->OutstandingRequests[i] = NULL;
-            pthread_mutex_unlock(&lifx->SessionLock);
+            lifxMutex_Unlock(&lifx->SessionLock);
             return lifxSession_SetLastError(lifx, kLifxStatusOk, NULL);
           }
         }
-        pthread_mutex_unlock(&lifx->SessionLock);
+        lifxMutex_Unlock(&lifx->SessionLock);
       }
     }
 
@@ -482,6 +485,7 @@ lifxStatus_t lifxSession_RecvFromInternal(
   memset(message, 0, sizeof(lifxMessage_t));
   lifxBuffer_Seek(&lifx->ReadBuffer, 0, kLifxBufferWhenceSet);
   lifxSession_SetLastError(lifx, kLifxStatusOk, NULL);
+  status = kLifxStatusOk;
 
   FD_ZERO(&fds);
   FD_SET(lifx->Socket, &fds);
@@ -621,18 +625,18 @@ lifxStatus_t lifxSession_RegisterRequest(
 
   lxLog_Info(lifx, "registering:%d", future->SequenceNumber);
 
-  pthread_mutex_lock(&lifx->SessionLock);
+  lifxMutex_Lock(&lifx->SessionLock);
   for (i = 0; i < kLifxRequestsMax; ++i)
   {
     if (lifx->OutstandingRequests[i] == NULL)
     {
       lifxFuture_Retain(future);
       lifx->OutstandingRequests[i] = future;
-      pthread_mutex_unlock(&lifx->SessionLock);
+      lifxMutex_Unlock(&lifx->SessionLock);
       return lifxSession_SetLastError(lifx, kLifxStatusOk, NULL);
     }
   }
-  pthread_mutex_unlock(&lifx->SessionLock);
+  lifxMutex_Unlock(&lifx->SessionLock);
   return lifxSession_SetLastError(lifx, kLifxStatusFailed, 
     "failed to find open slot for request");
 }
