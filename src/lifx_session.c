@@ -13,11 +13,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-#include "lifx_internal.h"
+#include "lifx_private.h"
 #include "lifx_encoders.h"
 
 #include <arpa/inet.h>
-#include <errno.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -138,6 +138,9 @@ lifxSession_t* lifxSession_Open(lifxSessionConfig_t const* conf)
     // TODO: set default config
   }
 
+  memset(lifx->LastErrorMessage, 0, kLifxErrorMessageMax);
+  lifx->LastError = kLifxStatusOk;
+
   lxLog_Info(lifx, "liblifx %s", lifx_Version());
 
   lifx->Socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
@@ -180,8 +183,8 @@ lifxSession_t* lifxSession_Open(lifxSessionConfig_t const* conf)
     ret = bind(lifx->Socket, (struct sockaddr *) &bind_addr, bind_addr_length);
     if (ret != 0)
     {
-      int err = errno;
-      lxLog_Warn(lifx, "bind:%s", lifxError_ToString(err));
+      lifxSystemError_t sys_error = lifxError_GetSystemError();
+      lxLog_Warn(lifx, "bind:%s", lifxError_ToString(sys_error));
     }
   }
 
@@ -194,12 +197,12 @@ lifxSession_t* lifxSession_Open(lifxSessionConfig_t const* conf)
   return lifx;
 }
 
-int lifxSession_Close(lifxSession_t* lifx)
+lifxStatus_t lifxSession_Close(lifxSession_t* lifx)
 {
   int i;
 
   if (!lifx)
-    return EINVAL;
+    return kLifxStatusInvalidArgument;
 
   if (lifx->Socket != -1)
     close(lifx->Socket);
@@ -224,7 +227,7 @@ int lifxSession_Close(lifxSession_t* lifx)
       free(lifx->DeviceDatabase[i]);
   }
 
-  return 0;
+  return kLifxStatusOk;
 }
 
 bool lifxSession_IsDiscoveryEnabled(lifxSession_t* lifx)
@@ -236,40 +239,42 @@ bool lifxSession_IsDiscoveryEnabled(lifxSession_t* lifx)
   return enabled;
 }
 
-int lifxSession_StartDiscovery(lifxSession_t* lifx)
+lifxStatus_t lifxSession_StartDiscovery(lifxSession_t* lifx)
 {
   pthread_mutex_lock(&lifx->SessionLock);
   lifx->RunDiscovery = true;
   pthread_mutex_unlock(&lifx->SessionLock);
-  return 0;
+  return lifxSession_SetLastError(lifx, kLifxStatusOk, NULL);
 }
 
-int lifxSession_StopDiscovery(lifxSession_t* lifx)
+lifxStatus_t lifxSession_StopDiscovery(lifxSession_t* lifx)
 {
   pthread_mutex_lock(&lifx->SessionLock);
   lifx->RunDiscovery = false;
   pthread_mutex_unlock(&lifx->SessionLock);
-  return 0;
+  return lifxSession_SetLastError(lifx, kLifxStatusOk, NULL);
 }
 
-int
-lifxSession_Dispatch(lifxSession_t* lifx, int timeout)
+lifxStatus_t lifxSession_Dispatch(
+  lifxSession_t*      lifx,
+  int                 timeout)
 {
-  int                     ret;
   bool                    done;
   struct timeval          begin;
   struct timeval          last_discovery_sent;
   struct timeval          elapsed;
   lifxMessage_t           message;
+  lifxStatus_t            status;
   struct sockaddr_storage source_addr;
   
-  ret = 0;
   done = false;
   timerclear(&begin);
   timerclear(&last_discovery_sent);
   timerclear(&elapsed);
   memset(&message, 0, sizeof(lifxMessage_t));
   memset(&source_addr, 0, sizeof(struct sockaddr_storage));
+  status = kLifxStatusOk;
+  lifxSession_SetLastError(lifx, kLifxStatusOk, NULL);
 
   while (!done)
   {
@@ -290,10 +295,10 @@ lifxSession_Dispatch(lifxSession_t* lifx, int timeout)
     }
 
     memset(&message, 0, sizeof(lifxMessage_t));
-    ret = lifxSession_RecvFromInternal(lifx, &message, &source_addr, 1000);
-    if (ret != 0)
+    status = lifxSession_RecvFromInternal(lifx, &message, &source_addr, 1000);
+    if (status != kLifxStatusOk)
     {
-      if (ret != ETIMEDOUT)
+      if (status != kLifxStatusOperationTimedout)
         done = true;
       else
         continue;
@@ -302,7 +307,7 @@ lifxSession_Dispatch(lifxSession_t* lifx, int timeout)
     gettimeofday(&now, NULL);
     timersub(&now, &begin, &elapsed);
 
-    if (ret == 0)
+    if (status == kLifxStatusOk)
     {
       lifxDeviceId_t deviceId;
       memcpy(deviceId.Octets, message.Header.Target, 6);
@@ -338,7 +343,7 @@ lifxSession_Dispatch(lifxSession_t* lifx, int timeout)
             lifxFuture_Release(future);
             lifx->OutstandingRequests[i] = NULL;
             pthread_mutex_unlock(&lifx->SessionLock);
-            return 0;
+            return lifxSession_SetLastError(lifx, kLifxStatusOk, NULL);
           }
         }
         pthread_mutex_unlock(&lifx->SessionLock);
@@ -349,11 +354,10 @@ lifxSession_Dispatch(lifxSession_t* lifx, int timeout)
       done = true;
   }
 
-  return ret;
+  return status;
 }
 
-int
-lifxSession_SendTo(
+lifxStatus_t lifxSession_SendTo(
   lifxSession_t*    lifx,
   lifxDeviceId_t    deviceId,
   void*             packet,
@@ -363,7 +367,7 @@ lifxSession_SendTo(
   return lifxSession_SendToInternal(lifx, deviceId, packet, packetType, seqno);
 }
 
-int lifxSession_SendToInternal(
+lifxStatus_t lifxSession_SendToInternal(
   lifxSession_t*    lifx,
   lifxDeviceId_t    deviceId,
   void*             packet,
@@ -419,7 +423,7 @@ int lifxSession_SendToInternal(
     else
     {
       lxLog_Warn(lifx, "can't find device in database to send");
-      return ENOENT;
+      return kLifxStatusUnknownDevice;
     }
   }
 
@@ -444,15 +448,15 @@ int lifxSession_SendToInternal(
 
   if (n == -1)
   {
-    int err = errno;
-    lxLog_Warn(lifx, "sendto:%s", lifxError_ToString(err));
-    return err;
+    lifxSystemError_t sys_error = lifxError_GetSystemError();
+    return lifxSession_SetLastError(lifx, kLifxStatusFailed, "sendto failed. %s",
+      lifxError_ToString(sys_error));
   }
 
-  return 0;
+  return kLifxStatusFailed;
 }
 
-int lifxSession_RecvFrom(
+lifxStatus_t lifxSession_RecvFrom(
   lifxSession_t*  lifx,
   lifxMessage_t*  message,
   int             timeout)
@@ -461,7 +465,7 @@ int lifxSession_RecvFrom(
   return lifxSession_RecvFromInternal(lifx, message, &source_addr, timeout);
 }
 
-int lifxSession_RecvFromInternal(
+lifxStatus_t lifxSession_RecvFromInternal(
   lifxSession_t*              lifx,
   lifxMessage_t*              message,
   struct sockaddr_storage*    source,
@@ -470,19 +474,25 @@ int lifxSession_RecvFromInternal(
   int             n;
   fd_set          fds;
   struct timeval  wait_time;
+  lifxStatus_t    status;
 
   n = 0;
   wait_time.tv_sec = timeout / 1000;
   wait_time.tv_usec = (timeout % 1000) * 1000;
   memset(message, 0, sizeof(lifxMessage_t));
   lifxBuffer_Seek(&lifx->ReadBuffer, 0, kLifxBufferWhenceSet);
+  lifxSession_SetLastError(lifx, kLifxStatusOk, NULL);
 
   FD_ZERO(&fds);
   FD_SET(lifx->Socket, &fds);
 
   n = select(lifx->Socket  + 1, &fds, NULL, NULL, &wait_time);
   if (n == -1)
-    return errno;
+  {
+    lifxSystemError_t sys_error = lifxError_GetSystemError();
+    return lifxSession_SetLastError(lifx, kLifxStatusFailed, 
+      "select failed. %s", lifxError_ToString(sys_error));
+  }
 
   if (FD_ISSET(lifx->Socket, &fds))
   {
@@ -500,9 +510,10 @@ int lifxSession_RecvFromInternal(
 
     if (n == -1)
     {
-      int err = errno;
-      lxLog_Warn(lifx, "error receiving message from socket. %s", lifxError_ToString(err));
-      return err;
+      lifxSystemError_t sys_error = lifxError_GetSystemError();
+      status = lifxSession_SetLastError(lifx, kLifxStatusFailed,
+        "recvfrom failed. %s", lifxError_ToString(sys_error));
+      return status;
     }
 
     memcpy(&message->Header, lifx->ReadBuffer.Data, sizeof(lifxProtocolHeader_t));
@@ -520,10 +531,10 @@ int lifxSession_RecvFromInternal(
   }
   else
   {
-    return ETIMEDOUT;
+    status = kLifxStatusOperationTimedout;
   }
 
-  return 0;
+  return status;
 }
 
 int lifxDeviceId_Compare(
@@ -533,17 +544,17 @@ int lifxDeviceId_Compare(
   return memcmp(deviceId1->Octets, deviceId2->Octets, 6);
 }
 
-int lifxDeviceId_ToString(
+lifxStatus_t lifxDeviceId_ToString(
   lifxDeviceId_t const* deviceId,
   char*                 buff,
   int                   n)
 {
   if (!deviceId)
-    return EINVAL;
+    return kLifxStatusInvalidArgument;
   if (!buff)
-    return EINVAL;
+    return kLifxStatusInvalidArgument;
   if (n < 30)
-    return ENOMEM;
+    return kLifxStatusNotEnoughMemory;
 
   memset(buff, 0, n);
   snprintf(buff, n, "lifx_id://mac/%02hhx:%02hhx:%02hhx:%02hhx:%02hhx:%02hhx", 
@@ -553,17 +564,18 @@ int lifxDeviceId_ToString(
     deviceId->Octets[3],
     deviceId->Octets[4],
     deviceId->Octets[5]);
-  return 0;
+
+  return kLifxStatusOk;
 }
 
-int lifxDeviceId_FromString(
+lifxStatus_t lifxDeviceId_FromString(
   lifxDeviceId_t*       deviceId,
   char const*           buff)
 {
   if (!deviceId)
-    return EINVAL;
+    return kLifxStatusInvalidArgument;
   if (!buff)
-    return EINVAL;
+    return kLifxStatusInvalidArgument;
 
   sscanf(buff, "lifx_id://mac/%02hhx:%02hhx:%02hhx:%02hhx:%02hhx:%02hhx",
     &deviceId->Octets[0],
@@ -572,7 +584,8 @@ int lifxDeviceId_FromString(
     &deviceId->Octets[3],
     &deviceId->Octets[4],
     &deviceId->Octets[5]);
-  return 0;
+
+  return kLifxStatusOk;
 }
 
 int lifxSessionConfig_Copy(lifxSessionConfig_t* dest, lifxSessionConfig_t const* src)
@@ -592,15 +605,15 @@ int lifxSessionConfig_Copy(lifxSessionConfig_t* dest, lifxSessionConfig_t const*
   return 0;
 }
 
-int lifxSessionConfig_Init(lifxSessionConfig_t* conf)
+lifxStatus_t lifxSessionConfig_Init(lifxSessionConfig_t* conf)
 {
   if (!conf)
-    return EINVAL;
+    return kLifxStatusInvalidArgument;
   memset(conf, 0, sizeof(lifxSessionConfig_t));
-  return 0;
+  return kLifxStatusOk;
 }
 
-int lifxSession_RegisterRequest(
+lifxStatus_t lifxSession_RegisterRequest(
   lifxSession_t*      lifx,
   lifxFuture_t*       future)
 {
@@ -616,11 +629,12 @@ int lifxSession_RegisterRequest(
       lifxFuture_Retain(future);
       lifx->OutstandingRequests[i] = future;
       pthread_mutex_unlock(&lifx->SessionLock);
-      return 0;
+      return lifxSession_SetLastError(lifx, kLifxStatusOk, NULL);
     }
   }
   pthread_mutex_unlock(&lifx->SessionLock);
-  return EBUSY;
+  return lifxSession_SetLastError(lifx, kLifxStatusFailed, 
+    "failed to find open slot for request");
 }
 
 lifxFuture_t* lifxSession_BeginSendRequest(
@@ -648,7 +662,7 @@ lifxFuture_t* lifxSession_BeginSendRequest(
   return future;
 }
 
-int lifxSession_SendRequest(
+lifxStatus_t lifxSession_SendRequest(
   lifxSession_t*    lifx,
   lifxDeviceId_t    deviceId,
   void*             request,
@@ -656,13 +670,62 @@ int lifxSession_SendRequest(
   lifxPacket_t*     response,
   int               millis)
 {
-  int ret;
+  lifxStatus_t status = kLifxStatusOk;
   lifxFuture_t* future = lifxSession_BeginSendRequest(lifx, deviceId, request, packetType);
+  lifxSession_SetLastError(lifx, kLifxStatusOk, NULL);
 
-  ret = lifxFuture_Wait(future, millis);
-  if (ret == 0)
-    ret = lifxFuture_Get(future, response, 2000);
+  status = lifxFuture_Wait(future, millis);
+  if (status == kLifxStatusOk)
+    status = lifxFuture_Get(future, response, 2000);
   lifxFuture_Release(future);
 
-  return ret;
+  return status;
 }
+
+lifxStatus_t lifxSession_SetLastError(
+  lifxSession_t*                  lifx,
+  lifxStatus_t                    status,
+  char const*                     format, ...)
+{
+  if (lifx)
+  {
+    if (format)
+    {
+      va_list argp;
+      va_start(argp, format);
+      memset(lifx->LastErrorMessage, 0, kLifxErrorMessageMax);
+      vsnprintf(lifx->LastErrorMessage, (kLifxErrorMessageMax - 1), format, argp);
+      va_end(argp);
+    }
+    else
+    {
+      lifx->LastErrorMessage[0] = '\0';
+    }
+
+    lifx->LastError = status;
+  }
+
+  return status;
+}
+
+lifxStatus_t lifxSession_GetLastError(
+  lifxSession_t*                  lifx,
+  char*                           buff,
+  int                             n)
+{
+  lifxStatus_t status = 0;
+  if (lifx)
+  {
+    status = lifx->LastError;
+    if (buff)
+    {
+      size_t len = strlen(lifx->LastErrorMessage);
+      if (len > (size_t) (n - 1))
+        len = (n - 1);
+      memset(buff, 0, n);
+      strncpy(buff, lifx->LastErrorMessage, len);
+    }
+  }
+  return status;
+}
+

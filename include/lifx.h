@@ -16,7 +16,7 @@
 #ifndef __LIFX_H__
 #define __LIFX_H__
 
-#include <lifx_defines.h>
+#include <lifx_common.h>
 #include <lifx_enums.h>
 #include <lifx_fields.h>
 #include <lifx_packets.h>
@@ -136,7 +136,7 @@ LIFX_EXPORT char const* lifx_Version();
 /**
  *
  */
-LIFX_EXPORT int lifxSessionConfig_Init(
+LIFX_EXPORT lifxStatus_t lifxSessionConfig_Init(
   lifxSessionConfig_t*  conf);
 
 /**
@@ -148,25 +148,25 @@ LIFX_EXPORT lifxSession_t* lifxSession_Open(
 /**
  *
  */
-LIFX_EXPORT int lifxSession_Close(
+LIFX_EXPORT lifxStatus_t lifxSession_Close(
   lifxSession_t*        lifx);
 
 /**
  *
  */
-LIFX_EXPORT int lifxSession_StartDiscovery(
+LIFX_EXPORT lifxStatus_t lifxSession_StartDiscovery(
   lifxSession_t*        lifx);
 
 /**
  *
  */
-LIFX_EXPORT int lifxSession_StopDiscovery(
+LIFX_EXPORT lifxStatus_t lifxSession_StopDiscovery(
   lifxSession_t*        lifx);
 
 /**
  *
  */
-LIFX_EXPORT int lifxSession_SendTo(
+LIFX_EXPORT lifxStatus_t lifxSession_SendTo(
   lifxSession_t*        lifx,
   lifxDeviceId_t        device,
   void*                 packet,
@@ -174,18 +174,24 @@ LIFX_EXPORT int lifxSession_SendTo(
 
 /**
  */
-LIFX_EXPORT int lifxSession_RecvFrom(
+LIFX_EXPORT lifxStatus_t lifxSession_RecvFrom(
   lifxSession_t*        lifx,
   lifxMessage_t*        message,
   int                   timeout);
 
+/**
+ *
+ */
 LIFX_EXPORT lifxFuture_t* lifxSession_BeginSendRequest(
   lifxSession_t*        lifx,
   lifxDeviceId_t        deviceId,
   void*                 request,
   lifxPacketType_t      packetType);
 
-LIFX_EXPORT int lifxSession_SendRequest(
+/**
+ *
+ */
+LIFX_EXPORT lifxStatus_t lifxSession_SendRequest(
   lifxSession_t*        lifx,
   lifxDeviceId_t        deviceId,
   void*                 request,
@@ -196,9 +202,17 @@ LIFX_EXPORT int lifxSession_SendRequest(
 /**
  *
  */
-LIFX_EXPORT int lifxSession_Dispatch(
+LIFX_EXPORT lifxStatus_t lifxSession_Dispatch(
   lifxSession_t*        lifx,
   int                   timeout);
+
+/**
+ *
+ */
+LIFX_EXPORT lifxStatus_t lifxSession_GetLastError(
+  lifxSession_t*        lifx,
+  char*                 buff,
+  int                   n);
 
 /**
  *
@@ -210,7 +224,7 @@ LIFX_EXPORT int lifxDeviceId_Compare(
 /**
  *
  */
-LIFX_EXPORT int lifxDeviceId_ToString(
+LIFX_EXPORT lifxStatus_t lifxDeviceId_ToString(
   lifxDeviceId_t const* deviceId,
   char*                 buff,
   int                   n);
@@ -218,33 +232,33 @@ LIFX_EXPORT int lifxDeviceId_ToString(
 /**
  *
  */
-LIFX_EXPORT int lifxDeviceId_FromString(
+LIFX_EXPORT lifxStatus_t lifxDeviceId_FromString(
   lifxDeviceId_t*       deviceId,
   char const*           buff);
 
 /**
  *
  */
-LIFX_EXPORT int lifxFuture_Retain(
+LIFX_EXPORT lifxStatus_t lifxFuture_Retain(
   lifxFuture_t*         future);
 
 /**
  *
  */
-LIFX_EXPORT int lifxFuture_Release(
+LIFX_EXPORT lifxStatus_t lifxFuture_Release(
   lifxFuture_t*         future);
 
 /**
  *
  */
-LIFX_EXPORT int lifxFuture_Wait(
+LIFX_EXPORT lifxStatus_t lifxFuture_Wait(
   lifxFuture_t*         future,
   int                   millis);
 
 /**
  *
  */
-LIFX_EXPORT int lifxFuture_Get(
+LIFX_EXPORT lifxStatus_t lifxFuture_Get(
   lifxFuture_t*         future,
   lifxPacket_t*         packet,
   int                   millis);

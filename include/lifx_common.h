@@ -30,6 +30,7 @@
 #define kLifxRequestsMax (16)
 #define kLifxMaxDevices (256)
 #define kLifxSizeofHeader (sizeof(lifxProtocolHeader_t))
+#define kLifxErrorMessageMax (256)
 
 #ifdef __GNUC__
 #define LIFX_PRINTF_FORMAT(IDX, FIRST) __attribute__ ((format (printf, IDX, FIRST)))
@@ -68,6 +69,18 @@ typedef struct
 {
   uint8_t Octets[kLifxDeviceIdSize];
 } lifxDeviceId_t;
+
+typedef enum
+{
+  kLifxStatusOk = 0,
+  kLifxStatusOperationTimedout,
+  kLifxStatusInvalidArgument,
+  kLifxStatusPermissionDenied,
+  kLifxStatusUnknownDevice,
+  kLifxStatusNotEnoughMemory,
+  kLifxStatusFailed
+} lifxStatus_t;
+
 
 #endif
 #endif

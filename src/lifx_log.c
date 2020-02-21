@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-#include "lifx_internal.h"
+#include "lifx_private.h"
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -61,8 +61,7 @@ lifxThreadId_t lifxThreadGetCurrentId()
 #endif
 }
 
-void
-lxLog_Printf(lifxSession_t* lifx, lifxLogLevel_t level, char const* format, ...)
+void lxLog_Printf(lifxSession_t* lifx, lifxLogLevel_t level, char const* format, ...)
 {
   va_list argp;
 

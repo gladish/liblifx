@@ -1,5 +1,5 @@
 //
-// DO NOT EDIT - AUTO-GENERATE:2020-02-20 20:43:14.106588
+// DO NOT EDIT - AUTO-GENERATE:2020-02-20 22:15:30.533064
 //
 #ifndef __LIFX_REQUESTS_H__
 #define __LIFX_REQUESTS_H__
@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 
-#include <lifx_defines.h>
+#include <lifx_common.h>
 #include <lifx_packets.h>
 
 LIFX_EXPORT int lifxDevice_GetService(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDeviceStateService_t* response);

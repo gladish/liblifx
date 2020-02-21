@@ -173,7 +173,7 @@ class CodeGenerator:
 
   def gen_decoder(self, key, pktdef):
     struct_name =  "%s%s" % (self.prefix, key)
-    self.write("int lifxDecoder_Decode%s(lifxBuffer_t* buff, %s_t* pkt)\n" % (key, struct_name))
+    self.write("lifxStatus_t lifxDecoder_Decode%s(lifxBuffer_t* buff, %s_t* pkt)\n" % (key, struct_name))
     self.write("{\n")
     self.indent()
     self.write("// %s\n" % (pktdef))
@@ -222,13 +222,13 @@ class CodeGenerator:
           except Exception:
             print(pktdef)
             raise
-    self.write("return 0;\n")
+    self.write("return kLifxStatusOk;\n")
     self.outdent()
     self.write("}\n")
 
   def gen_encoder(self, key, pktdef):
     struct_name =  "%s%s" % (self.prefix, key)
-    self.write("int lifxEncoder_Encode%s(lifxBuffer_t* buff, %s_t const* pkt)\n" % (key, struct_name))
+    self.write("lifxStatus_t lifxEncoder_Encode%s(lifxBuffer_t* buff, %s_t const* pkt)\n" % (key, struct_name))
     self.write("{\n")
     self.indent()
     self.write("// %s\n" % (pktdef))
@@ -278,7 +278,7 @@ class CodeGenerator:
           except Exception:
             print(pktdef)
             raise
-    self.write("return 0;\n")
+    self.write("return kLifxStatusOk;\n")
     self.outdent()
     self.write("}\n")
 
@@ -307,7 +307,7 @@ class CodeGenerator:
     requests = {}
     self.open_file("lifx_requests.h")
     self.emit_guard_prefix("__LIFX_REQUESTS_H__")
-    self.write("#include <lifx_defines.h>\n")
+    self.write("#include <lifx_common.h>\n")
     self.write("#include <lifx_packets.h>\n")
     self.write("\n")
     # multi_zone is bit more complicated since requeset can return either/or
@@ -376,65 +376,65 @@ class CodeGenerator:
     self.write("#include <lifx_fields.h>\n")
     self.write("#include <lifx_packets.h>\n")
     self.write("\n")
-    self.write("int lifxDecoder_DecodePacket(lifxBuffer_t* buff, lifxPacketType_t type, lifxPacket_t* pkt);\n")
-    self.write("int lifxEncoder_EncodePacket(lifxBuffer_t* buff, lifxPacketType_t type, lifxPacket_t const* pkt);\n")
+    self.write("lifxStatus_t lifxDecoder_DecodePacket(lifxBuffer_t* buff, lifxPacketType_t type, lifxPacket_t* pkt);\n")
+    self.write("lifxStatus_t lifxEncoder_EncodePacket(lifxBuffer_t* buff, lifxPacketType_t type, lifxPacket_t const* pkt);\n")
     self.write("int lifxEncoder_GetEncodedSize(lifxPacketType_t type);\n")
     self.write("\n")
     for s in ["device", "light", "tile", "multi_zone"]:
       for key, val in pkts[s].items():
         struct_name =  "%s%s" % (self.prefix, key)
-        self.write("int lifxEncoder_Encode%s(lifxBuffer_t* buff, %s_t const* pkt);\n" % (key, struct_name))
+        self.write("lifxStatus_t lifxEncoder_Encode%s(lifxBuffer_t* buff, %s_t const* pkt);\n" % (key, struct_name))
     self.write("\n")
     for s in ["device", "light", "tile", "multi_zone"]:
       for key, val in pkts[s].items():
         struct_name =  "%s%s" % (self.prefix, key)
-        self.write("int lifxDecoder_Decode%s(lifxBuffer_t* buff, %s_t* pkt);\n" % (key, struct_name))
+        self.write("lifxStatus_t lifxDecoder_Decode%s(lifxBuffer_t* buff, %s_t* pkt);\n" % (key, struct_name))
     self.write("\n")
     for key, val in fields.items():
       struct_name =  "%s%s" % (self.prefix, key)
-      self.write("int lifxEncoder_Encode%s(lifxBuffer_t* buff, %s_t const* pkt);\n" % (key, struct_name))
-      self.write("int lifxDecoder_Decode%s(lifxBuffer_t* buff, %s_t* pkt);\n" % (key, struct_name))
+      self.write("lifxStatus_t lifxEncoder_Encode%s(lifxBuffer_t* buff, %s_t const* pkt);\n" % (key, struct_name))
+      self.write("lifxStatus_t lifxDecoder_Decode%s(lifxBuffer_t* buff, %s_t* pkt);\n" % (key, struct_name))
     self.write("\n")
     self.emit_guard_suffix()
     self.out.close()
 
     self.open_file("lifx_encoders.c")
-    self.write("#include \"lifx_internal.h\"\n")
+    self.write("#include \"lifx_private.h\"\n")
     self.write("#include \"lifx_encoders.h\"\n\n")
 
-    self.write("int lifxDecoder_DecodePacket(lifxBuffer_t* buff, lifxPacketType_t type, lifxPacket_t* pkt)\n")
+    self.write("lifxStatus_t lifxDecoder_DecodePacket(lifxBuffer_t* buff, lifxPacketType_t type, lifxPacket_t* pkt)\n")
     self.write("{\n");
     self.indent()
-    self.write("int ret = 0;\n")
+    self.write("lifxStatus_t status = kLifxStatusOk;\n")
     self.write("switch (type)\n")
     self.write("{\n")
     self.indent()
     for value, name in sorted(self.packet_types.items()):
       self.write("case kLifxPacketType%s:\n" % (name))
-      self.write("ret = %sDecoder_Decode%s(buff, &pkt->%s);\n" % (self.prefix, name, name))
+      self.write("status = %sDecoder_Decode%s(buff, &pkt->%s);\n" % (self.prefix, name, name))
       self.write("break;\n")
     self.outdent()
     self.write("}\n")
-    self.write("return ret;\n")
+    self.write("return status;\n")
     self.outdent()
     self.write("}");
     self.write("\n")
 
     self.write("\n")
-    self.write("int lifxEncoder_EncodePacket(lifxBuffer_t* buff, lifxPacketType_t type, lifxPacket_t const* pkt)\n")
+    self.write("lifxStatus_t lifxEncoder_EncodePacket(lifxBuffer_t* buff, lifxPacketType_t type, lifxPacket_t const* pkt)\n")
     self.write("{\n");
     self.indent()
-    self.write("int ret = 0;\n")
+    self.write("lifxStatus_t status = kLifxStatusOk;\n")
     self.write("switch (type)\n")
     self.write("{\n")
     self.indent()
     for value, name in sorted(self.packet_types.items()):
       self.write("case kLifxPacketType%s:\n" % (name))
-      self.write("ret = %sEncoder_Encode%s(buff, &pkt->%s);\n" % (self.prefix, name, name))
+      self.write("status = %sEncoder_Encode%s(buff, &pkt->%s);\n" % (self.prefix, name, name))
       self.write("break;\n")
     self.outdent()
     self.write("}\n")
-    self.write("return ret;\n")
+    self.write("return status;\n")
     self.outdent()
     self.write("}");
     self.write("\n")
@@ -443,7 +443,7 @@ class CodeGenerator:
     self.write("int lifxEncoder_GetEncodedSize(lifxPacketType_t type)\n")
     self.write("{\n");
     self.indent()
-    self.write("int ret = 0;\n")
+    self.write("int encoded_size = 0;\n")
     self.write("switch (type)\n")
     self.write("{\n")
     self.indent()
@@ -451,11 +451,11 @@ class CodeGenerator:
       for key, pktdef in pkts[s].items():
         self.write("// %s\n" % (pktdef))
         self.write("case kLifxPacketType%s:\n" % (key))
-        self.write("ret = %d;\n"  % (pktdef["size_bytes"]))
+        self.write("encoded_size = %d;\n"  % (pktdef["size_bytes"]))
         self.write("break;\n")
     self.outdent()
     self.write("}\n")
-    self.write("return ret;\n")
+    self.write("return encoded_size;\n")
     self.outdent()
     self.write("}");
     self.write("\n")

@@ -15,11 +15,10 @@
 //
 #include "lifx.h"
 #include "lifx_encoders.h"
-#include "lifx_internal.h"
+#include "lifx_private.h"
 #include "lifx_version.h"
 
 #include <arpa/inet.h>
-#include <errno.h>
 #include <netinet/in.h>
 #include <pthread.h>
 #include <stdio.h>
@@ -88,13 +87,12 @@ void lifxSockaddr_ToString(struct sockaddr_storage* ss, char* buff, int n, uint1
   }
 }
 
-char const*
-lifx_Version()
+char const* lifx_Version()
 {
   return "v" LIFX_PROJECT_VER;
 }
 
-char const* lifxError_ToString(int errnum)
+char const* lifxError_ToString(lifxSystemError_t sys_error)
 {
   int n;
   char const* buff;
@@ -106,13 +104,13 @@ char const* lifxError_ToString(int errnum)
   if (specific)
   {
     #ifdef __linux__
-    n = strerror_r(errnum, specific->LastErrorMessage, kLifxErrorMessageMaxLength - 1);
+    n = strerror_r(sys_error, specific->LastErrorMessage, kLifxErrorMessageMaxLength - 1);
     if (!n)
       buff = specific->LastErrorMessage;
     #else
-    buff = strerror(errnum);
+    buff = strerror(sys_error);
     #endif
-    specific->LastError = errnum;
+    specific->LastError = sys_error;
   }
 
   return buff;
@@ -125,20 +123,20 @@ lifxFuture_t* lifxFuture_Create(lifxSequence_t seqno)
   pthread_mutex_init(&f->Mutex, NULL);
   pthread_cond_init(&f->Cond, NULL);
   memset(&f->Result, 0, sizeof(lifxPacket_t));
-  f->ErrorCode = 0;
+  f->Status = kLifxStatusOk;
   f->ReferenceCount = 1;
   f->Complete = false;
   f->SequenceNumber = seqno;
   return f;
 }
 
-int lifxFuture_Retain(struct lifxFuture* f)
+lifxStatus_t lifxFuture_Retain(struct lifxFuture* f)
 {
   lifxInterlockedIncrement(&f->ReferenceCount);
-  return 0;
+  return kLifxStatusOk;
 }
 
-int lifxFuture_Release(struct lifxFuture* f)
+lifxStatus_t lifxFuture_Release(struct lifxFuture* f)
 {
   int n = lifxInterlockedDecrement(&f->ReferenceCount);
   if (n == 1)
@@ -148,44 +146,53 @@ int lifxFuture_Release(struct lifxFuture* f)
     pthread_cond_destroy(&f->Cond);
     free(f);
   }
-  return 0;
+  return kLifxStatusOk;
 }
 
-int lifxFuture_Wait(struct lifxFuture* f, int millis)
+lifxStatus_t lifxFuture_Wait(struct lifxFuture* f, int millis)
 {
-  int ret;
-
+  lifxStatus_t status = kLifxStatusOk;
   pthread_mutex_lock(&f->Mutex);
   while (!f->Complete)
   {
     // TODO: proper timeout handling
+    int ret;
     struct timespec timeout;
     clock_gettime(CLOCK_REALTIME, &timeout);
     timeout.tv_sec += (millis / 1000);
     ret = pthread_cond_timedwait(&f->Cond, &f->Mutex, &timeout);
+    if (ret != 0)
+    {
+      if (ret == ETIMEDOUT)
+        status = kLifxStatusOperationTimedout;
+      else if (ret == EINVAL)
+        status = kLifxStatusInvalidArgument;
+      else if (ret == EPERM)
+        status = kLifxStatusPermissionDenied;
+    }
     f->Complete = true;
-    f->ErrorCode = ret;
+    f->Status = status;
   }
   pthread_mutex_unlock(&f->Mutex);
-  return f->ErrorCode;
+  return f->Status;
 }
 
-int lifxFuture_Get(lifxFuture_t* f, lifxPacket_t* packet, int millis)
+lifxStatus_t lifxFuture_Get(lifxFuture_t* f, lifxPacket_t* packet, int millis)
 {
-  int ret = lifxFuture_Wait(f, millis);
-  if (ret == 0)
+  lifxStatus_t status = lifxFuture_Wait(f, millis);
+  if (status == kLifxStatusOk)
     *packet = f->Result;
-  return ret;
+  return status;
 }
 
-int lifxFuture_SetComplete(lifxFuture_t* f, int error, lifxPacket_t* p)
+lifxStatus_t lifxFuture_SetComplete(lifxFuture_t* f, lifxStatus_t status, lifxPacket_t* p)
 {
   pthread_mutex_lock(&f->Mutex);
   if (p)
     f->Result = *p;
-  f->ErrorCode = error;
+  f->Status = status;
   f->Complete = true;
   pthread_mutex_unlock(&f->Mutex);
   pthread_cond_broadcast(&f->Cond);
-  return 0;
+  return kLifxStatusOk;
 }
