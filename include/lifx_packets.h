@@ -1,5 +1,5 @@
 //
-// DO NOT EDIT - AUTO-GENERATE:2020-02-20 22:15:30.527182
+// DO NOT EDIT - AUTO-GENERATE:2020-02-21 10:11:18.576562
 //
 #ifndef __LIFX_PACKETS_H__
 #define __LIFX_PACKETS_H__
@@ -77,6 +77,8 @@ typedef enum {
 
 // {'pkt_type': 2, 'size_bytes': 0}
 typedef struct {
+  // Don't think setting this does anything
+  uint32_t __c_structs_without_fields_are_invalid;
 } lifxDeviceGetService_t;
 
 // {'pkt_type': 3, 'size_bytes': 5}
@@ -89,6 +91,8 @@ typedef struct {
 
 // {'pkt_type': 12, 'size_bytes': 0}
 typedef struct {
+  // Don't think setting this does anything
+  uint32_t __c_structs_without_fields_are_invalid;
 } lifxDeviceGetHostInfo_t;
 
 // {'pkt_type': 13, 'size_bytes': 14}
@@ -105,12 +109,16 @@ typedef struct {
 
 // {'pkt_type': 14, 'size_bytes': 0}
 typedef struct {
+  // Don't think setting this does anything
+  uint32_t __c_structs_without_fields_are_invalid;
 } lifxDeviceGetHostFirmware_t;
 
 // HACK: DeviceStateHostFirmware is in lifx_fields.h
 
 // {'pkt_type': 16, 'size_bytes': 0}
 typedef struct {
+  // Don't think setting this does anything
+  uint32_t __c_structs_without_fields_are_invalid;
 } lifxDeviceGetWifiInfo_t;
 
 // {'pkt_type': 17, 'size_bytes': 14}
@@ -127,6 +135,8 @@ typedef struct {
 
 // {'pkt_type': 18, 'size_bytes': 0}
 typedef struct {
+  // Don't think setting this does anything
+  uint32_t __c_structs_without_fields_are_invalid;
 } lifxDeviceGetWifiFirmware_t;
 
 // {'pkt_type': 19, 'size_bytes': 20}
@@ -143,6 +153,8 @@ typedef struct {
 
 // {'pkt_type': 20, 'size_bytes': 0}
 typedef struct {
+  // Don't think setting this does anything
+  uint32_t __c_structs_without_fields_are_invalid;
 } lifxDeviceGetPower_t;
 
 // {'pkt_type': 21, 'size_bytes': 2}
@@ -159,6 +171,8 @@ typedef struct {
 
 // {'pkt_type': 23, 'size_bytes': 0}
 typedef struct {
+  // Don't think setting this does anything
+  uint32_t __c_structs_without_fields_are_invalid;
 } lifxDeviceGetLabel_t;
 
 // {'pkt_type': 24, 'size_bytes': 32}
@@ -175,12 +189,16 @@ typedef struct {
 
 // {'pkt_type': 32, 'size_bytes': 0}
 typedef struct {
+  // Don't think setting this does anything
+  uint32_t __c_structs_without_fields_are_invalid;
 } lifxDeviceGetVersion_t;
 
 // HACK: DeviceStateVersion is in lifx_fields.h
 
 // {'pkt_type': 34, 'size_bytes': 0}
 typedef struct {
+  // Don't think setting this does anything
+  uint32_t __c_structs_without_fields_are_invalid;
 } lifxDeviceGetInfo_t;
 
 // {'pkt_type': 35, 'size_bytes': 24}
@@ -195,10 +213,14 @@ typedef struct {
 
 // {'pkt_type': 45, 'size_bytes': 0}
 typedef struct {
+  // Don't think setting this does anything
+  uint32_t __c_structs_without_fields_are_invalid;
 } lifxDeviceAcknowledgement_t;
 
 // {'pkt_type': 48, 'size_bytes': 0}
 typedef struct {
+  // Don't think setting this does anything
+  uint32_t __c_structs_without_fields_are_invalid;
 } lifxDeviceGetLocation_t;
 
 // {'pkt_type': 49, 'size_bytes': 56}
@@ -223,6 +245,8 @@ typedef struct {
 
 // {'pkt_type': 51, 'size_bytes': 0}
 typedef struct {
+  // Don't think setting this does anything
+  uint32_t __c_structs_without_fields_are_invalid;
 } lifxDeviceGetGroup_t;
 
 // {'pkt_type': 52, 'size_bytes': 56}
@@ -259,6 +283,8 @@ typedef struct {
 
 // {'pkt_type': 101, 'size_bytes': 0}
 typedef struct {
+  // Don't think setting this does anything
+  uint32_t __c_structs_without_fields_are_invalid;
 } lifxLightGet_t;
 
 // {'pkt_type': 102, 'size_bytes': 13}
@@ -317,6 +343,8 @@ typedef struct {
 
 // {'pkt_type': 116, 'size_bytes': 0}
 typedef struct {
+  // Don't think setting this does anything
+  uint32_t __c_structs_without_fields_are_invalid;
 } lifxLightGetPower_t;
 
 // {'pkt_type': 117, 'size_bytes': 6}
@@ -349,6 +377,8 @@ typedef struct {
 
 // {'pkt_type': 120, 'size_bytes': 0}
 typedef struct {
+  // Don't think setting this does anything
+  uint32_t __c_structs_without_fields_are_invalid;
 } lifxLightGetInfrared_t;
 
 // {'pkt_type': 121, 'size_bytes': 2}
@@ -365,6 +395,8 @@ typedef struct {
 
 // {'pkt_type': 701, 'size_bytes': 0}
 typedef struct {
+  // Don't think setting this does anything
+  uint32_t __c_structs_without_fields_are_invalid;
 } lifxTileGetDeviceChain_t;
 
 // {'pkt_type': 702, 'size_bytes': 882}
@@ -493,6 +525,8 @@ typedef struct {
 
 // {'pkt_type': 507, 'size_bytes': 0}
 typedef struct {
+  // Don't think setting this does anything
+  uint32_t __c_structs_without_fields_are_invalid;
 } lifxMultiZoneGetEffect_t;
 
 // {'pkt_type': 508, 'size_bytes': 59}
@@ -523,6 +557,8 @@ typedef struct {
 
 // {'pkt_type': 511, 'size_bytes': 0}
 typedef struct {
+  // Don't think setting this does anything
+  uint32_t __c_structs_without_fields_are_invalid;
 } lifxMultiZoneExtendedGetColorZones_t;
 
 // {'pkt_type': 512, 'size_bytes': 661}

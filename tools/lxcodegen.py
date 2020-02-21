@@ -127,6 +127,7 @@ class CodeGenerator:
       self.write("// %s\n" % (debug))
     self.write("typedef struct {\n")
     self.indent()
+    num_fields = 0
     for idx, field in enumerate(pktdef["fields"]):
       if "name" in field:
         name = field["name"]
@@ -139,12 +140,16 @@ class CodeGenerator:
         if self.debug:
           self.write("// %s\n" % (field))
         self.write("%s;\n" % (self.gen_type_name(name, type, size)))
+        num_fields += 1
       except Exception as err:
         print("failed to parse line")
         print(err)
         print("key:", pktname)
         print("val:", pktdef)
         sys.exit(1)
+    if num_fields == 0:
+      self.write("// Don't think setting this does anything\n")
+      self.write("uint32_t __c_structs_without_fields_are_invalid;\n")
     self.outdent()
     self.write("} %s%s_t;\n" % (self.prefix, pktname))
 
