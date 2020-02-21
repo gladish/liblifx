@@ -227,6 +227,9 @@ class CodeGenerator:
           except Exception:
             print(pktdef)
             raise
+    else:
+      self.write("(void) buff;\n")
+      self.write("(void) pkt;\n")
     self.write("return kLifxStatusOk;\n")
     self.outdent()
     self.write("}\n")
@@ -283,6 +286,9 @@ class CodeGenerator:
           except Exception:
             print(pktdef)
             raise
+    else: # len(...) > 0
+      self.write("(void) buff;\n")
+      self.write("(void) pkt;\n")
     self.write("return kLifxStatusOk;\n")
     self.outdent()
     self.write("}\n")

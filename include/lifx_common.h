@@ -19,7 +19,7 @@
 #include <stdint.h>
 
 #define LIFX_EXPORT __attribute__ ((visibility ("default")))
-#define LIFX_IMPORT __attribute__ ((visibility ("internal")))
+#define LIFX_IMPORT __attribute__ ((visibility ("hidden")))
 
 #define kLifxDefaultBroadcastPort (56700)
 #define kLifxWaitForever (-1)

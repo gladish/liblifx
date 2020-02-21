@@ -1,5 +1,5 @@
 //
-// DO NOT EDIT - AUTO-GENERATE:2020-02-20 22:15:30.528476
+// DO NOT EDIT - AUTO-GENERATE:2020-02-21 11:40:30.272832
 //
 #include "lifx_private.h"
 #include "lifx_encoders.h"
@@ -624,12 +624,16 @@ int lifxEncoder_GetEncodedSize(lifxPacketType_t type)
 lifxStatus_t lifxEncoder_EncodeDeviceGetService(lifxBuffer_t* buff, lifxDeviceGetService_t const* pkt)
 {
   // {'pkt_type': 2, 'size_bytes': 0, 'fields': []}
+  (void) buff;
+  (void) pkt;
   return kLifxStatusOk;
 }
 
 lifxStatus_t lifxDecoder_DecodeDeviceGetService(lifxBuffer_t* buff, lifxDeviceGetService_t* pkt)
 {
   // {'pkt_type': 2, 'size_bytes': 0, 'fields': []}
+  (void) buff;
+  (void) pkt;
   return kLifxStatusOk;
 }
 
@@ -656,12 +660,16 @@ lifxStatus_t lifxDecoder_DecodeDeviceStateService(lifxBuffer_t* buff, lifxDevice
 lifxStatus_t lifxEncoder_EncodeDeviceGetHostInfo(lifxBuffer_t* buff, lifxDeviceGetHostInfo_t const* pkt)
 {
   // {'pkt_type': 12, 'size_bytes': 0, 'fields': []}
+  (void) buff;
+  (void) pkt;
   return kLifxStatusOk;
 }
 
 lifxStatus_t lifxDecoder_DecodeDeviceGetHostInfo(lifxBuffer_t* buff, lifxDeviceGetHostInfo_t* pkt)
 {
   // {'pkt_type': 12, 'size_bytes': 0, 'fields': []}
+  (void) buff;
+  (void) pkt;
   return kLifxStatusOk;
 }
 
@@ -696,12 +704,16 @@ lifxStatus_t lifxDecoder_DecodeDeviceStateHostInfo(lifxBuffer_t* buff, lifxDevic
 lifxStatus_t lifxEncoder_EncodeDeviceGetHostFirmware(lifxBuffer_t* buff, lifxDeviceGetHostFirmware_t const* pkt)
 {
   // {'pkt_type': 14, 'size_bytes': 0, 'fields': []}
+  (void) buff;
+  (void) pkt;
   return kLifxStatusOk;
 }
 
 lifxStatus_t lifxDecoder_DecodeDeviceGetHostFirmware(lifxBuffer_t* buff, lifxDeviceGetHostFirmware_t* pkt)
 {
   // {'pkt_type': 14, 'size_bytes': 0, 'fields': []}
+  (void) buff;
+  (void) pkt;
   return kLifxStatusOk;
 }
 
@@ -736,12 +748,16 @@ lifxStatus_t lifxDecoder_DecodeDeviceStateHostFirmware(lifxBuffer_t* buff, lifxD
 lifxStatus_t lifxEncoder_EncodeDeviceGetWifiInfo(lifxBuffer_t* buff, lifxDeviceGetWifiInfo_t const* pkt)
 {
   // {'pkt_type': 16, 'size_bytes': 0, 'fields': []}
+  (void) buff;
+  (void) pkt;
   return kLifxStatusOk;
 }
 
 lifxStatus_t lifxDecoder_DecodeDeviceGetWifiInfo(lifxBuffer_t* buff, lifxDeviceGetWifiInfo_t* pkt)
 {
   // {'pkt_type': 16, 'size_bytes': 0, 'fields': []}
+  (void) buff;
+  (void) pkt;
   return kLifxStatusOk;
 }
 
@@ -776,12 +792,16 @@ lifxStatus_t lifxDecoder_DecodeDeviceStateWifiInfo(lifxBuffer_t* buff, lifxDevic
 lifxStatus_t lifxEncoder_EncodeDeviceGetWifiFirmware(lifxBuffer_t* buff, lifxDeviceGetWifiFirmware_t const* pkt)
 {
   // {'pkt_type': 18, 'size_bytes': 0, 'fields': []}
+  (void) buff;
+  (void) pkt;
   return kLifxStatusOk;
 }
 
 lifxStatus_t lifxDecoder_DecodeDeviceGetWifiFirmware(lifxBuffer_t* buff, lifxDeviceGetWifiFirmware_t* pkt)
 {
   // {'pkt_type': 18, 'size_bytes': 0, 'fields': []}
+  (void) buff;
+  (void) pkt;
   return kLifxStatusOk;
 }
 
@@ -816,12 +836,16 @@ lifxStatus_t lifxDecoder_DecodeDeviceStateWifiFirmware(lifxBuffer_t* buff, lifxD
 lifxStatus_t lifxEncoder_EncodeDeviceGetPower(lifxBuffer_t* buff, lifxDeviceGetPower_t const* pkt)
 {
   // {'pkt_type': 20, 'size_bytes': 0, 'fields': []}
+  (void) buff;
+  (void) pkt;
   return kLifxStatusOk;
 }
 
 lifxStatus_t lifxDecoder_DecodeDeviceGetPower(lifxBuffer_t* buff, lifxDeviceGetPower_t* pkt)
 {
   // {'pkt_type': 20, 'size_bytes': 0, 'fields': []}
+  (void) buff;
+  (void) pkt;
   return kLifxStatusOk;
 }
 
@@ -860,12 +884,16 @@ lifxStatus_t lifxDecoder_DecodeDeviceStatePower(lifxBuffer_t* buff, lifxDeviceSt
 lifxStatus_t lifxEncoder_EncodeDeviceGetLabel(lifxBuffer_t* buff, lifxDeviceGetLabel_t const* pkt)
 {
   // {'pkt_type': 23, 'size_bytes': 0, 'fields': []}
+  (void) buff;
+  (void) pkt;
   return kLifxStatusOk;
 }
 
 lifxStatus_t lifxDecoder_DecodeDeviceGetLabel(lifxBuffer_t* buff, lifxDeviceGetLabel_t* pkt)
 {
   // {'pkt_type': 23, 'size_bytes': 0, 'fields': []}
+  (void) buff;
+  (void) pkt;
   return kLifxStatusOk;
 }
 
@@ -904,12 +932,16 @@ lifxStatus_t lifxDecoder_DecodeDeviceStateLabel(lifxBuffer_t* buff, lifxDeviceSt
 lifxStatus_t lifxEncoder_EncodeDeviceGetVersion(lifxBuffer_t* buff, lifxDeviceGetVersion_t const* pkt)
 {
   // {'pkt_type': 32, 'size_bytes': 0, 'fields': []}
+  (void) buff;
+  (void) pkt;
   return kLifxStatusOk;
 }
 
 lifxStatus_t lifxDecoder_DecodeDeviceGetVersion(lifxBuffer_t* buff, lifxDeviceGetVersion_t* pkt)
 {
   // {'pkt_type': 32, 'size_bytes': 0, 'fields': []}
+  (void) buff;
+  (void) pkt;
   return kLifxStatusOk;
 }
 
@@ -940,12 +972,16 @@ lifxStatus_t lifxDecoder_DecodeDeviceStateVersion(lifxBuffer_t* buff, lifxDevice
 lifxStatus_t lifxEncoder_EncodeDeviceGetInfo(lifxBuffer_t* buff, lifxDeviceGetInfo_t const* pkt)
 {
   // {'pkt_type': 34, 'size_bytes': 0, 'fields': []}
+  (void) buff;
+  (void) pkt;
   return kLifxStatusOk;
 }
 
 lifxStatus_t lifxDecoder_DecodeDeviceGetInfo(lifxBuffer_t* buff, lifxDeviceGetInfo_t* pkt)
 {
   // {'pkt_type': 34, 'size_bytes': 0, 'fields': []}
+  (void) buff;
+  (void) pkt;
   return kLifxStatusOk;
 }
 
@@ -976,24 +1012,32 @@ lifxStatus_t lifxDecoder_DecodeDeviceStateInfo(lifxBuffer_t* buff, lifxDeviceSta
 lifxStatus_t lifxEncoder_EncodeDeviceAcknowledgement(lifxBuffer_t* buff, lifxDeviceAcknowledgement_t const* pkt)
 {
   // {'pkt_type': 45, 'size_bytes': 0, 'fields': []}
+  (void) buff;
+  (void) pkt;
   return kLifxStatusOk;
 }
 
 lifxStatus_t lifxDecoder_DecodeDeviceAcknowledgement(lifxBuffer_t* buff, lifxDeviceAcknowledgement_t* pkt)
 {
   // {'pkt_type': 45, 'size_bytes': 0, 'fields': []}
+  (void) buff;
+  (void) pkt;
   return kLifxStatusOk;
 }
 
 lifxStatus_t lifxEncoder_EncodeDeviceGetLocation(lifxBuffer_t* buff, lifxDeviceGetLocation_t const* pkt)
 {
   // {'pkt_type': 48, 'size_bytes': 0, 'fields': []}
+  (void) buff;
+  (void) pkt;
   return kLifxStatusOk;
 }
 
 lifxStatus_t lifxDecoder_DecodeDeviceGetLocation(lifxBuffer_t* buff, lifxDeviceGetLocation_t* pkt)
 {
   // {'pkt_type': 48, 'size_bytes': 0, 'fields': []}
+  (void) buff;
+  (void) pkt;
   return kLifxStatusOk;
 }
 
@@ -1048,12 +1092,16 @@ lifxStatus_t lifxDecoder_DecodeDeviceStateLocation(lifxBuffer_t* buff, lifxDevic
 lifxStatus_t lifxEncoder_EncodeDeviceGetGroup(lifxBuffer_t* buff, lifxDeviceGetGroup_t const* pkt)
 {
   // {'pkt_type': 51, 'size_bytes': 0, 'fields': []}
+  (void) buff;
+  (void) pkt;
   return kLifxStatusOk;
 }
 
 lifxStatus_t lifxDecoder_DecodeDeviceGetGroup(lifxBuffer_t* buff, lifxDeviceGetGroup_t* pkt)
 {
   // {'pkt_type': 51, 'size_bytes': 0, 'fields': []}
+  (void) buff;
+  (void) pkt;
   return kLifxStatusOk;
 }
 
@@ -1140,12 +1188,16 @@ lifxStatus_t lifxDecoder_DecodeDeviceEchoResponse(lifxBuffer_t* buff, lifxDevice
 lifxStatus_t lifxEncoder_EncodeLightGet(lifxBuffer_t* buff, lifxLightGet_t const* pkt)
 {
   // {'pkt_type': 101, 'size_bytes': 0, 'fields': []}
+  (void) buff;
+  (void) pkt;
   return kLifxStatusOk;
 }
 
 lifxStatus_t lifxDecoder_DecodeLightGet(lifxBuffer_t* buff, lifxLightGet_t* pkt)
 {
   // {'pkt_type': 101, 'size_bytes': 0, 'fields': []}
+  (void) buff;
+  (void) pkt;
   return kLifxStatusOk;
 }
 
@@ -1272,12 +1324,16 @@ lifxStatus_t lifxDecoder_DecodeLightSetWaveform(lifxBuffer_t* buff, lifxLightSet
 lifxStatus_t lifxEncoder_EncodeLightGetPower(lifxBuffer_t* buff, lifxLightGetPower_t const* pkt)
 {
   // {'pkt_type': 116, 'size_bytes': 0, 'fields': []}
+  (void) buff;
+  (void) pkt;
   return kLifxStatusOk;
 }
 
 lifxStatus_t lifxDecoder_DecodeLightGetPower(lifxBuffer_t* buff, lifxLightGetPower_t* pkt)
 {
   // {'pkt_type': 116, 'size_bytes': 0, 'fields': []}
+  (void) buff;
+  (void) pkt;
   return kLifxStatusOk;
 }
 
@@ -1352,12 +1408,16 @@ lifxStatus_t lifxDecoder_DecodeLightState(lifxBuffer_t* buff, lifxLightState_t* 
 lifxStatus_t lifxEncoder_EncodeLightGetInfrared(lifxBuffer_t* buff, lifxLightGetInfrared_t const* pkt)
 {
   // {'pkt_type': 120, 'size_bytes': 0, 'fields': []}
+  (void) buff;
+  (void) pkt;
   return kLifxStatusOk;
 }
 
 lifxStatus_t lifxDecoder_DecodeLightGetInfrared(lifxBuffer_t* buff, lifxLightGetInfrared_t* pkt)
 {
   // {'pkt_type': 120, 'size_bytes': 0, 'fields': []}
+  (void) buff;
+  (void) pkt;
   return kLifxStatusOk;
 }
 
@@ -1396,12 +1456,16 @@ lifxStatus_t lifxDecoder_DecodeLightSetInfrared(lifxBuffer_t* buff, lifxLightSet
 lifxStatus_t lifxEncoder_EncodeTileGetDeviceChain(lifxBuffer_t* buff, lifxTileGetDeviceChain_t const* pkt)
 {
   // {'pkt_type': 701, 'size_bytes': 0, 'fields': []}
+  (void) buff;
+  (void) pkt;
   return kLifxStatusOk;
 }
 
 lifxStatus_t lifxDecoder_DecodeTileGetDeviceChain(lifxBuffer_t* buff, lifxTileGetDeviceChain_t* pkt)
 {
   // {'pkt_type': 701, 'size_bytes': 0, 'fields': []}
+  (void) buff;
+  (void) pkt;
   return kLifxStatusOk;
 }
 
@@ -2000,12 +2064,16 @@ lifxStatus_t lifxDecoder_DecodeMultiZoneStateMultiZone(lifxBuffer_t* buff, lifxM
 lifxStatus_t lifxEncoder_EncodeMultiZoneGetEffect(lifxBuffer_t* buff, lifxMultiZoneGetEffect_t const* pkt)
 {
   // {'pkt_type': 507, 'size_bytes': 0, 'fields': []}
+  (void) buff;
+  (void) pkt;
   return kLifxStatusOk;
 }
 
 lifxStatus_t lifxDecoder_DecodeMultiZoneGetEffect(lifxBuffer_t* buff, lifxMultiZoneGetEffect_t* pkt)
 {
   // {'pkt_type': 507, 'size_bytes': 0, 'fields': []}
+  (void) buff;
+  (void) pkt;
   return kLifxStatusOk;
 }
 
@@ -2238,12 +2306,16 @@ lifxStatus_t lifxDecoder_DecodeMultiZoneExtendedSetColorZones(lifxBuffer_t* buff
 lifxStatus_t lifxEncoder_EncodeMultiZoneExtendedGetColorZones(lifxBuffer_t* buff, lifxMultiZoneExtendedGetColorZones_t const* pkt)
 {
   // {'pkt_type': 511, 'size_bytes': 0, 'fields': []}
+  (void) buff;
+  (void) pkt;
   return kLifxStatusOk;
 }
 
 lifxStatus_t lifxDecoder_DecodeMultiZoneExtendedGetColorZones(lifxBuffer_t* buff, lifxMultiZoneExtendedGetColorZones_t* pkt)
 {
   // {'pkt_type': 511, 'size_bytes': 0, 'fields': []}
+  (void) buff;
+  (void) pkt;
   return kLifxStatusOk;
 }
 

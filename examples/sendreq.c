@@ -43,6 +43,9 @@ int main(int argc, char* argv[])
   lifxDeviceId_t deviceId;
   lifxDeviceStateLabel_t label;
 
+  (void) argc;
+  (void) argv;
+
   lifxSessionConfig_Init(&conf);
   conf.UseBackgroundDispatchThread = true;
   conf.LogLevel = kLifxLogLevelInfo;

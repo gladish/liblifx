@@ -24,6 +24,8 @@
 void discovery_callback(lifxSession_t const* lifx, lifxDeviceId_t deviceId)
 {
   char mac[64];
+
+  (void) lifx;
   lifxDeviceId_ToString(&deviceId, mac, sizeof(mac));
   printf("new device:%s\n", mac);
 }
@@ -32,6 +34,9 @@ int main(int argc, char* argv[])
 {
   lifxSession_t* lifx;
   lifxSessionConfig_t conf;
+
+  (void) argc;
+  (void) argv;
 
   memset(&conf, 0, sizeof(lifxSessionConfig_t));
   conf.UseBackgroundDispatchThread = true;
