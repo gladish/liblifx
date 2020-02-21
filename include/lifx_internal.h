@@ -21,44 +21,9 @@
 #include <sys/socket.h>
 #include <pthread.h>
 
-#define LIFX_IMPORT __attribute__ ((visibility ("internal")))
-
-#ifdef __APPLE__
-#include <libkern/OSByteOrder.h>
-#define lifxHostToLittleInt16(n) OSSwapHostToLittleInt16(n)
-#define lifxLittleToHostInt16(n) OSSwapHostToLittleInt16(x)
-#define lifxHostToLittleInt32(n) OSSwapHostToLittleInt32(n)
-#define lifxLittleToHostInt32(n) OSSwapHostToLittleInt32(x)
-#define lifxHostToLittleInt64(n) OSSwapHostToLittleInt64(n)
-#define lifxLittleToHostInt64(n) OSSwapHostToLittleInt64(x)
-#else
-#include <endian.h>
-#define lifxHostToLittleInt16(n) htole16(n)
-#define lifxLittleToHostInt16(n) le16toh(n)
-#define lifxHostToLittleInt32(n) htole32(n)
-#define lifxLittleToHostInt32(n) le32toh(n)
-#define lifxHostToLittleInt64(n) htole64(n)
-#define lifxLittleToHostInt64(n) le64toh(n)
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#ifdef __GNUC__
-#define LIFX_PRINTF_FORMAT(IDX, FIRST) __attribute__ ((format (printf, IDX, FIRST)))
-#define lifxInterlockedIncrement(X) __atomic_fetch_add((X), 1, __ATOMIC_SEQ_CST)
-#define lifxInterlockedDecrement(X) __atomic_fetch_sub((X), 1, __ATOMIC_SEQ_CST)
-#else
-#define LIFX_PRINTF_FORMAT(IDX, FIRST)
-#error "Not supported"
-#endif
-
-#define kLifxErrorMessageMaxLength (256)
-#define kLifxRequestsMax (16)
-#define kLifxMaxDevices (256)
-#define kLifxSizeofHeader (sizeof(lifxProtocolHeader_t))
-
 
 LIFX_IMPORT struct lifxDevice
 {

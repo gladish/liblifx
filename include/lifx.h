@@ -16,32 +16,15 @@
 #ifndef __LIFX_H__
 #define __LIFX_H__
 
+#include <lifx_defines.h>
 #include <lifx_enums.h>
 #include <lifx_fields.h>
 #include <lifx_packets.h>
+#include <lifx_requests.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#define LIFX_EXPORT __attribute__ ((visibility ("default")))
-
-#define kLifxDefaultBroadcastPort (56700)
-#define kLifxWaitForever (-1)
-#define kLifxDeviceIdSize (6)
-#define kLifxDeviceAllInitializer {{0, 0, 0, 0, 0, 0}}
-#define kLifxDeviceInvalidInitializer {{0xff, 0xff, 0xff, 0xff, 0xff, 0xff}}
-
-struct lifxSession;
-struct lifxFuture;
-
-typedef struct lifxSession lifxSession_t;
-typedef struct lifxFuture lifxFuture_t;
-
-typedef struct
-{
-  uint8_t Octets[kLifxDeviceIdSize];
-} lifxDeviceId_t;
 
 static lifxDeviceId_t const kLifxDeviceAll = kLifxDeviceAllInitializer;
 static lifxDeviceId_t const kLifxDeviceInvalid = kLifxDeviceInvalidInitializer;

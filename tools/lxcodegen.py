@@ -23,6 +23,8 @@ class CodeGenerator:
     self.space += 2
 
   def outdent(self):
+    if self.space == 0:
+      raise Error;
     self.space -= 2
 
   def write(self, str):
@@ -280,6 +282,93 @@ class CodeGenerator:
     self.outdent()
     self.write("}\n")
 
+  def is_request_packet(self, name):
+    for p in [ "DeviceGet", "LightGet", "TileGet", "MultiZoneGet" ]:
+      if name.startswith(p):
+        match = re.search("(Get.*)", name)
+        return match.group(1)
+    return None
+
+  def is_response_packet(self, name):
+    for p in [ "DeviceState", "LightState", "TileState", "MultiZoneState" ]:
+      if name.startswith(p):
+        s = name.replace("State", "Get")
+        return s
+    return None
+
+  def get_method_name(self, name):
+    if name.startswith("DeviceGet"):
+      return "Device_" + name[6:]
+    if name.startswith("LightGet"):
+      return "Light_" + name[5:]
+    return name
+
+  def gen_gets(self, pkts, fields):
+    requests = {}
+    self.open_file("lifx_requests.h")
+    self.emit_guard_prefix("__LIFX_REQUESTS_H__")
+    self.write("#include <lifx_defines.h>\n")
+    self.write("#include <lifx_packets.h>\n")
+    self.write("\n")
+    # multi_zone is bit more complicated since requeset can return either/or
+    for s in ["device", "light", "tile"]: #, "multi_zone"]:
+      for key, val in pkts[s].items():
+        req = self.is_request_packet(key)
+        if req is not None:
+          if key not in requests:
+            requests[key] = {}
+          requests[key]["request"] = key
+          requests[key]["name"] = req
+          requests[key]["method"] = req;
+        res = self.is_response_packet(key)
+        if res is not None:
+          if res not in requests:
+            requests[res] = {}
+          requests[res]["response"] = key 
+
+    for key, val in requests.items():
+      method_name = self.get_method_name(key)
+      if method_name == "Light_Get":
+        continue
+      self.write("LIFX_EXPORT int %s%s(lifxSession_t* lifx, lifxDeviceId_t deviceId, "
+        % (self.prefix, method_name))
+      self.write("%s%s_t* response);\n" % (self.prefix, val["response"]))
+    self.write("\n")
+    self.emit_guard_suffix()
+    self.out.close()
+
+    self.open_file("lifx_requests.c")
+    self.write("#include \"lifx.h\"\n")
+    self.write("\n")
+    for key, val in requests.items():
+      method_name = self.get_method_name(key)
+      if method_name == "Light_Get":
+        continue
+      self.write("int %s%s(lifxSession_t* lifx, lifxDeviceId_t deviceId, "
+        % (self.prefix, method_name))
+      self.write("%s%s_t* response)\n" % (self.prefix, val["response"]))
+      self.write("{\n")
+      self.indent()
+      self.write("int status;\n")
+      self.write("int timeoutMillis;\n")
+      self.write("lifxPacket_t res;\n")
+      self.write("%s%s_t request;\n" % (self.prefix, val["request"]))
+      self.write("\n")
+      self.write("timeoutMillis = 2000;\n")
+      self.write("status = lifxSession_SendRequest(lifx, deviceId, &request, kLifxPacketType%s, &res, timeoutMillis);\n" %
+        (val["request"]))
+      self.write("if (status == 0)\n")
+      self.write("{\n")
+      self.indent()
+      self.write("*response = res.%s;\n" % (val["response"]))
+      self.outdent()
+      self.write("}\n")
+      self.write("return status;\n")
+      self.outdent()
+      self.write("}\n")
+      self.write("\n")
+    self.out.close();
+
   def gen_encoders(self, pkts, fields):
     self.open_file("lifx_encoders.h")
     self.emit_guard_prefix("__LIFX_ENCODERS_H__")
@@ -522,6 +611,7 @@ def main(argv):
       code_generator.gen_fields(doc, doc["fields"])
       code_generator.gen_pkts(doc["packets"])
       code_generator.gen_encoders(doc["packets"], doc["fields"])
+      code_generator.gen_gets(doc["packets"], doc["fields"])
   except yaml.YAMLError as err:
     print(err)
 
