@@ -1,5 +1,5 @@
 //
-// DO NOT EDIT - AUTO-GENERATE:2020-02-20 22:15:30.533538
+// DO NOT EDIT - AUTO-GENERATE:2020-02-21 13:45:06.412789
 //
 #include "lifx.h"
 
@@ -175,6 +175,22 @@ int lifxDevice_GetGroup(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDevice
   if (status == 0)
   {
     *response = res.DeviceStateGroup;
+  }
+  return status;
+}
+
+int lifxLight_Get(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxLightState_t* response)
+{
+  int status;
+  int timeoutMillis;
+  lifxPacket_t res;
+  lifxLightGet_t request;
+  
+  timeoutMillis = 2000;
+  status = lifxSession_SendRequest(lifx, deviceId, &request, kLifxPacketTypeLightGet, &res, timeoutMillis);
+  if (status == 0)
+  {
+    *response = res.LightState;
   }
   return status;
 }

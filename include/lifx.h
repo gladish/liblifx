@@ -107,7 +107,6 @@ typedef struct
   bool                          ReportDuplicateDevices;
 } lifxSessionConfig_t;
 
-
 /**
  *
  */

@@ -26,6 +26,33 @@
 extern "C" {
 #endif
 
+#ifdef __GNUC__
+#define LIFX_PRINTF_FORMAT(IDX, FIRST) __attribute__ ((format (printf, IDX, FIRST)))
+#define lifxInterlockedIncrement(X) __atomic_fetch_add((X), 1, __ATOMIC_SEQ_CST)
+#define lifxInterlockedDecrement(X) __atomic_fetch_sub((X), 1, __ATOMIC_SEQ_CST)
+#else
+#define LIFX_PRINTF_FORMAT(IDX, FIRST)
+#error "Not supported"
+#endif
+
+#ifdef __APPLE__
+#include <libkern/OSByteOrder.h>
+#define lifxHostToLittleInt16(n) OSSwapHostToLittleInt16(n)
+#define lifxLittleToHostInt16(n) OSSwapHostToLittleInt16(x)
+#define lifxHostToLittleInt32(n) OSSwapHostToLittleInt32(n)
+#define lifxLittleToHostInt32(n) OSSwapHostToLittleInt32(x)
+#define lifxHostToLittleInt64(n) OSSwapHostToLittleInt64(n)
+#define lifxLittleToHostInt64(n) OSSwapHostToLittleInt64(x)
+#else
+#include <endian.h>
+#define lifxHostToLittleInt16(n) htole16(n)
+#define lifxLittleToHostInt16(n) le16toh(n)
+#define lifxHostToLittleInt32(n) htole32(n)
+#define lifxLittleToHostInt32(n) le32toh(n)
+#define lifxHostToLittleInt64(n) htole64(n)
+#define lifxLittleToHostInt64(n) le64toh(n)
+#endif
+
 // errno
 typedef int lifxSystemError_t;
 static inline lifxSystemError_t lifxError_GetSystemError()
@@ -39,20 +66,69 @@ typedef pthread_mutex_t lifxMutex_t;
 typedef pthread_cond_t lifxCond_t;
 typedef void* (lifxThreadFunc_t)(void*);
 
-LIFX_IMPORT void lifxThread_Create(lifxThread_t* thread, lifxThreadFunc_t func, void* argp);
-LIFX_IMPORT void lifxMutex_Init(lifxMutex_t* mutex);
-LIFX_IMPORT void lifxMutex_Destroy(lifxMutex_t* mutex);
-LIFX_IMPORT void lifxMutex_Lock(lifxMutex_t* mutex);
-LIFX_IMPORT void lifxMutex_Unlock(lifxMutex_t* mutex);
-LIFX_IMPORT void lifxCond_Init(lifxCond_t* cond);
-LIFX_IMPORT void lifxCond_Destroy(lifxCond_t* cond);
-LIFX_IMPORT void lifxCond_NotifyAll(lifxCond_t* cond);
-LIFX_IMPORT lifxStatus_t lifxCond_TimedWait(
-  lifxCond_t*  cond,
-  lifxMutex_t*  mutex,
-  int          timeoutMillis);
+/**
+ *
+ */
+LIFX_IMPORT void lifxThread_Create(
+  lifxThread_t*           thread,
+  lifxThreadFunc_t        startRoutine,
+  void*                   argp);
 
-LIFX_IMPORT struct lifxDevice
+/**
+ *
+ */
+LIFX_IMPORT void lifxMutex_Init(
+  lifxMutex_t*            mutex);
+
+/**
+ *
+ */
+LIFX_IMPORT void lifxMutex_Destroy(
+  lifxMutex_t*            mutex);
+
+/**
+ *
+ */
+LIFX_IMPORT void lifxMutex_Lock(
+  lifxMutex_t*            mutex);
+
+/**
+ *
+ */
+LIFX_IMPORT void lifxMutex_Unlock(
+  lifxMutex_t*            mutex);
+
+/**
+ *
+ */
+LIFX_IMPORT void lifxCond_Init(
+  lifxCond_t*             cond);
+
+/**
+ *
+ */
+LIFX_IMPORT void lifxCond_Destroy(
+  lifxCond_t*             cond);
+
+/**
+ *
+ */
+LIFX_IMPORT void lifxCond_NotifyAll(
+  lifxCond_t*             cond);
+  
+
+/**
+ *
+ */
+LIFX_IMPORT lifxStatus_t lifxCond_TimedWait(
+  lifxCond_t*             cond,
+  lifxMutex_t*            mutex,
+  int                     timeoutMillis);
+
+/**
+ *
+ */
+struct lifxDevice
 {
   lifxDeviceId_t          DeviceId; 
   struct sockaddr_storage Endpoint;
@@ -61,7 +137,7 @@ LIFX_IMPORT struct lifxDevice
 typedef uint8_t lifxSequence_t;
 typedef struct lifxDevice lifxDevice_t;
 
-LIFX_IMPORT struct lifxFuture
+struct lifxFuture
 {
   lifxMutex_t             Mutex;
   lifxCond_t              Cond;
@@ -73,7 +149,7 @@ LIFX_IMPORT struct lifxFuture
 };
 
 
-LIFX_IMPORT struct lifxSession
+struct lifxSession
 {
   int                     Socket;
   uint32_t                SourceId;
@@ -182,35 +258,163 @@ LIFX_IMPORT void lifxSockaddr_ToString(
   int                             n,
   uint16_t*                       port);
 
-LIFX_IMPORT lifxStatus_t lifxBuffer_Init(lifxBuffer_t* buff, int n);
-LIFX_IMPORT lifxStatus_t lifxBuffer_Destroy(lifxBuffer_t* buff);
-LIFX_IMPORT lifxStatus_t lifxBuffer_Seek(lifxBuffer_t* buff, int offset, lifxBufferWhence whence);
-LIFX_IMPORT lifxStatus_t lifxBuffer_Write(lifxBuffer_t* buff, void const* data, int n);
-LIFX_IMPORT lifxStatus_t lifxBuffer_WriteUInt8(lifxBuffer_t* buff, uint8_t n);
-LIFX_IMPORT lifxStatus_t lifxBuffer_WriteBool(lifxBuffer_t* buff, bool b);
-LIFX_IMPORT lifxStatus_t lifxBuffer_WriteInt16(lifxBuffer_t* buff, int16_t n);
-LIFX_IMPORT lifxStatus_t lifxBuffer_WriteUInt16(lifxBuffer_t* buff, uint16_t n);
-LIFX_IMPORT lifxStatus_t lifxBuffer_WriteInt32(lifxBuffer_t* buff, int32_t n);
-LIFX_IMPORT lifxStatus_t lifxBuffer_WriteUInt32(lifxBuffer_t* buff, uint32_t n);
-LIFX_IMPORT lifxStatus_t lifxBuffer_WriteUInt64(lifxBuffer_t* buff, uint64_t n);
-LIFX_IMPORT lifxStatus_t lifxBuffer_WriteFloat(lifxBuffer_t* buff, float n);
-LIFX_IMPORT lifxStatus_t lifxBuffer_Read(lifxBuffer_t* buff, void* data, int n);
-LIFX_IMPORT lifxStatus_t lifxBuffer_ReadUInt8(lifxBuffer_t* buff, uint8_t* n);
-LIFX_IMPORT lifxStatus_t lifxBuffer_ReadInt16(lifxBuffer_t* buff, int16_t* n);
-LIFX_IMPORT lifxStatus_t lifxBuffer_ReadUInt16(lifxBuffer_t* buff, uint16_t* n);
-LIFX_IMPORT lifxStatus_t lifxBuffer_ReadInt32(lifxBuffer_t* buff, int32_t* n);
-LIFX_IMPORT lifxStatus_t lifxBuffer_ReadUInt32(lifxBuffer_t* buff, uint32_t* n);
-LIFX_IMPORT lifxStatus_t lifxBuffer_ReadUInt64(lifxBuffer_t* buff, uint64_t* n);
-LIFX_IMPORT lifxStatus_t lifxBuffer_ReadFloat(lifxBuffer_t* buff, float* f);
-LIFX_IMPORT lifxStatus_t lifxBuffer_ReadBool(lifxBuffer_t* buff, bool* b);
+/**
+ *
+ */
+LIFX_IMPORT lifxStatus_t lifxBuffer_Init(
+  lifxBuffer_t*                   buff,
+  int                             n);
+
+
+/**
+ *
+ */
+LIFX_IMPORT lifxStatus_t lifxBuffer_Destroy(
+  lifxBuffer_t*                   buff);
+
+/**
+ *
+ */
+LIFX_IMPORT lifxStatus_t lifxBuffer_Seek(
+  lifxBuffer_t*                   buff,
+  int                             offset,
+  lifxBufferWhence                whence);
+
+/**
+ *
+ */
+LIFX_IMPORT lifxStatus_t lifxBuffer_Write(
+  lifxBuffer_t*                   buff,
+  void const*                     data,
+  int                             n);
+
+/**
+ *
+ */
+LIFX_IMPORT lifxStatus_t lifxBuffer_WriteUInt8(
+  lifxBuffer_t*                   buff,
+  uint8_t                         n);
+
+/**
+ *
+ */
+LIFX_IMPORT lifxStatus_t lifxBuffer_WriteBool(
+  lifxBuffer_t*                   buff,
+  bool                            b);
+
+/**
+ *
+ */
+LIFX_IMPORT lifxStatus_t lifxBuffer_WriteInt16(
+  lifxBuffer_t*                   buff,
+  int16_t                         n);
+
+/**
+ *
+ */
+LIFX_IMPORT lifxStatus_t lifxBuffer_WriteUInt16(
+  lifxBuffer_t*                   buff,
+  uint16_t                        n);
+
+/**
+ *
+ */
+LIFX_IMPORT lifxStatus_t lifxBuffer_WriteInt32(
+  lifxBuffer_t*                   buff,
+  int32_t                         n);
+
+/**
+ *
+ */
+LIFX_IMPORT lifxStatus_t lifxBuffer_WriteUInt32(
+  lifxBuffer_t*                   buff,
+  uint32_t                        n);
+
+/**
+ *
+ */
+LIFX_IMPORT lifxStatus_t lifxBuffer_WriteUInt64(
+  lifxBuffer_t*                   buff,
+  uint64_t                        n);
+
+/**
+ *
+ */
+LIFX_IMPORT lifxStatus_t lifxBuffer_WriteFloat(
+  lifxBuffer_t*                   buff, 
+  float                           n);
+
+/**
+ *
+ */
+LIFX_IMPORT lifxStatus_t lifxBuffer_Read(
+  lifxBuffer_t*                   buff,
+  void*                           data,
+  int                             n);
+
+/**
+ *
+ */
+LIFX_IMPORT lifxStatus_t lifxBuffer_ReadUInt8(
+  lifxBuffer_t*                   buff,
+  uint8_t*                        n);
+
+/**
+ *
+ */
+LIFX_IMPORT lifxStatus_t lifxBuffer_ReadInt16(
+  lifxBuffer_t*                   buff,
+  int16_t*                        n);
+
+/**
+ *
+ */
+LIFX_IMPORT lifxStatus_t lifxBuffer_ReadUInt16(
+  lifxBuffer_t*                   buff,
+  uint16_t*                       n);
+
+/**
+ *
+ */
+LIFX_IMPORT lifxStatus_t lifxBuffer_ReadInt32(
+  lifxBuffer_t*                   buff,
+  int32_t*                        n);
+
+/**
+ *
+ */
+LIFX_IMPORT lifxStatus_t lifxBuffer_ReadUInt32(
+  lifxBuffer_t*                   buff,
+  uint32_t*                       n);
+
+/**
+ *
+ */
+LIFX_IMPORT lifxStatus_t lifxBuffer_ReadUInt64(
+  lifxBuffer_t*                   buff,
+  uint64_t*                       n);
+
+/**
+ *
+ */
+LIFX_IMPORT lifxStatus_t lifxBuffer_ReadFloat(
+  lifxBuffer_t*                   buff,
+  float*                          f);
+
+/**
+ *
+ */
+LIFX_IMPORT lifxStatus_t lifxBuffer_ReadBool(
+  lifxBuffer_t*                   buff,
+  bool*                           b);
 
 /**
  *
  */
 LIFX_IMPORT void lxLog_Printf(
-  lifxSession_t*                lifx,
-  lifxLogLevel_t                level,
-  const char*                   format, ...) LIFX_PRINTF_FORMAT(3, 4);
+  lifxSession_t*                  lifx,
+  lifxLogLevel_t                  level,
+  const char*                     format, ...) LIFX_PRINTF_FORMAT(3, 4);
 
 #define lxLog_Print(SESS, LEVEL, FORMAT, ...) do { lxLog_Printf(SESS, LEVEL, FORMAT, ## __VA_ARGS__); } while (0)
 #define lxLog_Debug(SESS, FORMAT, ...) lxLog_Print(SESS, kLifxLogLevelDebug, FORMAT, ## __VA_ARGS__)

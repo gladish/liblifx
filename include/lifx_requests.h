@@ -1,5 +1,5 @@
 //
-// DO NOT EDIT - AUTO-GENERATE:2020-02-20 22:15:30.533064
+// DO NOT EDIT - AUTO-GENERATE:2020-02-21 13:45:06.412240
 //
 #ifndef __LIFX_REQUESTS_H__
 #define __LIFX_REQUESTS_H__
@@ -22,6 +22,7 @@ LIFX_EXPORT int lifxDevice_GetVersion(lifxSession_t* lifx, lifxDeviceId_t device
 LIFX_EXPORT int lifxDevice_GetInfo(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDeviceStateInfo_t* response);
 LIFX_EXPORT int lifxDevice_GetLocation(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDeviceStateLocation_t* response);
 LIFX_EXPORT int lifxDevice_GetGroup(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDeviceStateGroup_t* response);
+LIFX_EXPORT int lifxLight_Get(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxLightState_t* response);
 LIFX_EXPORT int lifxLight_GetPower(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxLightStatePower_t* response);
 LIFX_EXPORT int lifxLight_GetInfrared(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxLightStateInfrared_t* response);
 LIFX_EXPORT int lifxTileGetDeviceChain(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxTileStateDeviceChain_t* response);

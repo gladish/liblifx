@@ -331,6 +331,8 @@ class CodeGenerator:
           requests[key]["request"] = key
           requests[key]["name"] = req
           requests[key]["method"] = req;
+          if key == "Light_Get":
+            requests[key]["response"] = "LightState"
         res = self.is_response_packet(key)
         if res is not None:
           if res not in requests:
@@ -339,8 +341,8 @@ class CodeGenerator:
 
     for key, val in requests.items():
       method_name = self.get_method_name(key)
-      if method_name == "Light_Get":
-        continue
+#      if method_name == "Light_Get":
+#        continue
       self.write("LIFX_EXPORT int %s%s(lifxSession_t* lifx, lifxDeviceId_t deviceId, "
         % (self.prefix, method_name))
       self.write("%s%s_t* response);\n" % (self.prefix, val["response"]))
@@ -353,8 +355,8 @@ class CodeGenerator:
     self.write("\n")
     for key, val in requests.items():
       method_name = self.get_method_name(key)
-      if method_name == "Light_Get":
-        continue
+#      if method_name == "Light_Get":
+#        continue
       self.write("int %s%s(lifxSession_t* lifx, lifxDeviceId_t deviceId, "
         % (self.prefix, method_name))
       self.write("%s%s_t* response)\n" % (self.prefix, val["response"]))

@@ -32,33 +32,6 @@
 #define kLifxSizeofHeader (sizeof(lifxProtocolHeader_t))
 #define kLifxErrorMessageMax (256)
 
-#ifdef __GNUC__
-#define LIFX_PRINTF_FORMAT(IDX, FIRST) __attribute__ ((format (printf, IDX, FIRST)))
-#define lifxInterlockedIncrement(X) __atomic_fetch_add((X), 1, __ATOMIC_SEQ_CST)
-#define lifxInterlockedDecrement(X) __atomic_fetch_sub((X), 1, __ATOMIC_SEQ_CST)
-#else
-#define LIFX_PRINTF_FORMAT(IDX, FIRST)
-#error "Not supported"
-#endif
-
-#ifdef __APPLE__
-#include <libkern/OSByteOrder.h>
-#define lifxHostToLittleInt16(n) OSSwapHostToLittleInt16(n)
-#define lifxLittleToHostInt16(n) OSSwapHostToLittleInt16(x)
-#define lifxHostToLittleInt32(n) OSSwapHostToLittleInt32(n)
-#define lifxLittleToHostInt32(n) OSSwapHostToLittleInt32(x)
-#define lifxHostToLittleInt64(n) OSSwapHostToLittleInt64(n)
-#define lifxLittleToHostInt64(n) OSSwapHostToLittleInt64(x)
-#else
-#include <endian.h>
-#define lifxHostToLittleInt16(n) htole16(n)
-#define lifxLittleToHostInt16(n) le16toh(n)
-#define lifxHostToLittleInt32(n) htole32(n)
-#define lifxLittleToHostInt32(n) le32toh(n)
-#define lifxHostToLittleInt64(n) htole64(n)
-#define lifxLittleToHostInt64(n) le64toh(n)
-
-
 struct lifxSession;
 struct lifxFuture;
 
@@ -81,6 +54,4 @@ typedef enum
   kLifxStatusFailed
 } lifxStatus_t;
 
-
-#endif
 #endif

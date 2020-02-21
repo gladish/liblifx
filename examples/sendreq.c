@@ -60,6 +60,23 @@ int main(int argc, char* argv[])
   ret = lifxDevice_GetLabel(lifx, deviceId, &label);
   if (ret == 0)
     printf("label:%s\n", label.Label);
+
+  if (ret == 0)
+  {
+    lifxLightState_t lightState;
+    ret = lifxLight_Get(lifx, deviceId, &lightState);
+    if (ret == 0)
+    {
+      printf("Light State\n");
+      printf("\tColor {Hue:%d Saturation:%d Brightness:%d Kelvin:%d}\n",
+        lightState.Color.Hue,
+        lightState.Color.Saturation,
+        lightState.Color.Brightness,
+        lightState.Color.Kelvin);
+      printf("\tLabel:%s\n", lightState.Label);
+    }
+  }
+
   lifxSession_Close(lifx);
 
   return 0;
