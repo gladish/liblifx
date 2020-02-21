@@ -22,7 +22,6 @@
 // JUST PROTOTYPING API 
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-
 // lifx.h -- lifx.c
 // won't need this
 int lifxStringCopy(char* dest, int destLength, uint8_t const* source, int sourceLength)
@@ -34,25 +33,6 @@ int lifxStringCopy(char* dest, int destLength, uint8_t const* source, int source
   dest[n] = '\0';
   return 0;
 }
-
-// this is generatable from protocol.yml for all packets that match
-// get. Not sure about set.
-int lifxDevice_GetLabel(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDeviceStateLabel_t* res)
-{
-  int ret;
-  int timeoutMillis;
-  lifxPacket_t response;
-  lifxDeviceGetLabel_t request;
-
-  timeoutMillis = 2000; // TODO: get this from lifxSession_t as configuration param
-
-  ret = lifxSession_SendRequest(lifx, deviceId, &request, kLifxPacketTypeDeviceGetLabel, &response, timeoutMillis);
-  if ((ret == 0) && (res != NULL))
-    *res = response.DeviceStateLabel;
-
-  return ret;
-}
-
 
 int main(int argc, char* argv[])
 {
