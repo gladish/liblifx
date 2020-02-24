@@ -36,14 +36,14 @@ extern "C" {
 #error "Not supported"
 #endif
 
-#ifdef __APPLE__
+#ifdef LIFX_PLATFORM_MACOSX
 #include <libkern/OSByteOrder.h>
 #define lifxHostToLittleInt16(n) OSSwapHostToLittleInt16(n)
-#define lifxLittleToHostInt16(n) OSSwapHostToLittleInt16(x)
+#define lifxLittleToHostInt16(n) OSSwapHostToLittleInt16(n)
 #define lifxHostToLittleInt32(n) OSSwapHostToLittleInt32(n)
-#define lifxLittleToHostInt32(n) OSSwapHostToLittleInt32(x)
+#define lifxLittleToHostInt32(n) OSSwapHostToLittleInt32(n)
 #define lifxHostToLittleInt64(n) OSSwapHostToLittleInt64(n)
-#define lifxLittleToHostInt64(n) OSSwapHostToLittleInt64(x)
+#define lifxLittleToHostInt64(n) OSSwapHostToLittleInt64(n)
 #else
 #include <endian.h>
 #define lifxHostToLittleInt16(n) htole16(n)

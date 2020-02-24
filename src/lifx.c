@@ -98,7 +98,6 @@ char const* lifx_Version()
 
 char const* lifxError_ToString(lifxSystemError_t system_error)
 {
-  int n;
   char const* buff;
   lifxErrorThreadSpecific_t* specific;
   
@@ -108,7 +107,7 @@ char const* lifxError_ToString(lifxSystemError_t system_error)
   if (specific)
   {
     #ifdef __linux__
-    n = strerror_r(system_error, specific->LastErrorMessage, kLifxErrorMessageMaxLength - 1);
+    int n = strerror_r(system_error, specific->LastErrorMessage, kLifxErrorMessageMaxLength - 1);
     if (!n)
       buff = specific->LastErrorMessage;
     #else

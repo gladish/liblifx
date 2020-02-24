@@ -15,6 +15,7 @@
 //
 #include "lifx_private.h"
 
+#include <inttypes.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <sys/time.h>
@@ -24,7 +25,7 @@
 #include <unistd.h>
 #endif
 
-#ifdef __APPLE__
+#ifdef LIFX_PLATFORM_MACOSX
 typedef uint64_t lifxThreadId_t;
 #define LIFX_THREADID_FMT PRIu64
 #elif defined WIN32
@@ -50,7 +51,7 @@ static char const* lifxLogLevelToString(lifxLogLevel_t level)
 
 lifxThreadId_t lifxThreadGetCurrentId()
 {
-#ifdef __APPLE__
+#ifdef LIFX_PLATFORM_MACOSX
   uint64_t threadId = 0;
   pthread_threadid_np(NULL, &threadId);
   return threadId;
@@ -84,8 +85,13 @@ void lxLog_Printf(lifxSession_t* lifx, lifxLogLevel_t level, char const* format,
     gettimeofday(&now, NULL);
 
     pthread_mutex_lock(&lock);
+    #ifdef LIFX_PLATFORM_MACOSX
+    printf("%ld.%06d %5s -- Thread-%" LIFX_THREADID_FMT ": ", now.tv_sec, now.tv_usec,
+        lifxLogLevelToString(level), lifxThreadGetCurrentId());
+    #else
     printf("%ld.%06ld %5s -- Thread-%" LIFX_THREADID_FMT ": ", now.tv_sec, now.tv_usec,
         lifxLogLevelToString(level), lifxThreadGetCurrentId());
+    #endif
     vprintf(format, argp);
     printf("\n");
     pthread_mutex_unlock(&lock);

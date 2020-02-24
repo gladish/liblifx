@@ -17,6 +17,11 @@ set(CMAKE_CXX_FLAGS_DEBUG "-Wall -Wextra -g -O0 -fno-inline") # -Weffc++ ")
 set(CMAKE_CXX_FLAGS_RELEASE "-Werror -Wall -Wextra") # -Weffc++")
 enable_testing()
 
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  set(MACOSX TRUE)
+  add_definitions(-DLIFX_PLATFORM_MACOSX)
+endif()
+
 if (ENABLE_TIDY)
   set(CMAKE_C_CLANG_TIDY
   clang-tidy;
@@ -96,7 +101,11 @@ add_library(
 configure_file("include/lifx_version.h.in" "${CMAKE_CURRENT_SOURCE_DIR}/include/lifx_version.h")
 include_directories(lifx ${CMAKE_CURRENT_BINARY_DIR}/deps/src)
 include_directories(lifx ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_link_libraries(lifx ${CMAKE_THREAD_LIBS_INIT} rt)
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+  target_link_libraries(lifx ${CMAKE_THREAD_LIBS_INIT} rt)
+else()
+  target_link_libraries(lifx ${CMAKE_THREAD_LIBS_INIT})
+endif()
 #add_dependencies(lifx generate_sources)
 #add_dependencies(generate_sources lifx_yaml_file)
 ########################################################
