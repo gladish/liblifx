@@ -1,11 +1,11 @@
 //
-// DO NOT EDIT - AUTO-GENERATE:2020-02-21 15:04:04.603362
+// DO NOT EDIT - AUTO-GENERATE:2020-02-24 16:44:03.998739
 //
 #include "lifx.h"
 
-int lifxDevice_GetService(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDeviceStateService_t* response)
+lifxStatus_t lifxDevice_GetService(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDeviceStateService_t* response)
 {
-  int status;
+  lifxStatus_t status;
   int timeoutMillis;
   lifxPacket_t res;
   lifxDeviceGetService_t request;
@@ -19,9 +19,9 @@ int lifxDevice_GetService(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDevi
   return status;
 }
 
-int lifxDevice_GetHostInfo(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDeviceStateHostInfo_t* response)
+lifxStatus_t lifxDevice_GetHostInfo(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDeviceStateHostInfo_t* response)
 {
-  int status;
+  lifxStatus_t status;
   int timeoutMillis;
   lifxPacket_t res;
   lifxDeviceGetHostInfo_t request;
@@ -35,9 +35,9 @@ int lifxDevice_GetHostInfo(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDev
   return status;
 }
 
-int lifxDevice_GetHostFirmware(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDeviceStateHostFirmware_t* response)
+lifxStatus_t lifxDevice_GetHostFirmware(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDeviceStateHostFirmware_t* response)
 {
-  int status;
+  lifxStatus_t status;
   int timeoutMillis;
   lifxPacket_t res;
   lifxDeviceGetHostFirmware_t request;
@@ -51,9 +51,9 @@ int lifxDevice_GetHostFirmware(lifxSession_t* lifx, lifxDeviceId_t deviceId, lif
   return status;
 }
 
-int lifxDevice_GetWifiInfo(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDeviceStateWifiInfo_t* response)
+lifxStatus_t lifxDevice_GetWifiInfo(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDeviceStateWifiInfo_t* response)
 {
-  int status;
+  lifxStatus_t status;
   int timeoutMillis;
   lifxPacket_t res;
   lifxDeviceGetWifiInfo_t request;
@@ -67,9 +67,9 @@ int lifxDevice_GetWifiInfo(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDev
   return status;
 }
 
-int lifxDevice_GetWifiFirmware(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDeviceStateWifiFirmware_t* response)
+lifxStatus_t lifxDevice_GetWifiFirmware(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDeviceStateWifiFirmware_t* response)
 {
-  int status;
+  lifxStatus_t status;
   int timeoutMillis;
   lifxPacket_t res;
   lifxDeviceGetWifiFirmware_t request;
@@ -83,9 +83,9 @@ int lifxDevice_GetWifiFirmware(lifxSession_t* lifx, lifxDeviceId_t deviceId, lif
   return status;
 }
 
-int lifxDevice_GetPower(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDeviceStatePower_t* response)
+lifxStatus_t lifxDevice_GetPower(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDeviceStatePower_t* response)
 {
-  int status;
+  lifxStatus_t status;
   int timeoutMillis;
   lifxPacket_t res;
   lifxDeviceGetPower_t request;
@@ -99,9 +99,9 @@ int lifxDevice_GetPower(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDevice
   return status;
 }
 
-int lifxDevice_GetLabel(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDeviceStateLabel_t* response)
+lifxStatus_t lifxDevice_GetLabel(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDeviceStateLabel_t* response)
 {
-  int status;
+  lifxStatus_t status;
   int timeoutMillis;
   lifxPacket_t res;
   lifxDeviceGetLabel_t request;
@@ -115,9 +115,9 @@ int lifxDevice_GetLabel(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDevice
   return status;
 }
 
-int lifxDevice_GetVersion(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDeviceStateVersion_t* response)
+lifxStatus_t lifxDevice_GetVersion(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDeviceStateVersion_t* response)
 {
-  int status;
+  lifxStatus_t status;
   int timeoutMillis;
   lifxPacket_t res;
   lifxDeviceGetVersion_t request;
@@ -131,9 +131,9 @@ int lifxDevice_GetVersion(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDevi
   return status;
 }
 
-int lifxDevice_GetInfo(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDeviceStateInfo_t* response)
+lifxStatus_t lifxDevice_GetInfo(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDeviceStateInfo_t* response)
 {
-  int status;
+  lifxStatus_t status;
   int timeoutMillis;
   lifxPacket_t res;
   lifxDeviceGetInfo_t request;
@@ -147,9 +147,9 @@ int lifxDevice_GetInfo(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDeviceS
   return status;
 }
 
-int lifxDevice_GetLocation(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDeviceStateLocation_t* response)
+lifxStatus_t lifxDevice_GetLocation(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDeviceStateLocation_t* response)
 {
-  int status;
+  lifxStatus_t status;
   int timeoutMillis;
   lifxPacket_t res;
   lifxDeviceGetLocation_t request;
@@ -163,9 +163,9 @@ int lifxDevice_GetLocation(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDev
   return status;
 }
 
-int lifxDevice_GetGroup(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDeviceStateGroup_t* response)
+lifxStatus_t lifxDevice_GetGroup(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDeviceStateGroup_t* response)
 {
-  int status;
+  lifxStatus_t status;
   int timeoutMillis;
   lifxPacket_t res;
   lifxDeviceGetGroup_t request;
@@ -179,9 +179,9 @@ int lifxDevice_GetGroup(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxDevice
   return status;
 }
 
-int lifxLight_Get(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxLightState_t* response)
+lifxStatus_t lifxLight_Get(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxLightState_t* response)
 {
-  int status;
+  lifxStatus_t status;
   int timeoutMillis;
   lifxPacket_t res;
   lifxLightGet_t request;
@@ -195,9 +195,9 @@ int lifxLight_Get(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxLightState_t
   return status;
 }
 
-int lifxLight_GetPower(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxLightStatePower_t* response)
+lifxStatus_t lifxLight_GetPower(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxLightStatePower_t* response)
 {
-  int status;
+  lifxStatus_t status;
   int timeoutMillis;
   lifxPacket_t res;
   lifxLightGetPower_t request;
@@ -211,9 +211,9 @@ int lifxLight_GetPower(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxLightSt
   return status;
 }
 
-int lifxLight_GetInfrared(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxLightStateInfrared_t* response)
+lifxStatus_t lifxLight_GetInfrared(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxLightStateInfrared_t* response)
 {
-  int status;
+  lifxStatus_t status;
   int timeoutMillis;
   lifxPacket_t res;
   lifxLightGetInfrared_t request;
@@ -227,9 +227,9 @@ int lifxLight_GetInfrared(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxLigh
   return status;
 }
 
-int lifxTileGetDeviceChain(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxTileStateDeviceChain_t* response)
+lifxStatus_t lifxTileGetDeviceChain(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxTileStateDeviceChain_t* response)
 {
-  int status;
+  lifxStatus_t status;
   int timeoutMillis;
   lifxPacket_t res;
   lifxTileGetDeviceChain_t request;
@@ -243,9 +243,9 @@ int lifxTileGetDeviceChain(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxTil
   return status;
 }
 
-int lifxTileGet64(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxTileState64_t* response)
+lifxStatus_t lifxTileGet64(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxTileState64_t* response)
 {
-  int status;
+  lifxStatus_t status;
   int timeoutMillis;
   lifxPacket_t res;
   lifxTileGet64_t request;
@@ -259,9 +259,9 @@ int lifxTileGet64(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxTileState64_
   return status;
 }
 
-int lifxTileGetEffect(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxTileStateEffect_t* response)
+lifxStatus_t lifxTileGetEffect(lifxSession_t* lifx, lifxDeviceId_t deviceId, lifxTileStateEffect_t* response)
 {
-  int status;
+  lifxStatus_t status;
   int timeoutMillis;
   lifxPacket_t res;
   lifxTileGetEffect_t request;

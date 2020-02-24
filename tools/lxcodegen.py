@@ -343,7 +343,7 @@ class CodeGenerator:
       method_name = self.get_method_name(key)
 #      if method_name == "Light_Get":
 #        continue
-      self.write("LIFX_EXPORT int %s%s(lifxSession_t* lifx, lifxDeviceId_t deviceId, "
+      self.write("LIFX_EXPORT lifxStatus_t %s%s(lifxSession_t* lifx, lifxDeviceId_t deviceId, "
         % (self.prefix, method_name))
       self.write("%s%s_t* response);\n" % (self.prefix, val["response"]))
     self.write("\n")
@@ -357,12 +357,12 @@ class CodeGenerator:
       method_name = self.get_method_name(key)
 #      if method_name == "Light_Get":
 #        continue
-      self.write("int %s%s(lifxSession_t* lifx, lifxDeviceId_t deviceId, "
+      self.write("lifxStatus_t %s%s(lifxSession_t* lifx, lifxDeviceId_t deviceId, "
         % (self.prefix, method_name))
       self.write("%s%s_t* response)\n" % (self.prefix, val["response"]))
       self.write("{\n")
       self.indent()
-      self.write("int status;\n")
+      self.write("lifxStatus_t status;\n")
       self.write("int timeoutMillis;\n")
       self.write("lifxPacket_t res;\n")
       self.write("%s%s_t request;\n" % (self.prefix, val["request"]))
