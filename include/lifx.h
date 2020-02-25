@@ -136,7 +136,13 @@ LIFX_EXPORT char const* lifx_Version();
  *
  */
 LIFX_EXPORT lifxStatus_t lifxSessionConfig_Init(
-  lifxSessionConfig_t*  conf);
+  lifxSessionConfig_t*        conf);
+
+/**
+ *
+ */
+LIFX_EXPORT lifxStatus_t lifxSessionConfig_InitWithDefaults(
+  lifxSessionConfig_t*        conf);
 
 /**
  *

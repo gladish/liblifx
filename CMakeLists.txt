@@ -91,16 +91,21 @@ ExternalProject_Add(
 ########################################################
 
 ########################################################
+set(lifx_SOURCES)
+list(APPEND lifx_SOURCES src/lifx.c)
+list(APPEND lifx_SOURCES src/lifx_buffer.c)
+list(APPEND lifx_SOURCES src/lifx_encoders.c)
+list(APPEND lifx_SOURCES src/lifx_log.c)
+list(APPEND lifx_SOURCES src/lifx_requests.c)
+list(APPEND lifx_SOURCES src/lifx_session.c)
+if ((LINUX) OR (MACOSX))
+list(APPEND lifx_SOURCES src/lifx_platform_posix.c)
+endif()
 # liblifx
 add_library(
   lifx
   SHARED
-  src/lifx.c
-  src/lifx_buffer.c
-  src/lifx_encoders.c
-  src/lifx_log.c
-  src/lifx_requests.c
-  src/lifx_session.c)
+  ${lifx_SOURCES})
 configure_file("include/lifx_version.h.in" "${CMAKE_CURRENT_SOURCE_DIR}/include/lifx_version.h")
 include_directories(lifx ${CMAKE_CURRENT_BINARY_DIR}/deps/src)
 include_directories(lifx ${CMAKE_CURRENT_SOURCE_DIR}/include)

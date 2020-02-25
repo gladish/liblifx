@@ -38,18 +38,13 @@ int main(int argc, char* argv[])
 {
   lifxStatus_t status;
   lifxSession_t* lifx;
-  lifxSessionConfig_t conf;
   lifxDeviceId_t device_id;
   lifxDeviceStateLabel_t label;
 
   (void) argc;
   (void) argv;
 
-  lifxSessionConfig_Init(&conf);
-  conf.UseBackgroundDispatchThread = true;
-  conf.LogLevel = kLifxLogLevelInfo;
-
-  lifx = lifxSession_Open(&conf);
+  lifx = lifxSession_Open(NULL);
   lifxSession_StartDiscovery(lifx);
   sleep(3);
 

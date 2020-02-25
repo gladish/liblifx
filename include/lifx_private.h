@@ -18,11 +18,6 @@
 
 #include "lifx.h"
 
-#include <errno.h>
-#include <netinet/in.h>
-#include <pthread.h>
-#include <sys/socket.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -36,7 +31,22 @@ extern "C" {
 #error "Not supported"
 #endif
 
+#if defined(LIFX_PLATFORM_LINUX) || defined(LIFX_PLATFORM_MACOSX)
+#include <assert.h>
+#include <errno.h>
+#include <netinet/in.h>
+#include <pthread.h>
+#include <sys/socket.h>
+// errno
+typedef int lifxSystemError_t; 
+typedef pthread_t lifxThread_t;
+typedef pthread_mutex_t lifxMutex_t;
+typedef pthread_cond_t lifxCond_t;
+typedef void* (lifxThreadFunc_t)(void*);
 #define LIFX_ASSERT(X) assert((X))
+#else
+#error "Not implemented"
+#endif
 
 #ifdef LIFX_PLATFORM_MACOSX
 #include <libkern/OSByteOrder.h>
@@ -48,7 +58,6 @@ extern "C" {
 #define lifxLittleToHostInt64(n) OSSwapHostToLittleInt64(n)
 #elif LIFX_PLATFORM_LINUX
 #include <endian.h>
-#include <assert.h>
 #define lifxHostToLittleInt16(n) htole16(n)
 #define lifxLittleToHostInt16(n) le16toh(n)
 #define lifxHostToLittleInt32(n) htole32(n)
@@ -59,18 +68,10 @@ extern "C" {
 #error "Not implemented"
 #endif
 
-// errno
-typedef int lifxSystemError_t;
-static inline lifxSystemError_t lifxError_GetSystemError()
-{
-  return errno;
-}
-
-// threads
-typedef pthread_t lifxThread_t;
-typedef pthread_mutex_t lifxMutex_t;
-typedef pthread_cond_t lifxCond_t;
-typedef void* (lifxThreadFunc_t)(void*);
+/**
+ *
+ */
+LIFX_IMPORT lifxSystemError_t lifxError_GetSystemError();
 
 /**
  *

@@ -132,13 +132,9 @@ lifxSession_t* lifxSession_Open(lifxSessionConfig_t const* conf)
   // set this as early as possible to avoid uninitialized reads
   lifx->Config.LogLevel = kLifxLogLevelInfo;
   if (conf)
-  {
     lifxSessionConfig_Copy(&lifx->Config, conf);
-  }
   else
-  {
-    // TODO(jacob_gladish@yahoo.com): set default config
-  }
+    lifxSessionConfig_InitWithDefaults(&lifx->Config);
 
   memset(lifx->LastErrorMessage, 0, kLifxErrorMessageMax);
   lifx->LastError = kLifxStatusOk;
@@ -178,9 +174,9 @@ lifxSession_t* lifxSession_Open(lifxSessionConfig_t const* conf)
 
     bind_addr_length = sizeof(struct sockaddr_in);
     memset(&bind_addr, 0, sizeof(struct sockaddr_in));
-    inet_pton(AF_INET, conf->BindInterface, &bind_addr);
+    inet_pton(AF_INET, lifx->Config.BindInterface, &bind_addr);
 
-    lxLog_Info(lifx, "binding to %s", conf->BindInterface);
+    lxLog_Info(lifx, "binding to %s", lifx->Config.BindInterface);
 
     ret = bind(lifx->Socket, (struct sockaddr *) &bind_addr, bind_addr_length);
     if (ret != 0)
@@ -620,6 +616,17 @@ lifxStatus_t lifxSessionConfig_Init(lifxSessionConfig_t* conf)
   if (!conf)
     return kLifxStatusInvalidArgument;
   memset(conf, 0, sizeof(lifxSessionConfig_t));
+  return kLifxStatusOk;
+}
+
+lifxStatus_t lifxSessionConfig_InitWithDefaults(
+  lifxSessionConfig_t*    conf)
+{
+  if (!conf)
+    return kLifxStatusInvalidArgument;
+  memset(conf, 0, sizeof(lifxSessionConfig_t));
+  conf->UseBackgroundDispatchThread = true;
+  conf->LogLevel = kLifxLogLevelInfo;
   return kLifxStatusOk;
 }
 
