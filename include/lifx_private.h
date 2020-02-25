@@ -225,7 +225,7 @@ LIFX_IMPORT lifxStatus_t lifxSession_RecvFromInternal(
 LIFX_IMPORT lifxStatus_t lifxSession_SendToInternal(
   lifxSession_t*                  lifx,
   lifxDeviceId_t                  deviceId,
-  void*                           packet,
+  void const*                     packet,
   lifxPacketType_t                packetType,
   uint8_t                         seqno);
 

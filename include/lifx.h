@@ -184,7 +184,7 @@ LIFX_EXPORT lifxStatus_t lifxSession_RecvFrom(
 LIFX_EXPORT lifxFuture_t* lifxSession_BeginSendRequest(
   lifxSession_t*        lifx,
   lifxDeviceId_t        deviceId,
-  void*                 packet,
+  void const*           packet,
   lifxPacketType_t      packetType);
 
 /**
@@ -193,7 +193,7 @@ LIFX_EXPORT lifxFuture_t* lifxSession_BeginSendRequest(
 LIFX_EXPORT lifxStatus_t lifxSession_SendRequest(
   lifxSession_t*        lifx,
   lifxDeviceId_t        deviceId,
-  void*                 request,
+  void const*           request,
   lifxPacketType_t      packetType,
   lifxPacket_t*         response,
   int                   millis);

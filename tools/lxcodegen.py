@@ -300,6 +300,13 @@ class CodeGenerator:
         return match.group(1)
     return None
 
+  def is_setter_packet(self, name):
+    for p in [ "DeviceSet", "LightSet", "TileSet", "MultiZoneSet" ]:
+      if name.startswith(p):
+        match = re.search("(Set.*)", name)
+        return match.group(1)
+    return None
+
   def is_response_packet(self, name):
     for p in [ "DeviceState", "LightState", "TileState", "MultiZoneState" ]:
       if name.startswith(p):
@@ -308,10 +315,12 @@ class CodeGenerator:
     return None
 
   def get_method_name(self, name):
-    if name.startswith("DeviceGet"):
+    if name.startswith("DeviceGet") or name.startswith("DeviceSet"):
       return "Device_" + name[6:]
-    if name.startswith("LightGet"):
+    if name.startswith("LightGet") or name.startswith("LightSet"):
       return "Light_" + name[5:]
+    if name.startswith("TileGet") or name.startswith("TileSet"):
+      return "Tile_" + name[4:]
     return name
 
   def gen_gets(self, pkts, fields):
@@ -337,8 +346,9 @@ class CodeGenerator:
         if res is not None:
           if res not in requests:
             requests[res] = {}
-          requests[res]["response"] = key 
+          requests[res]["response"] = key
 
+    self.write("// ---BEGIN GETTERS---\n")
     for key, val in requests.items():
       method_name = self.get_method_name(key)
 #      if method_name == "Light_Get":
@@ -346,7 +356,26 @@ class CodeGenerator:
       self.write("LIFX_EXPORT lifxStatus_t %s%s(lifxSession_t* lifx, lifxDeviceId_t deviceId, "
         % (self.prefix, method_name))
       self.write("%s%s_t* response);\n" % (self.prefix, val["response"]))
+    self.write("// ---END GETTERS---\n")
     self.write("\n")
+
+    getters = {}
+    self.write("// ---BEGIN SETTERS---\n")
+    for s in [ "device", "light", "tile"]:
+      for key, val in pkts[s].items():
+        req = self.is_setter_packet(key)
+        if req is not None:
+          if key not in getters:
+            getters[key] = req;
+
+    print(str(getters))
+    for key, val in getters.items():
+      method_name = self.get_method_name(key)
+      self.write("LIFX_EXPORT lifxStatus_t %s%s(lifxSession_t* lifx, lifxDeviceId_t deviceId, "
+        % (self.prefix, method_name))
+      self.write("%s%s_t const* value);\n" % (self.prefix, key))
+    self.write("\n")
+
     self.emit_guard_suffix()
     self.out.close()
 
@@ -363,20 +392,36 @@ class CodeGenerator:
       self.write("{\n")
       self.indent()
       self.write("lifxStatus_t status;\n")
-      self.write("int timeoutMillis;\n")
-      self.write("lifxPacket_t res;\n")
+      self.write("int timeout_millis;\n")
+      self.write("lifxPacket_t packet;\n")
       self.write("%s%s_t request;\n" % (self.prefix, val["request"]))
       self.write("\n")
-      self.write("timeoutMillis = 2000;\n")
-      self.write("status = lifxSession_SendRequest(lifx, deviceId, &request, kLifxPacketType%s, &res, timeoutMillis);\n" %
+      self.write("timeout_millis = 2000;\n")
+      self.write("status = lifxSession_SendRequest(lifx, deviceId, &request, kLifxPacketType%s, &packet, timeout_millis);\n" %
         (val["request"]))
       self.write("if (status == 0)\n")
       self.write("{\n")
       self.indent()
-      self.write("*response = res.%s;\n" % (val["response"]))
+      self.write("*response = packet.%s;\n" % (val["response"]))
       self.outdent()
       self.write("}\n")
       self.write("return status;\n")
+      self.outdent()
+      self.write("}\n")
+      self.write("\n")
+
+    for key, val in getters.items():
+      method_name = self.get_method_name(key)
+      self.write("lifxStatus_t %s%s(lifxSession_t* lifx, lifxDeviceId_t deviceId, "
+        % (self.prefix, method_name))
+      self.write("%s%s_t const* value)\n" % (self.prefix, key))
+      self.write("{\n")
+      self.indent()
+      self.write("int timeout_millis;\n")
+      self.write("lifxPacket_t packet;\n")
+      self.write("timeout_millis = 2000;\n")
+      self.write("return lifxSession_SendRequest(lifx, deviceId, value, kLifxPacketType%s, &packet, timeout_millis);\n"
+        % (key))
       self.outdent()
       self.write("}\n")
       self.write("\n")

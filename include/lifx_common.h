@@ -32,6 +32,9 @@
 #define kLifxSizeofHeader (sizeof(lifxProtocolHeader_t))
 #define kLifxErrorMessageMax (256)
 
+#define kLifxLightOn 65535
+#define kLifxLightOff 0
+
 struct lifxSession;
 struct lifxFuture;
 
