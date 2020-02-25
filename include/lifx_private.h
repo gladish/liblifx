@@ -71,12 +71,12 @@ typedef void* (lifxThreadFunc_t)(void*);
 /**
  *
  */
-LIFX_IMPORT lifxSystemError_t lifxError_GetSystemError();
+LIFX_PRIVATE lifxSystemError_t lifxError_GetSystemError();
 
 /**
  *
  */
-LIFX_IMPORT void lifxThread_Create(
+LIFX_PRIVATE void lifxThread_Create(
   lifxThread_t*           thread,
   lifxThreadFunc_t        startRoutine,
   void*                   argp);
@@ -84,50 +84,50 @@ LIFX_IMPORT void lifxThread_Create(
 /**
  *
  */
-LIFX_IMPORT void lifxMutex_Init(
+LIFX_PRIVATE void lifxMutex_Init(
   lifxMutex_t*            mutex);
 
 /**
  *
  */
-LIFX_IMPORT void lifxMutex_Destroy(
+LIFX_PRIVATE void lifxMutex_Destroy(
   lifxMutex_t*            mutex);
 
 /**
  *
  */
-LIFX_IMPORT void lifxMutex_Lock(
+LIFX_PRIVATE void lifxMutex_Lock(
   lifxMutex_t*            mutex);
 
 /**
  *
  */
-LIFX_IMPORT void lifxMutex_Unlock(
+LIFX_PRIVATE void lifxMutex_Unlock(
   lifxMutex_t*            mutex);
 
 /**
  *
  */
-LIFX_IMPORT void lifxCond_Init(
+LIFX_PRIVATE void lifxCond_Init(
   lifxCond_t*             cond);
 
 /**
  *
  */
-LIFX_IMPORT void lifxCond_Destroy(
+LIFX_PRIVATE void lifxCond_Destroy(
   lifxCond_t*             cond);
 
 /**
  *
  */
-LIFX_IMPORT void lifxCond_NotifyAll(
+LIFX_PRIVATE void lifxCond_NotifyAll(
   lifxCond_t*             cond);
   
 
 /**
  *
  */
-LIFX_IMPORT lifxStatus_t lifxCond_TimedWait(
+LIFX_PRIVATE lifxStatus_t lifxCond_TimedWait(
   lifxCond_t*             cond,
   lifxMutex_t*            mutex,
   int                     timeout_millis);
@@ -176,20 +176,20 @@ struct lifxSession
 /**
  *
  */
-LIFX_IMPORT int lifxSessionConfig_Copy(
+LIFX_PRIVATE int lifxSessionConfig_Copy(
   lifxSessionConfig_t* dest,
   lifxSessionConfig_t const* src);
 
 /**
  *
  */
-LIFX_IMPORT char const* lifxError_ToString(
+LIFX_PRIVATE char const* lifxError_ToString(
   lifxSystemError_t               system_error);
 
 /**
  *
  */
-LIFX_IMPORT lifxStatus_t lifxSession_SetLastError(
+LIFX_PRIVATE lifxStatus_t lifxSession_SetLastError(
   lifxSession_t*                  lifx,
   lifxStatus_t                    status,
   char const*                     format, ...) LIFX_PRINTF_FORMAT(3, 4);
@@ -197,21 +197,21 @@ LIFX_IMPORT lifxStatus_t lifxSession_SetLastError(
 /**
  *
  */
-LIFX_IMPORT lifxStatus_t lifxSession_RegisterRequest(
+LIFX_PRIVATE lifxStatus_t lifxSession_RegisterRequest(
   lifxSession_t*                  lifx,
   lifxFuture_t*                   future);
 
 /**
  *
  */
-LIFX_IMPORT lifxDevice_t* lifxSession_FindDevice(
+LIFX_PRIVATE lifxDevice_t* lifxSession_FindDevice(
   lifxSession_t*                  lifx,
   lifxDeviceId_t                  deviceId);
 
 /**
  *
  */
-LIFX_IMPORT lifxDevice_t* lifxSession_CreateDevice(
+LIFX_PRIVATE lifxDevice_t* lifxSession_CreateDevice(
   lifxSession_t*                  lifx,
   lifxMessage_t const*            message,
   struct sockaddr_storage const*  source_address);
@@ -219,7 +219,7 @@ LIFX_IMPORT lifxDevice_t* lifxSession_CreateDevice(
 /**
  *
  */
-LIFX_IMPORT lifxStatus_t lifxSession_RecvFromInternal(
+LIFX_PRIVATE lifxStatus_t lifxSession_RecvFromInternal(
   lifxSession_t*                  lifx,
   lifxMessage_t*                  message,
   struct sockaddr_storage*        source,
@@ -228,7 +228,7 @@ LIFX_IMPORT lifxStatus_t lifxSession_RecvFromInternal(
 /**
  *
  */
-LIFX_IMPORT lifxStatus_t lifxSession_SendToInternal(
+LIFX_PRIVATE lifxStatus_t lifxSession_SendToInternal(
   lifxSession_t*                  lifx,
   lifxDeviceId_t                  deviceId,
   void const*                     packet,
@@ -238,13 +238,13 @@ LIFX_IMPORT lifxStatus_t lifxSession_SendToInternal(
 /**
  *
  */
-LIFX_IMPORT lifxFuture_t* lifxFuture_Create(
+LIFX_PRIVATE lifxFuture_t* lifxFuture_Create(
   lifxSequence_t                  sequence_number);
 
 /**
  *
  */
-LIFX_IMPORT lifxStatus_t lifxFuture_SetComplete(
+LIFX_PRIVATE lifxStatus_t lifxFuture_SetComplete(
   lifxFuture_t*                   future,
   lifxStatus_t                    status,
   lifxPacket_t*                   packet);
@@ -252,7 +252,7 @@ LIFX_IMPORT lifxStatus_t lifxFuture_SetComplete(
 /**
  *
  */
-LIFX_IMPORT void lifxDumpBuffer(
+LIFX_PRIVATE void lifxDumpBuffer(
   lifxSession_t*                  lifx,
   uint8_t*                        p,
   int                             n);
@@ -260,7 +260,7 @@ LIFX_IMPORT void lifxDumpBuffer(
 /**
  *
  */
-LIFX_IMPORT void lifxSockaddr_ToString(
+LIFX_PRIVATE void lifxSockaddr_ToString(
   struct sockaddr_storage const*  socket_address,
   char*                           buff,
   int                             n,
@@ -269,7 +269,7 @@ LIFX_IMPORT void lifxSockaddr_ToString(
 /**
  *
  */
-LIFX_IMPORT lifxStatus_t lifxBuffer_Init(
+LIFX_PRIVATE lifxStatus_t lifxBuffer_Init(
   lifxBuffer_t*                   buff,
   int                             n);
 
@@ -277,13 +277,13 @@ LIFX_IMPORT lifxStatus_t lifxBuffer_Init(
 /**
  *
  */
-LIFX_IMPORT lifxStatus_t lifxBuffer_Destroy(
+LIFX_PRIVATE lifxStatus_t lifxBuffer_Destroy(
   lifxBuffer_t*                   buff);
 
 /**
  *
  */
-LIFX_IMPORT lifxStatus_t lifxBuffer_Seek(
+LIFX_PRIVATE lifxStatus_t lifxBuffer_Seek(
   lifxBuffer_t*                   buff,
   int                             offset,
   lifxBufferWhence                whence);
@@ -291,7 +291,7 @@ LIFX_IMPORT lifxStatus_t lifxBuffer_Seek(
 /**
  *
  */
-LIFX_IMPORT lifxStatus_t lifxBuffer_Write(
+LIFX_PRIVATE lifxStatus_t lifxBuffer_Write(
   lifxBuffer_t*                   buff,
   void const*                     data,
   int                             n);
@@ -299,63 +299,63 @@ LIFX_IMPORT lifxStatus_t lifxBuffer_Write(
 /**
  *
  */
-LIFX_IMPORT lifxStatus_t lifxBuffer_WriteUInt8(
+LIFX_PRIVATE lifxStatus_t lifxBuffer_WriteUInt8(
   lifxBuffer_t*                   buff,
   uint8_t                         n);
 
 /**
  *
  */
-LIFX_IMPORT lifxStatus_t lifxBuffer_WriteBool(
+LIFX_PRIVATE lifxStatus_t lifxBuffer_WriteBool(
   lifxBuffer_t*                   buff,
   bool                            b);
 
 /**
  *
  */
-LIFX_IMPORT lifxStatus_t lifxBuffer_WriteInt16(
+LIFX_PRIVATE lifxStatus_t lifxBuffer_WriteInt16(
   lifxBuffer_t*                   buff,
   int16_t                         n);
 
 /**
  *
  */
-LIFX_IMPORT lifxStatus_t lifxBuffer_WriteUInt16(
+LIFX_PRIVATE lifxStatus_t lifxBuffer_WriteUInt16(
   lifxBuffer_t*                   buff,
   uint16_t                        n);
 
 /**
  *
  */
-LIFX_IMPORT lifxStatus_t lifxBuffer_WriteInt32(
+LIFX_PRIVATE lifxStatus_t lifxBuffer_WriteInt32(
   lifxBuffer_t*                   buff,
   int32_t                         n);
 
 /**
  *
  */
-LIFX_IMPORT lifxStatus_t lifxBuffer_WriteUInt32(
+LIFX_PRIVATE lifxStatus_t lifxBuffer_WriteUInt32(
   lifxBuffer_t*                   buff,
   uint32_t                        n);
 
 /**
  *
  */
-LIFX_IMPORT lifxStatus_t lifxBuffer_WriteUInt64(
+LIFX_PRIVATE lifxStatus_t lifxBuffer_WriteUInt64(
   lifxBuffer_t*                   buff,
   uint64_t                        n);
 
 /**
  *
  */
-LIFX_IMPORT lifxStatus_t lifxBuffer_WriteFloat(
+LIFX_PRIVATE lifxStatus_t lifxBuffer_WriteFloat(
   lifxBuffer_t*                   buff, 
   float                           n);
 
 /**
  *
  */
-LIFX_IMPORT lifxStatus_t lifxBuffer_Read(
+LIFX_PRIVATE lifxStatus_t lifxBuffer_Read(
   lifxBuffer_t*                   buff,
   void*                           data,
   int                             n);
@@ -363,63 +363,63 @@ LIFX_IMPORT lifxStatus_t lifxBuffer_Read(
 /**
  *
  */
-LIFX_IMPORT lifxStatus_t lifxBuffer_ReadUInt8(
+LIFX_PRIVATE lifxStatus_t lifxBuffer_ReadUInt8(
   lifxBuffer_t*                   buff,
   uint8_t*                        n);
 
 /**
  *
  */
-LIFX_IMPORT lifxStatus_t lifxBuffer_ReadInt16(
+LIFX_PRIVATE lifxStatus_t lifxBuffer_ReadInt16(
   lifxBuffer_t*                   buff,
   int16_t*                        n);
 
 /**
  *
  */
-LIFX_IMPORT lifxStatus_t lifxBuffer_ReadUInt16(
+LIFX_PRIVATE lifxStatus_t lifxBuffer_ReadUInt16(
   lifxBuffer_t*                   buff,
   uint16_t*                       n);
 
 /**
  *
  */
-LIFX_IMPORT lifxStatus_t lifxBuffer_ReadInt32(
+LIFX_PRIVATE lifxStatus_t lifxBuffer_ReadInt32(
   lifxBuffer_t*                   buff,
   int32_t*                        n);
 
 /**
  *
  */
-LIFX_IMPORT lifxStatus_t lifxBuffer_ReadUInt32(
+LIFX_PRIVATE lifxStatus_t lifxBuffer_ReadUInt32(
   lifxBuffer_t*                   buff,
   uint32_t*                       n);
 
 /**
  *
  */
-LIFX_IMPORT lifxStatus_t lifxBuffer_ReadUInt64(
+LIFX_PRIVATE lifxStatus_t lifxBuffer_ReadUInt64(
   lifxBuffer_t*                   buff,
   uint64_t*                       n);
 
 /**
  *
  */
-LIFX_IMPORT lifxStatus_t lifxBuffer_ReadFloat(
+LIFX_PRIVATE lifxStatus_t lifxBuffer_ReadFloat(
   lifxBuffer_t*                   buff,
   float*                          f);
 
 /**
  *
  */
-LIFX_IMPORT lifxStatus_t lifxBuffer_ReadBool(
+LIFX_PRIVATE lifxStatus_t lifxBuffer_ReadBool(
   lifxBuffer_t*                   buff,
   bool*                           b);
 
 /**
  *
  */
-LIFX_IMPORT void lxLog_Printf(
+LIFX_PRIVATE void lxLog_Printf(
   lifxSession_t*                  lifx,
   lifxLogLevel_t                  level,
   const char*                     format, ...) LIFX_PRINTF_FORMAT(3, 4);

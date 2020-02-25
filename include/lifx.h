@@ -65,7 +65,7 @@ typedef enum
   kLifxLogLevelWarn = 2,
   kLifxLogLevelError = 3,
   kLifxLogLevelFatal = 4
-} LIFX_EXPORT lifxLogLevel_t;
+} LIFX_PUBLIC lifxLogLevel_t;
 
 /**
  *
@@ -125,53 +125,53 @@ typedef enum
   kLifxBufferWhenceCurrent,
   kLifxBufferWhenceEnd,
   kLifxBufferWhenceSet
-} LIFX_EXPORT lifxBufferWhence;
+} LIFX_PUBLIC lifxBufferWhence;
 
 /**
  *
  */
-LIFX_EXPORT char const* lifx_Version();
+LIFX_PUBLIC char const* lifx_Version();
 
 /**
  *
  */
-LIFX_EXPORT lifxStatus_t lifxSessionConfig_Init(
+LIFX_PUBLIC lifxStatus_t lifxSessionConfig_Init(
   lifxSessionConfig_t*        conf);
 
 /**
  *
  */
-LIFX_EXPORT lifxStatus_t lifxSessionConfig_InitWithDefaults(
+LIFX_PUBLIC lifxStatus_t lifxSessionConfig_InitWithDefaults(
   lifxSessionConfig_t*        conf);
 
 /**
  *
  */
-LIFX_EXPORT lifxSession_t* lifxSession_Open(
+LIFX_PUBLIC lifxSession_t* lifxSession_Open(
   lifxSessionConfig_t const*  conf);
 
 /**
  *
  */
-LIFX_EXPORT lifxStatus_t lifxSession_Close(
+LIFX_PUBLIC lifxStatus_t lifxSession_Close(
   lifxSession_t*        lifx);
 
 /**
  *
  */
-LIFX_EXPORT lifxStatus_t lifxSession_StartDiscovery(
+LIFX_PUBLIC lifxStatus_t lifxSession_StartDiscovery(
   lifxSession_t*        lifx);
 
 /**
  *
  */
-LIFX_EXPORT lifxStatus_t lifxSession_StopDiscovery(
+LIFX_PUBLIC lifxStatus_t lifxSession_StopDiscovery(
   lifxSession_t*        lifx);
 
 /**
  *
  */
-LIFX_EXPORT lifxStatus_t lifxSession_SendTo(
+LIFX_PUBLIC lifxStatus_t lifxSession_SendTo(
   lifxSession_t*        lifx,
   lifxDeviceId_t        deviceId,
   void*                 packet,
@@ -179,7 +179,7 @@ LIFX_EXPORT lifxStatus_t lifxSession_SendTo(
 
 /**
  */
-LIFX_EXPORT lifxStatus_t lifxSession_RecvFrom(
+LIFX_PUBLIC lifxStatus_t lifxSession_RecvFrom(
   lifxSession_t*        lifx,
   lifxMessage_t*        message,
   int                   timeout);
@@ -187,7 +187,7 @@ LIFX_EXPORT lifxStatus_t lifxSession_RecvFrom(
 /**
  *
  */
-LIFX_EXPORT lifxFuture_t* lifxSession_BeginSendRequest(
+LIFX_PUBLIC lifxFuture_t* lifxSession_BeginSendRequest(
   lifxSession_t*        lifx,
   lifxDeviceId_t        deviceId,
   void const*           packet,
@@ -196,7 +196,7 @@ LIFX_EXPORT lifxFuture_t* lifxSession_BeginSendRequest(
 /**
  *
  */
-LIFX_EXPORT lifxStatus_t lifxSession_SendRequest(
+LIFX_PUBLIC lifxStatus_t lifxSession_SendRequest(
   lifxSession_t*        lifx,
   lifxDeviceId_t        deviceId,
   void const*           request,
@@ -207,14 +207,14 @@ LIFX_EXPORT lifxStatus_t lifxSession_SendRequest(
 /**
  *
  */
-LIFX_EXPORT lifxStatus_t lifxSession_Dispatch(
+LIFX_PUBLIC lifxStatus_t lifxSession_Dispatch(
   lifxSession_t*        lifx,
   int                   timeout);
 
 /**
  *
  */
-LIFX_EXPORT lifxStatus_t lifxSession_GetLastError(
+LIFX_PUBLIC lifxStatus_t lifxSession_GetLastError(
   lifxSession_t*        lifx,
   char*                 buff,
   int                   n);
@@ -222,14 +222,14 @@ LIFX_EXPORT lifxStatus_t lifxSession_GetLastError(
 /**
  *
  */
-LIFX_EXPORT int lifxDeviceId_Compare(
+LIFX_PUBLIC int lifxDeviceId_Compare(
   lifxDeviceId_t const* deviceId1,
   lifxDeviceId_t const* deviceId2);
 
 /**
  *
  */
-LIFX_EXPORT lifxStatus_t lifxDeviceId_ToString(
+LIFX_PUBLIC lifxStatus_t lifxDeviceId_ToString(
   lifxDeviceId_t const* deviceId,
   char*                 buff,
   int                   n);
@@ -237,33 +237,33 @@ LIFX_EXPORT lifxStatus_t lifxDeviceId_ToString(
 /**
  *
  */
-LIFX_EXPORT lifxStatus_t lifxDeviceId_FromString(
+LIFX_PUBLIC lifxStatus_t lifxDeviceId_FromString(
   lifxDeviceId_t*       deviceId,
   char const*           buff);
 
 /**
  *
  */
-LIFX_EXPORT lifxStatus_t lifxFuture_Retain(
+LIFX_PUBLIC lifxStatus_t lifxFuture_Retain(
   lifxFuture_t*         future);
 
 /**
  *
  */
-LIFX_EXPORT lifxStatus_t lifxFuture_Release(
+LIFX_PUBLIC lifxStatus_t lifxFuture_Release(
   lifxFuture_t*         future);
 
 /**
  *
  */
-LIFX_EXPORT lifxStatus_t lifxFuture_Wait(
+LIFX_PUBLIC lifxStatus_t lifxFuture_Wait(
   lifxFuture_t*         future,
   int                   millis);
 
 /**
  *
  */
-LIFX_EXPORT lifxStatus_t lifxFuture_Get(
+LIFX_PUBLIC lifxStatus_t lifxFuture_Get(
   lifxFuture_t*         future,
   lifxPacket_t*         packet,
   int                   millis);

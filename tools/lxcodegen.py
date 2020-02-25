@@ -353,7 +353,7 @@ class CodeGenerator:
       method_name = self.get_method_name(key)
 #      if method_name == "Light_Get":
 #        continue
-      self.write("LIFX_EXPORT lifxStatus_t %s%s(lifxSession_t* lifx, lifxDeviceId_t deviceId, "
+      self.write("LIFX_PUBLIC lifxStatus_t %s%s(lifxSession_t* lifx, lifxDeviceId_t deviceId, "
         % (self.prefix, method_name))
       self.write("%s%s_t* response);\n" % (self.prefix, val["response"]))
     self.write("// ---END GETTERS---\n")
@@ -368,10 +368,10 @@ class CodeGenerator:
           if key not in getters:
             getters[key] = req;
 
-    print(str(getters))
+    #print(str(getters))
     for key, val in getters.items():
       method_name = self.get_method_name(key)
-      self.write("LIFX_EXPORT lifxStatus_t %s%s(lifxSession_t* lifx, lifxDeviceId_t deviceId, "
+      self.write("LIFX_PUBLIC lifxStatus_t %s%s(lifxSession_t* lifx, lifxDeviceId_t deviceId, "
         % (self.prefix, method_name))
       self.write("%s%s_t const* value);\n" % (self.prefix, key))
     self.write("\n")

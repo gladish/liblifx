@@ -18,8 +18,17 @@
 
 #include <stdint.h>
 
-#define LIFX_EXPORT __attribute__ ((visibility ("default")))
-#define LIFX_IMPORT __attribute__ ((visibility ("hidden")))
+#if defined LIFX_PLATFORM_WINDOWS
+#ifdef LIFX_BUILDING_SHARED_LIBRARY
+#define LIFX_PUBLIC   __declspec(dllexport)
+#define LIFX_PRIVATE  __declspec(dllimport)
+#else
+#define LIFX_PUBLIC   __declspec(dllimport)
+#endif
+#else
+#define LIFX_PUBLIC   __attribute__ ((visibility ("default")))
+#define LIFX_PRIVATE  __attribute__ ((visibility ("hidden")))
+#endif
 
 #define kLifxDefaultBroadcastPort (56700)
 #define kLifxWaitForever (-1)
