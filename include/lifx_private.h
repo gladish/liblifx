@@ -36,6 +36,8 @@ extern "C" {
 #error "Not supported"
 #endif
 
+#define LIFX_ASSERT(X) assert((X))
+
 #ifdef LIFX_PLATFORM_MACOSX
 #include <libkern/OSByteOrder.h>
 #define lifxHostToLittleInt16(n) OSSwapHostToLittleInt16(n)
@@ -44,14 +46,17 @@ extern "C" {
 #define lifxLittleToHostInt32(n) OSSwapHostToLittleInt32(n)
 #define lifxHostToLittleInt64(n) OSSwapHostToLittleInt64(n)
 #define lifxLittleToHostInt64(n) OSSwapHostToLittleInt64(n)
-#else
+#elif LIFX_PLATFORM_LINUX
 #include <endian.h>
+#include <assert.h>
 #define lifxHostToLittleInt16(n) htole16(n)
 #define lifxLittleToHostInt16(n) le16toh(n)
 #define lifxHostToLittleInt32(n) htole32(n)
 #define lifxLittleToHostInt32(n) le32toh(n)
 #define lifxHostToLittleInt64(n) htole64(n)
 #define lifxLittleToHostInt64(n) le64toh(n)
+#else
+#error "Not implemented"
 #endif
 
 // errno

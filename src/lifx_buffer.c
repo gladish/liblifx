@@ -32,9 +32,10 @@ lifxStatus_t lifxBuffer_Init(lifxBuffer_t* buff, int n)
   }
   else
   {
-    buff->Data = malloc(n * sizeof(uint8_t));
+    buff->Data = malloc(n);
     if (!buff->Data)
       return kLifxStatusNotEnoughMemory;
+    memset(buff->Data, 0, n);
     buff->Size = n;
   }
 

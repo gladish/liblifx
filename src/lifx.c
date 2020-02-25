@@ -182,6 +182,8 @@ lifxStatus_t lifxFuture_SetComplete(
   lifxMutex_Lock(&future->Mutex);
   if (packet)
     future->Result = *packet;
+  else
+    memset(&future->Result, 0, sizeof(future->Result));
   future->Status = status;
   future->Complete = true;
   lifxMutex_Unlock(&future->Mutex);

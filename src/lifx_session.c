@@ -383,6 +383,8 @@ lifxStatus_t lifxSession_SendToInternal(
   int n;
 
   memset(&header, 0, kLifxSizeofHeader);
+  memset(&dest, 0, sizeof(struct sockaddr_storage));
+
   // TODO(jacobgladish@yahoo.com): we could utilize the lifxBuffer for this. currently the lifxBuffer_Write
   // functions return zero on ok. they could return the bytes written which 
   // would then also be returned from the lifxEncoder_EncodePacket(). this would
@@ -408,10 +410,14 @@ lifxStatus_t lifxSession_SendToInternal(
   }
   else
   {
+    // TODO(jacobgladish@yahoo.com): we probably need a SendOptions flags argument
+    // to control the ResRequired and AckRequired.
+    // https://lan.developer.lifx.com/docs/workflow-diagrams
     lifxDevice_t* entry = lifxSession_FindDevice(lifx, deviceId);
     if (entry)
     {
       header.ResRequired = 1;
+      header.AckRequired = 0;
       header.Addressable = 1;
       header.Tagged = 0;
       header.Target[0] = entry->DeviceId.Octets[0];
@@ -431,9 +437,6 @@ lifxStatus_t lifxSession_SendToInternal(
     }
   }
 
-  // copy header to write buffer
-  // memcpy(lifx->WriteBuffer.Data, &header, kLifxSizeofHeader);
-  // lifxBuffer_Seek(&lifx->WriteBuffer, kLifxSizeofHeader, kLifxBufferWhenceSet);
   lifxBuffer_Seek(&lifx->WriteBuffer, 0, kLifxBufferWhenceSet);
   lifxBuffer_Write(&lifx->WriteBuffer, &header, kLifxSizeofHeader);
   lifxEncoder_EncodePacket(&lifx->WriteBuffer, packetType, packet);
@@ -447,6 +450,9 @@ lifxStatus_t lifxSession_SendToInternal(
     lifxDumpBuffer(lifx, lifx->WriteBuffer.Data, header.Size);
   }
 
+  lxLog_Info(lifx, "header:%d write_buffer:%d", header.Size, lifx->WriteBuffer.Size);
+  LIFX_ASSERT(lifx->WriteBuffer.Size > header.Size);
+
   n = sendto(lifx->Socket, lifx->WriteBuffer.Data, header.Size, 0,
     (struct sockaddr *)&dest, sizeof(struct sockaddr_in));
 
@@ -457,7 +463,7 @@ lifxStatus_t lifxSession_SendToInternal(
       lifxError_ToString(sys_error));
   }
 
-  return kLifxStatusFailed;
+  return kLifxStatusOk;
 }
 
 lifxStatus_t lifxSession_RecvFrom(
@@ -647,20 +653,21 @@ lifxFuture_t* lifxSession_BeginSendRequest(
   void const*       packet,
   lifxPacketType_t  packetType)
 {
-  int             ret;
+  lifxStatus_t    status;
   lifxFuture_t*   future;
 
   future = lifxFuture_Create(lifxInterlockedIncrement(&lifx->SequenceNumber));
-  ret = lifxSession_RegisterRequest(lifx, future);
-  if (ret != 0)
+  status = lifxSession_RegisterRequest(lifx, future);
+  if (status != kLifxStatusOk)
   {
-    lxLog_Warn(lifx, "failed to register future:%d", ret);
+    lxLog_Warn(lifx, "failed to register future:%d", status);
   }
 
-  ret = lifxSession_SendToInternal(lifx, deviceId, packet, packetType, future->SequenceNumber);
-  if (ret != 0)
+  status = lifxSession_SendToInternal(lifx, deviceId, packet, packetType, future->SequenceNumber);
+  if (status != kLifxStatusOk)
   {
-    lxLog_Warn(lifx, "failed to send message:%d", ret);
+    lxLog_Warn(lifx, "failed to send message:%d", status);
+    lifxFuture_SetComplete(future, status, NULL);
   }
 
   return future;
