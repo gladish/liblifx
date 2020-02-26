@@ -27,6 +27,10 @@
 
 static uint16_t const kLifxProtocolNumber = 0x400; // 1024
 
+// the __lifx_products is in lifx_products_db (generated code)
+extern lifxProductInformation_t** __lifx_products;
+
+
 static void* lifxSession_Dispatcher(void* argp)
 {
   int ret;
@@ -135,6 +139,8 @@ lifxSession_t* lifxSession_Open(lifxSessionConfig_t const* conf)
     lifxSessionConfig_Copy(&lifx->Config, conf);
   else
     lifxSessionConfig_InitWithDefaults(&lifx->Config);
+
+  lifx->ProductInfoDB.LifxPrecompiledDB = __lifx_products;
 
   memset(lifx->LastErrorMessage, 0, kLifxErrorMessageMax);
   lifx->LastError = kLifxStatusOk;

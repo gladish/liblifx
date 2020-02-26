@@ -155,6 +155,10 @@ struct lifxFuture
   lifxSequence_t          SequenceNumber;
 };
 
+typedef struct
+{
+  lifxProductInformation_t** LifxPrecompiledDB;
+} lifxProductInfoDB_t;
 
 struct lifxSession
 {
@@ -171,6 +175,7 @@ struct lifxSession
   lifxFuture_t*           OutstandingRequests[kLifxRequestsMax];
   lifxStatus_t            LastError;
   char                    LastErrorMessage[256];
+  lifxProductInfoDB_t     ProductInfoDB;
 };
 
 /**
