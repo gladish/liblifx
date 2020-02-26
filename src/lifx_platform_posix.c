@@ -19,6 +19,7 @@
 #include <pthread.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/time.h>
 
 static pthread_once_t error_once = PTHREAD_ONCE_INIT;
 static pthread_key_t  error_key;
@@ -66,17 +67,34 @@ void lifxCond_NotifyAll(lifxCond_t* cond)
 lifxStatus_t lifxCond_TimedWait(
   lifxCond_t*             cond,
   lifxMutex_t*            mutex,
-  int                     timeout_millis)
+  lifxTimeSpan_t          timeout)
 {
   int ret;
-  struct timespec timeout;
+  struct timespec time_spec;
   lifxStatus_t status;
 
-  // TODO(jacobgladish@yahoo.com): proper timeout handling
-  clock_gettime(CLOCK_REALTIME, &timeout);
-  timeout.tv_sec += (timeout_millis / 1000);
+  // printf("timeout:%ld\n", timeout);
 
-  ret = pthread_cond_timedwait(cond, mutex, &timeout);
+  clock_gettime(CLOCK_REALTIME, &time_spec);
+
+  // printf("time_spec.tv_sec:%ld\n", time_spec.tv_sec);
+  // printf("time_spec.tv_nsec:%ld\n", time_spec.tv_nsec);
+
+  time_spec.tv_sec += (timeout / 1000000);
+  timeout -= ((timeout / 1000000) * 1000000);
+  time_spec.tv_nsec += timeout * 1000;
+
+  // need to account for rollover
+  if (time_spec.tv_nsec > 1000000000)
+  {
+    time_spec.tv_sec += 1;
+    time_spec.tv_nsec -= 1000000000;
+  }
+
+  // printf("time_spec.tv_sec:%ld\n", time_spec.tv_sec);
+  // printf("time_spec.tv_nsec:%ld\n", time_spec.tv_nsec);
+
+  ret = pthread_cond_timedwait(cond, mutex, &time_spec);
   if (ret == 0)
     status = kLifxStatusOk;
   else if (ret == ETIMEDOUT)
@@ -146,4 +164,17 @@ char const* lifxError_ToString(lifxSystemError_t system_error)
   }
 
   return buff;
+}
+
+lifxDateTime_t lifxDateTime_Now()
+{
+  lifxDateTime_t now;
+
+  struct timeval tv;
+  gettimeofday(&tv, NULL);
+
+  now = lifxMicrosecondsToSeconds(tv.tv_sec);
+  now += tv.tv_usec;
+
+  return now;
 }

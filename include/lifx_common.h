@@ -31,7 +31,7 @@
 #endif
 
 #define kLifxDefaultBroadcastPort (56700)
-#define kLifxWaitForever (-1)
+#define kLifxWaitForever UINT64_MAX
 #define kLifxDeviceIdSize (6)
 #define kLifxDeviceAllInitializer {{0, 0, 0, 0, 0, 0}}
 #define kLifxDeviceInvalidInitializer {{0xff, 0xff, 0xff, 0xff, 0xff, 0xff}}
@@ -51,6 +51,19 @@ struct lifxFuture;
 typedef struct lifxSession lifxSession_t;
 typedef struct lifxFuture lifxFuture_t;
 
+/**
+ * Relative time in microseconds
+ */
+typedef uint64_t lifxTimeSpan_t;
+
+/**
+ * Time since epoch in microseconds
+ */
+typedef uint64_t lifxDateTime_t;
+
+/**
+ *
+ */
 typedef struct
 {
   uint8_t Octets[kLifxDeviceIdSize];

@@ -18,21 +18,8 @@
 #include <string.h>
 #include <unistd.h>
 
-// lifx.h -- lifx.c
-// won't need this
-int lifxStringCopy(char* dest, int destLength, uint8_t const* source, int sourceLength)
-{
-  int n = (destLength - 1);
-  if (sourceLength < n)
-    n = sourceLength;
-  memcpy(dest, source, n);
-  dest[n] = '\0';
-  return 0;
-}
-
 int main(int argc, char* argv[])
 {
-  int i;
   lifxStatus_t status;
   lifxSession_t* lifx;
   lifxDeviceId_t device_id;
@@ -46,7 +33,7 @@ int main(int argc, char* argv[])
 
   // not setting the duration causes random values
   // to be used, which has really confusing results
-  set_power.Level = kLifxLightPowerLevelOn;
+  set_power.Level = kLifxLightPowerLevelOff;
   set_power.Duration = 0;
 
   // not longer need to first discover the device. if the device endpoint
@@ -54,19 +41,22 @@ int main(int argc, char* argv[])
   // once the device is discovered, the ip/port is used w/ unicast
   lifxDeviceId_FromString(&device_id, "lifx_id://mac/d0:73:d5:40:4d:61");
 
-  for (i = 0; i < 5; ++i)
+  while (true)
   {
     if (set_power.Level == kLifxLightPowerLevelOff)
       set_power.Level = kLifxLightPowerLevelOn;
     else
       set_power.Level = kLifxLightPowerLevelOff;
 
-    printf("setting light power:%d\n", set_power.Level);
-
-    future = lifxSession_BeginSendRequest(lifx, device_id, &set_power,
-      kLifxPacketTypeLightSetPower);
-    status = lifxFuture_Wait(future, 5000);
-    lifxFuture_Release(future);
+    do
+    {
+      printf("setting light power:%d\n", set_power.Level);
+      future = lifxSession_BeginSendRequest(lifx, device_id, &set_power,
+          kLifxPacketTypeLightSetPower);
+      status = lifxFuture_Wait(future, lifxTimeSpan_FromMilliseconds(500));
+      lifxFuture_Release(future);
+    }
+    while (status == kLifxStatusOperationTimedout);
 
     if (status != kLifxStatusOk)
     {
@@ -75,7 +65,7 @@ int main(int argc, char* argv[])
     }
     else
     {
-      printf("status:%d\n", status);
+      printf("status:%d waiting one second\n", status);
       sleep(1);
     }
   }

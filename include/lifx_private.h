@@ -22,6 +22,10 @@
 extern "C" {
 #endif
 
+#define lifxMillisecondsToMicroseconds(n) ((n) * 1000)
+#define lifxMicrosecondsToSeconds(n) ((n) / 1000000)
+#define lifxSecondsToMicroseconds(n) ((n) * 1000000)
+
 #ifdef __GNUC__
 #define LIFX_PRINTF_FORMAT(IDX, FIRST) __attribute__ ((format (printf, IDX, FIRST)))
 #define lifxInterlockedIncrement(X) __atomic_fetch_add((X), 1, __ATOMIC_SEQ_CST)
@@ -130,7 +134,7 @@ LIFX_PRIVATE void lifxCond_NotifyAll(
 LIFX_PRIVATE lifxStatus_t lifxCond_TimedWait(
   lifxCond_t*             cond,
   lifxMutex_t*            mutex,
-  int                     timeout_millis);
+  lifxTimeSpan_t          timeout);
 
 /**
  *
@@ -228,7 +232,7 @@ LIFX_PRIVATE lifxStatus_t lifxSession_RecvFromInternal(
   lifxSession_t*                  lifx,
   lifxMessage_t*                  message,
   struct sockaddr_storage*        source,
-  int                             timeout);
+  lifxTimeSpan_t                  timeout);
 
 /**
  *

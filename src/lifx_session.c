@@ -272,36 +272,35 @@ lifxStatus_t lifxSession_StopDiscovery(lifxSession_t* lifx)
 
 lifxStatus_t lifxSession_Dispatch(
   lifxSession_t*      lifx,
-  int                 timeout)
+  lifxTimeSpan_t      timeout)
 {
   bool                    done;
-  struct timeval          begin;
-  struct timeval          last_discovery_sent;
-  struct timeval          elapsed;
+  lifxDateTime_t          last_discovery_sent;
+  lifxDateTime_t          begin;
+  lifxTimeSpan_t          elapsed;
   lifxMessage_t           message;
   lifxStatus_t            status;
   struct sockaddr_storage source_address;
   
   done = false;
-  timerclear(&begin);
-  timerclear(&last_discovery_sent);
-  timerclear(&elapsed);
   memset(&message, 0, sizeof(lifxMessage_t));
   memset(&source_address, 0, sizeof(struct sockaddr_storage));
   status = kLifxStatusOk;
   lifxSession_SetLastError(lifx, kLifxStatusOk, NULL);
+  begin = 0;
+  elapsed = 0;
+  last_discovery_sent = 0;
 
   while (!done)
   {
-    struct timeval now;
-    gettimeofday(&now, NULL);
-    if (!timerisset(&begin))
+    lifxDateTime_t now = lifxDateTime_Now();
+    if (begin == 0)
       begin = now;
 
     if (lifxSession_IsDiscoveryEnabled(lifx))
     {
-      timersub(&now, &last_discovery_sent, &elapsed);
-      if (elapsed.tv_sec > 1)
+      elapsed = lifxDateTime_Subtract(now, last_discovery_sent);
+      if (elapsed > lifxTimeSpan_FromSeconds(1))
       {
         lifxDeviceGetService_t get_service;
         lifxSession_SendTo(lifx, kLifxDeviceAll, &get_service, kLifxPacketTypeDeviceGetService);
@@ -310,7 +309,8 @@ lifxStatus_t lifxSession_Dispatch(
     }
 
     memset(&message, 0, sizeof(lifxMessage_t));
-    status = lifxSession_RecvFromInternal(lifx, &message, &source_address, 2000);
+    status = lifxSession_RecvFromInternal(lifx, &message, &source_address,
+        lifxTimeSpan_FromMilliseconds(2000));
     if (status != kLifxStatusOk)
     {
       lxLog_Info(lifx, "lifxSession_RecvFromInternal:%d", status);
@@ -320,8 +320,8 @@ lifxStatus_t lifxSession_Dispatch(
         continue;
     }
 
-    gettimeofday(&now, NULL);
-    timersub(&now, &begin, &elapsed);
+    now = lifxDateTime_Now();
+    elapsed = lifxDateTime_Subtract(now, begin);
 
     if (status == kLifxStatusOk)
     {
@@ -366,7 +366,7 @@ lifxStatus_t lifxSession_Dispatch(
       }
     }
 
-    if ((timeout != kLifxWaitForever) && (elapsed.tv_sec >= timeout))
+    if ((timeout != kLifxWaitForever) && (elapsed > timeout))
       done = true;
   }
 
@@ -501,7 +501,7 @@ lifxStatus_t lifxSession_SendToInternal(
 lifxStatus_t lifxSession_RecvFrom(
   lifxSession_t*  lifx,
   lifxMessage_t*  message,
-  int             timeout)
+  lifxTimeSpan_t  timeout)
 {
   struct sockaddr_storage source_address;
   return lifxSession_RecvFromInternal(lifx, message, &source_address, timeout);
@@ -511,15 +511,17 @@ lifxStatus_t lifxSession_RecvFromInternal(
   lifxSession_t*              lifx,
   lifxMessage_t*              message,
   struct sockaddr_storage*    source,
-  int                         timeout)
+  lifxTimeSpan_t              timeout)
 {
   int             n;
   fd_set          fds;
   struct timeval  wait_time;
   lifxStatus_t    status;
 
-  wait_time.tv_sec = timeout / 1000;
-  wait_time.tv_usec = (timeout % 1000) * 1000;
+  wait_time.tv_sec = lifxMicrosecondsToSeconds(timeout);
+  timeout -= lifxSecondsToMicroseconds(wait_time.tv_sec);
+  wait_time.tv_usec = timeout;
+
   memset(message, 0, sizeof(lifxMessage_t));
   lifxBuffer_Seek(&lifx->ReadBuffer, 0, kLifxBufferWhenceSet);
   lifxSession_SetLastError(lifx, kLifxStatusOk, NULL);
@@ -723,13 +725,13 @@ lifxStatus_t lifxSession_SendRequest(
   void const*       request,
   lifxPacketType_t  packetType,
   lifxPacket_t*     response,
-  int               millis)
+  lifxTimeSpan_t    timeout)
 {
   lifxStatus_t status = kLifxStatusOk;
   lifxFuture_t* future = lifxSession_BeginSendRequest(lifx, deviceId, request, packetType);
   lifxSession_SetLastError(lifx, kLifxStatusOk, NULL);
 
-  status = lifxFuture_Wait(future, millis);
+  status = lifxFuture_Wait(future, timeout);
   if (status == kLifxStatusOk)
     status = lifxFuture_Get(future, response, 2000);
   lifxFuture_Release(future);

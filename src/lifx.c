@@ -96,13 +96,13 @@ lifxStatus_t lifxFuture_Release(struct lifxFuture* future)
   return kLifxStatusOk;
 }
 
-lifxStatus_t lifxFuture_Wait(struct lifxFuture* future, int millis)
+lifxStatus_t lifxFuture_Wait(struct lifxFuture* future, lifxTimeSpan_t timeout)
 {
   lifxStatus_t status = kLifxStatusOk;
   lifxMutex_Lock(&future->Mutex);
   while (!future->Complete)
   {
-    status = lifxCond_TimedWait(&future->Cond, &future->Mutex, millis);
+    status = lifxCond_TimedWait(&future->Cond, &future->Mutex, timeout);
     future->Complete = true;
     future->Status = status;
   }
@@ -110,9 +110,9 @@ lifxStatus_t lifxFuture_Wait(struct lifxFuture* future, int millis)
   return future->Status;
 }
 
-lifxStatus_t lifxFuture_Get(lifxFuture_t* future, lifxPacket_t* packet, int millis)
+lifxStatus_t lifxFuture_Get(lifxFuture_t* future, lifxPacket_t* packet, lifxTimeSpan_t timeout)
 {
-  lifxStatus_t status = lifxFuture_Wait(future, millis);
+  lifxStatus_t status = lifxFuture_Wait(future, timeout);
   if (status == kLifxStatusOk)
     *packet = future->Result;
   return status;
@@ -133,4 +133,25 @@ lifxStatus_t lifxFuture_SetComplete(
   lifxMutex_Unlock(&future->Mutex);
   lifxCond_NotifyAll(&future->Cond);
   return kLifxStatusOk;
+}
+
+lifxTimeSpan_t lifxTimeSpan_FromMilliseconds(uint64_t millis)
+{
+  lifxTimeSpan_t time_span;
+  time_span = lifxMillisecondsToMicroseconds(millis);
+  return time_span;
+}
+
+lifxTimeSpan_t lifxTimeSpan_FromSeconds(uint64_t seconds)
+{
+  lifxTimeSpan_t time_span;
+  time_span = lifxSecondsToMicroseconds(seconds);
+  return time_span;
+}
+
+lifxTimeSpan_t lifxDateTime_Subtract(
+  lifxDateTime_t  now,
+  lifxDateTime_t  then)
+{
+  return (now - then);
 }

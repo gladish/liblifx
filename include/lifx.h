@@ -29,6 +29,7 @@ extern "C" {
 static lifxDeviceId_t const kLifxDeviceAll = kLifxDeviceAllInitializer;
 static lifxDeviceId_t const kLifxDeviceInvalid = kLifxDeviceInvalidInitializer;
 
+
 #pragma pack(push, 1)
 typedef struct
 {
@@ -200,7 +201,7 @@ LIFX_PUBLIC lifxStatus_t lifxSession_SendTo(
 LIFX_PUBLIC lifxStatus_t lifxSession_RecvFrom(
   lifxSession_t*        lifx,
   lifxMessage_t*        message,
-  int                   timeout);
+  lifxTimeSpan_t        timeout);
 
 /**
  *
@@ -220,14 +221,14 @@ LIFX_PUBLIC lifxStatus_t lifxSession_SendRequest(
   void const*           request,
   lifxPacketType_t      packetType,
   lifxPacket_t*         response,
-  int                   millis);
+  lifxTimeSpan_t        timeout);
 
 /**
  *
  */
 LIFX_PUBLIC lifxStatus_t lifxSession_Dispatch(
   lifxSession_t*        lifx,
-  int                   timeout);
+  lifxTimeSpan_t        timeout);
 
 /**
  *
@@ -276,7 +277,7 @@ LIFX_PUBLIC lifxStatus_t lifxFuture_Release(
  */
 LIFX_PUBLIC lifxStatus_t lifxFuture_Wait(
   lifxFuture_t*         future,
-  int                   millis);
+  lifxTimeSpan_t        timeout);
 
 /**
  *
@@ -284,7 +285,36 @@ LIFX_PUBLIC lifxStatus_t lifxFuture_Wait(
 LIFX_PUBLIC lifxStatus_t lifxFuture_Get(
   lifxFuture_t*         future,
   lifxPacket_t*         packet,
-  int                   millis);
+  lifxTimeSpan_t        timeout);
+
+/**
+ *
+ */
+LIFX_PUBLIC lifxTimeSpan_t lifxTimeSpan_FromMilliseconds(uint64_t millis);
+
+/**
+ *
+ */
+LIFX_PUBLIC lifxTimeSpan_t lifxTimeSpan_FromSeconds(uint64_t seconds);
+
+/**
+ *
+ */
+LIFX_PUBLIC lifxDateTime_t lifxDateTime_Now();
+
+/**
+ *
+ */
+LIFX_PUBLIC lifxDateTime_t lifxDateTime_Add(
+  lifxDateTime_t date_time,
+  lifxTimeSpan_t time_span);
+
+/**
+ *
+ */
+LIFX_PUBLIC lifxTimeSpan_t lifxDateTime_Subtract(
+  lifxDateTime_t now,
+  lifxDateTime_t then);
 
 #ifdef __cplusplus
 }
