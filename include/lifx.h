@@ -55,6 +55,23 @@ typedef struct
 } lifxProtocolHeader_t;
 #pragma pack(pop)
 
+typedef struct
+{
+  uint32_t        ProductId;
+  char const*     Name;
+  struct {
+    bool          Color;
+    bool          Infrared;
+    bool          Matrix;
+    bool          Multizone;
+    struct {
+      uint16_t    Minimum;
+      uint16_t    Maximum;
+    } TemperatureRange;
+    bool          Chain;
+  } Features;
+} lifxProductInformation_t;
+
 /**
  *
  */

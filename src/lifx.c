@@ -134,3 +134,69 @@ lifxStatus_t lifxFuture_SetComplete(
   lifxCond_NotifyAll(&future->Cond);
   return kLifxStatusOk;
 }
+
+struct lifxDeviceNode
+{
+  lifxProductInformation_t DeviceInfo;
+  struct lifxDeviceNode* Next;
+};
+
+int lifxDeviceDatabase_Hash(uint16_t vendor_id, uint16_t product_id)
+{
+  (void) vendor_id;
+  (void) product_id;
+  return 0;
+}
+
+typedef struct
+{
+  struct lifxDeviceNode* Buckets[kLifxDeviceDatabaseBucketCount];
+} lifxDeviceDatabase_t;
+
+void lifxDeviceDatabase_Add(
+  lifxDeviceDatabase_t* db,
+  uint16_t    vendor_id,
+  uint16_t    product_id,
+  char*       product_name,
+  bool        color,
+  bool        infrared,
+  bool        matrix,
+  bool        multi_zone,
+  uint16_t    temp_min,
+  uint16_t    temp_max,
+  bool        chain)
+{
+  struct lifxDeviceNode* node;
+  int hash = lifxDeviceDatabase_Hash(vendor_id, product_id);
+
+  node = db->Buckets[hash];
+  if (!node)
+  {
+    node = db->Buckets[hash] = malloc(sizeof(struct lifxDeviceNode));
+  }
+  else
+  {
+    while (node->Next)
+      node = node->Next;
+    node = malloc(sizeof(struct lifxDeviceNode));
+    node = node->Next;
+  }
+
+  node->DeviceInfo.ProductId = product_id;
+  node->DeviceInfo.Name = strdup(product_name);
+  node->DeviceInfo.Features.Color = color;
+  node->DeviceInfo.Features.Infrared = infrared;
+  node->DeviceInfo.Features.Matrix = matrix;
+  node->DeviceInfo.Features.Multizone = multi_zone;
+  node->DeviceInfo.Features.TemperatureRange.Minimum = temp_min;
+  node->DeviceInfo.Features.TemperatureRange.Maximum = temp_max;
+  node->DeviceInfo.Features.Chain = chain;
+  node->Next = NULL;
+}
+
+void lifxDeviceDatabase_Init(lifxDeviceDatabase_t* db)
+{
+  int i;
+  for (i = 0; i < kLifxDeviceDatabaseBucketCount; ++i)
+    db->Buckets[i] = NULL;
+}

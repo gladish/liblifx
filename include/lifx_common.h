@@ -40,6 +40,7 @@
 #define kLifxMaxDevices (256)
 #define kLifxSizeofHeader (sizeof(lifxProtocolHeader_t))
 #define kLifxErrorMessageMax (256)
+#define kLifxDeviceDatabaseBucketCount (1)
 
 #define kLifxLightPowerLevelOn 65535
 #define kLifxLightPowerLevelOff 0

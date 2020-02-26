@@ -56,6 +56,19 @@ ExternalProject_Add(
 ########################################################
 
 ########################################################
+ExternalProject_Add(
+  lifx_product_file
+  GIT_REPOSITORY https://github.com/LIFX/products.git
+  INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}
+  INSTALL_COMMAND ""
+  CONFIGURE_COMMAND ""
+  BUILD_IN_SOURCE 1
+  PREFIX deps
+  BUILD_COMMAND "")
+########################################################
+
+
+########################################################
 # yaml lib
 #ExternalProject_Add(
 #  yaml
