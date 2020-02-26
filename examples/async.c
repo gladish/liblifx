@@ -35,7 +35,6 @@ int main(int argc, char* argv[])
   int i;
   lifxStatus_t status;
   lifxSession_t* lifx;
-  lifxSessionConfig_t conf;
   lifxDeviceId_t device_id;
   lifxLightSetPower_t set_power;
   lifxFuture_t* future;
@@ -43,16 +42,16 @@ int main(int argc, char* argv[])
   (void) argc;
   (void) argv;
 
-  lifxSessionConfig_Init(&conf);
-  conf.UseBackgroundDispatchThread = true;
-  conf.LogLevel = kLifxLogLevelInfo;
+  lifx = lifxSession_Open(NULL);
 
-  lifx = lifxSession_Open(&conf);
-  lifxSession_StartDiscovery(lifx);
-  set_power.Level = kLifxLightPowerLevelOff;
-  sleep(3);
-//  lifxSession_StopDiscovery(lifx);
+  // not setting the duration causes random values
+  // to be used, which has really confusing results
+  set_power.Level = kLifxLightPowerLevelOn;
+  set_power.Duration = 0;
 
+  // not longer need to first discover the device. if the device endpoint
+  // is not known, then a broadcast is sent along with a device discovery
+  // once the device is discovered, the ip/port is used w/ unicast
   lifxDeviceId_FromString(&device_id, "lifx_id://mac/d0:73:d5:40:4d:61");
 
   for (i = 0; i < 5; ++i)
@@ -76,10 +75,9 @@ int main(int argc, char* argv[])
     }
     else
     {
+      printf("status:%d\n", status);
       sleep(1);
     }
-
-    printf("status:%d\n", status);
   }
 
   return 0;

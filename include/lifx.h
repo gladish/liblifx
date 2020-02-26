@@ -122,6 +122,7 @@ typedef struct
   lifxMessageHandler_t          MessageHandler;
   lifxDeviceDiscoveryHandler_t  DeviceDiscovered;
   bool                          ReportDuplicateDevices;
+  bool                          AutoResolveDevices;
 } lifxSessionConfig_t;
 
 /**

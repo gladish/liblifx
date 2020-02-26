@@ -31,6 +31,20 @@ static uint16_t const kLifxProtocolNumber = 0x400; // 1024
 extern lifxProductInformation_t** __lifx_products;
 
 
+static void lifxSession_SetBroadcastDestination(
+  lifxSession_t const*      lifx,
+  struct sockaddr_storage*  dest)
+{
+  (void) lifx;
+
+  struct sockaddr_in* v4 = (struct sockaddr_in *) dest;
+  memset(dest, 0, sizeof(struct sockaddr_storage));
+  v4->sin_family = AF_INET;
+  v4->sin_port = htons(kLifxDefaultBroadcastPort);
+  v4->sin_addr.s_addr = htonl(INADDR_BROADCAST);
+}
+
+
 static void* lifxSession_Dispatcher(void* argp)
 {
   int ret;
@@ -53,7 +67,7 @@ static void* lifxSession_Dispatcher(void* argp)
   return NULL;
 }
 
-lifxDevice_t* lifxSession_FindDevice(lifxSession_t* lifx, lifxDeviceId_t deviceId)
+lifxDevice_t* lifxSession_FindDevice(lifxSession_t* lifx, lifxDeviceId_t device_id)
 {
   int i;
   if (lifx == NULL)
@@ -63,7 +77,7 @@ lifxDevice_t* lifxSession_FindDevice(lifxSession_t* lifx, lifxDeviceId_t deviceI
   {
     if (lifx->DeviceDatabase[i] != NULL)
     {
-      if (lifxDeviceId_Compare(&deviceId, &lifx->DeviceDatabase[i]->DeviceId) == 0)
+      if (lifxDeviceId_Compare(&device_id, &lifx->DeviceDatabase[i]->DeviceId) == 0)
         return lifx->DeviceDatabase[i];
     }
   }
@@ -131,7 +145,6 @@ lifxSession_t* lifxSession_Open(lifxSessionConfig_t const* conf)
 
   memset(lifx, 0, sizeof(struct lifxSession));
 
-  lifxMutex_Init(&lifx->SessionLock);
 
   // set this as early as possible to avoid uninitialized reads
   lifx->Config.LogLevel = kLifxLogLevelInfo;
@@ -139,13 +152,13 @@ lifxSession_t* lifxSession_Open(lifxSessionConfig_t const* conf)
     lifxSessionConfig_Copy(&lifx->Config, conf);
   else
     lifxSessionConfig_InitWithDefaults(&lifx->Config);
-
-  lifx->ProductInfoDB.LifxPrecompiledDB = __lifx_products;
-
-  memset(lifx->LastErrorMessage, 0, kLifxErrorMessageMax);
-  lifx->LastError = kLifxStatusOk;
-
   lxLog_Info(lifx, "liblifx %s", lifx_Version());
+
+  lifxMutex_Init(&lifx->SessionLock);
+  lifx->ProductInfoDB.LifxPrecompiledDB = __lifx_products;
+  lifx->LastError = kLifxStatusOk;
+  lifx->SourceId = getpid();
+  lifx->SequenceNumber = 0;
 
   lifx->Socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
   if (lifx->Socket == -1)
@@ -161,9 +174,6 @@ lifxSession_t* lifxSession_Open(lifxSessionConfig_t const* conf)
   lifxBuffer_Init(&lifx->ReadBuffer, n);
   lifxBuffer_Init(&lifx->WriteBuffer, n);
   lxLog_Info(lifx, "allocated %d bytes for read/write buffers", n);
-
-  lifx->SourceId = getpid();
-  lifx->SequenceNumber = 0;
 
   flag = 1;
   ret = setsockopt(lifx->Socket, SOL_SOCKET, SO_BROADCAST, &flag, sizeof(flag));
@@ -300,7 +310,7 @@ lifxStatus_t lifxSession_Dispatch(
     }
 
     memset(&message, 0, sizeof(lifxMessage_t));
-    status = lifxSession_RecvFromInternal(lifx, &message, &source_address, 1000);
+    status = lifxSession_RecvFromInternal(lifx, &message, &source_address, 2000);
     if (status != kLifxStatusOk)
     {
       lxLog_Info(lifx, "lifxSession_RecvFromInternal:%d", status);
@@ -319,7 +329,7 @@ lifxStatus_t lifxSession_Dispatch(
       memcpy(deviceId.Octets, message.Header.Target, 6);
 
 
-      // response to a device disovery, cache the device in db
+      // response to a device discovery, cache the device in db
       if (message.Header.Type == kLifxPacketTypeDeviceStateService)
       {
         lifxDevice_t* device;
@@ -375,62 +385,73 @@ lifxStatus_t lifxSession_SendTo(
 
 lifxStatus_t lifxSession_SendToInternal(
   lifxSession_t*    lifx,
-  lifxDeviceId_t    deviceId,
+  lifxDeviceId_t    device_id,
   void const*       packet,
-  lifxPacketType_t  packetType,
+  lifxPacketType_t  packet_type,
   uint8_t           seqno)
 {
-  lifxProtocolHeader_t header;
+  lifxProtocolHeader_t    header;
   struct sockaddr_storage dest;
-  int n;
+  int                     n;
+  bool                    send_discovery_message;
 
   memset(&header, 0, kLifxSizeofHeader);
   memset(&dest, 0, sizeof(struct sockaddr_storage));
+  send_discovery_message = false;
 
   // TODO(jacobgladish@yahoo.com): we could utilize the lifxBuffer for this. currently the lifxBuffer_Write
   // functions return zero on ok. they could return the bytes written which 
   // would then also be returned from the lifxEncoder_EncodePacket(). this would
   // allow us to avoid switch'ing on the packet_type twice.
-  header.Size = kLifxSizeofHeader + lifxEncoder_GetEncodedSize(packetType);
+  header.Size = kLifxSizeofHeader + lifxEncoder_GetEncodedSize(packet_type);
   header.Protocol = kLifxProtocolNumber;
   header.Addressable = 1;
   header.Tagged = 1;
   header.Origin = 0;
-  header.Source = 0xdeadbeef;
+  header.Source = lifx->SourceId;
   header.ResRequired = 0;
   header.AckRequired = 0;
   header.Sequence = seqno;
-  header.Type = packetType;
+  header.Type = packet_type;
 
-  if (lifxDeviceId_Compare(&deviceId, &kLifxDeviceAll) == 0)
+  if (lifxDeviceId_Compare(&device_id, &kLifxDeviceAll) == 0)
   {
-    struct sockaddr_in* v4 = (struct sockaddr_in *) &dest;
-    memset(&dest, 0, sizeof(struct sockaddr_in));
-    v4->sin_family = AF_INET;
-    v4->sin_port = htons(kLifxDefaultBroadcastPort);
-    v4->sin_addr.s_addr = htonl(INADDR_BROADCAST);
+    lifxSession_SetBroadcastDestination(lifx, &dest);
   }
   else
   {
     // TODO(jacobgladish@yahoo.com): we probably need a SendOptions flags argument
     // to control the ResRequired and AckRequired.
     // https://lan.developer.lifx.com/docs/workflow-diagrams
-    lifxDevice_t* entry = lifxSession_FindDevice(lifx, deviceId);
-    if (entry)
+    lifxDevice_t const* entry = lifxSession_FindDevice(lifx, device_id);
+    if (entry || lifx->Config.AutoResolveDevices)
     {
       header.ResRequired = 1;
       header.AckRequired = 0;
       header.Addressable = 1;
       header.Tagged = 0;
-      header.Target[0] = entry->DeviceId.Octets[0];
-      header.Target[1] = entry->DeviceId.Octets[1];
-      header.Target[2] = entry->DeviceId.Octets[2];
-      header.Target[3] = entry->DeviceId.Octets[3];
-      header.Target[4] = entry->DeviceId.Octets[4];
-      header.Target[5] = entry->DeviceId.Octets[5];
+      header.Target[0] = device_id.Octets[0];
+      header.Target[1] = device_id.Octets[1];
+      header.Target[2] = device_id.Octets[2];
+      header.Target[3] = device_id.Octets[3];
+      header.Target[4] = device_id.Octets[4];
+      header.Target[5] = device_id.Octets[5];
       header.Target[6] = 0;
       header.Target[7] = 0;
-      memcpy(&dest, &entry->Endpoint, sizeof(struct sockaddr_storage));
+
+      lxLog_Info(lifx, "targeting device [%02x:%02x:%02x:%02x:%02x:%02x]",
+        header.Target[0], header.Target[1], header.Target[2],
+        header.Target[3], header.Target[4], header.Target[5]);
+
+      if (entry)
+      {
+        memcpy(&dest, &entry->Endpoint, sizeof(struct sockaddr_storage));
+      }
+      else
+      {
+        lifxSession_SetBroadcastDestination(lifx, &dest);
+        send_discovery_message = true;
+      }
     }
     else
     {
@@ -441,7 +462,7 @@ lifxStatus_t lifxSession_SendToInternal(
 
   lifxBuffer_Seek(&lifx->WriteBuffer, 0, kLifxBufferWhenceSet);
   lifxBuffer_Write(&lifx->WriteBuffer, &header, kLifxSizeofHeader);
-  lifxEncoder_EncodePacket(&lifx->WriteBuffer, packetType, packet);
+  lifxEncoder_EncodePacket(&lifx->WriteBuffer, packet_type, packet);
 
   {
     char addr[64];
@@ -452,7 +473,7 @@ lifxStatus_t lifxSession_SendToInternal(
     lifxDumpBuffer(lifx, lifx->WriteBuffer.Data, header.Size);
   }
 
-  lxLog_Info(lifx, "header:%d write_buffer:%d", header.Size, lifx->WriteBuffer.Size);
+  // lxLog_Info(lifx, "header:%d write_buffer:%d", header.Size, lifx->WriteBuffer.Size);
   LIFX_ASSERT(lifx->WriteBuffer.Size > header.Size);
 
   n = sendto(lifx->Socket, lifx->WriteBuffer.Data, header.Size, 0,
@@ -463,6 +484,15 @@ lifxStatus_t lifxSession_SendToInternal(
     lifxSystemError_t sys_error = lifxError_GetSystemError();
     return lifxSession_SetLastError(lifx, kLifxStatusFailed, "sendto failed. %s",
       lifxError_ToString(sys_error));
+  }
+
+  // TODO(jacobgladish@yahoo.com): there are a few cases above where this message
+  // won't get sent because of an error and subsequent return. do we care?
+  if (send_discovery_message)
+  {
+    lifxDeviceGetService_t get_service;
+    lxLog_Info(lifx, "sending auto-discovery for device");
+    lifxSession_SendTo(lifx, kLifxDeviceAll, &get_service, kLifxPacketTypeDeviceGetService);
   }
 
   return kLifxStatusOk;
@@ -633,6 +663,7 @@ lifxStatus_t lifxSessionConfig_InitWithDefaults(
   memset(conf, 0, sizeof(lifxSessionConfig_t));
   conf->UseBackgroundDispatchThread = true;
   conf->LogLevel = kLifxLogLevelInfo;
+  conf->AutoResolveDevices = true;
   return kLifxStatusOk;
 }
 
@@ -720,6 +751,8 @@ lifxStatus_t lifxSession_SetLastError(
       memset(lifx->LastErrorMessage, 0, kLifxErrorMessageMax);
       vsnprintf(lifx->LastErrorMessage, (kLifxErrorMessageMax - 1), format, argp);
       va_end(argp);
+      if (status != kLifxStatusOk)
+        lxLog_Warn(lifx, "%s", lifx->LastErrorMessage);
     }
     else
     {
