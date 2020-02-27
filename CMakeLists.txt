@@ -2,12 +2,13 @@
 cmake_minimum_required(VERSION 2.8)
 
 if (CMAKE_VERSION VERSION_LESS "3.0")
-  project(lifxlifx C)
+  project(liblifx C)
   set(PROJECT_VERSION 0.0.1)
 else ()
   cmake_policy(SET CMP0048 NEW)
-  project(liblifx VERSION 0.0.01)
+  project(liblifx VERSION 0.2.0)
 endif()
+
 
 include(ExternalProject)
 find_package(Threads)
@@ -120,6 +121,7 @@ add_library(
   lifx
   SHARED
   ${lifx_SOURCES})
+set_target_properties(lifx PROPERTIES SOVERSION ${PROJECT_VERSION})
 configure_file("include/lifx_version.h.in" "${CMAKE_CURRENT_SOURCE_DIR}/include/lifx_version.h")
 include_directories(lifx ${CMAKE_CURRENT_BINARY_DIR}/deps/src)
 include_directories(lifx ${CMAKE_CURRENT_SOURCE_DIR}/include)
