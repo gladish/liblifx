@@ -138,14 +138,14 @@ lifxStatus_t lifxFuture_SetComplete(
 lifxTimeSpan_t lifxTimeSpan_FromMilliseconds(uint64_t millis)
 {
   lifxTimeSpan_t time_span;
-  time_span = lifxMillisecondsToMicroseconds(millis);
+  time_span._ticks = (millis * 1000);
   return time_span;
 }
 
 lifxTimeSpan_t lifxTimeSpan_FromSeconds(uint64_t seconds)
 {
   lifxTimeSpan_t time_span;
-  time_span = lifxSecondsToMicroseconds(seconds);
+  time_span._ticks = (seconds * 1000 * 1000);
   return time_span;
 }
 
@@ -153,5 +153,34 @@ lifxTimeSpan_t lifxDateTime_Subtract(
   lifxDateTime_t  now,
   lifxDateTime_t  then)
 {
-  return (now - then);
+  lifxTimeSpan_t time_span;
+  time_span._ticks = (now - then);
+  return time_span;
+}
+
+uint64_t lifxTimeSpan_ToMicroseconds(
+  lifxTimeSpan_t  time_span)
+{
+  return time_span._ticks;
+}
+
+int lifxTimeSpan_Compare(
+  lifxTimeSpan_t time_span1,
+  lifxTimeSpan_t time_span2)
+{
+  return time_span1._ticks - time_span2._ticks;
+}
+
+lifxTimeSpan_t lifxTimeSpan_Zero()
+{
+  lifxTimeSpan_t time_span;
+  time_span._ticks = 0;
+  return time_span;
+}
+
+lifxTimeSpan_t lifxTimeSpan_Forever()
+{
+  lifxTimeSpan_t time_span;
+  time_span._ticks = UINT64_MAX;
+  return time_span;
 }

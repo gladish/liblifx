@@ -22,10 +22,6 @@
 extern "C" {
 #endif
 
-#define lifxMillisecondsToMicroseconds(n) ((n) * 1000)
-#define lifxMicrosecondsToSeconds(n) ((n) / 1000000)
-#define lifxSecondsToMicroseconds(n) ((n) * 1000000)
-
 #ifdef __GNUC__
 #define LIFX_PRINTF_FORMAT(IDX, FIRST) __attribute__ ((format (printf, IDX, FIRST)))
 #define lifxInterlockedIncrement(X) __atomic_fetch_add((X), 1, __ATOMIC_SEQ_CST)

@@ -1,5 +1,5 @@
 //
-// DO NOT EDIT - AUTO-GENERATE:2020-02-24 21:37:41.981180
+// DO NOT EDIT - AUTO-GENERATE:2020-02-26 20:13:15.008835
 //
 #include "lifx_private.h"
 #include "lifx_encoders.h"

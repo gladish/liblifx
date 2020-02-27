@@ -71,6 +71,7 @@ lifxStatus_t lifxCond_TimedWait(
 {
   int ret;
   struct timespec time_spec;
+  uint64_t micros;
   lifxStatus_t status;
 
   // printf("timeout:%ld\n", timeout);
@@ -79,10 +80,10 @@ lifxStatus_t lifxCond_TimedWait(
 
   // printf("time_spec.tv_sec:%ld\n", time_spec.tv_sec);
   // printf("time_spec.tv_nsec:%ld\n", time_spec.tv_nsec);
-
-  time_spec.tv_sec += (timeout / 1000000);
-  timeout -= ((timeout / 1000000) * 1000000);
-  time_spec.tv_nsec += timeout * 1000;
+  micros = lifxTimeSpan_ToMicroseconds(timeout);
+  time_spec.tv_sec += (micros / 1000000);
+  micros -= ((micros / 1000000) * 1000000);
+  time_spec.tv_nsec += micros * 1000;
 
   // need to account for rollover
   if (time_spec.tv_nsec > 1000000000)
@@ -173,7 +174,7 @@ lifxDateTime_t lifxDateTime_Now()
   struct timeval tv;
   gettimeofday(&tv, NULL);
 
-  now = lifxMicrosecondsToSeconds(tv.tv_sec);
+  now = (tv.tv_sec * 1000 * 1000);
   now += tv.tv_usec;
 
   return now;

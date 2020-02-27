@@ -29,6 +29,19 @@ extern "C" {
 static lifxDeviceId_t const kLifxDeviceAll = kLifxDeviceAllInitializer;
 static lifxDeviceId_t const kLifxDeviceInvalid = kLifxDeviceInvalidInitializer;
 
+/**
+ * Relative time in microseconds
+ */
+typedef struct
+{
+  uint64_t _ticks;
+} lifxTimeSpan_t;
+
+/**
+ * Time since epoch in microseconds
+ */
+typedef uint64_t lifxDateTime_t;
+
 
 #pragma pack(push, 1)
 typedef struct
@@ -315,6 +328,26 @@ LIFX_PUBLIC lifxDateTime_t lifxDateTime_Add(
 LIFX_PUBLIC lifxTimeSpan_t lifxDateTime_Subtract(
   lifxDateTime_t now,
   lifxDateTime_t then);
+
+LIFX_PUBLIC uint64_t lifxTimeSpan_ToMicroseconds(
+  lifxTimeSpan_t time_span);
+
+/**
+ * @return 0 if equal > 0 if time_span1 > time_span2 < 0 if time_span1 < time_span2
+ */
+LIFX_PUBLIC int lifxTimeSpan_Compare(
+  lifxTimeSpan_t time_span1,
+  lifxTimeSpan_t time_span2);
+
+/**
+ *
+ */
+LIFX_PUBLIC lifxTimeSpan_t lifxTimeSpan_Zero();
+
+/**
+ *
+ */
+LIFX_PUBLIC lifxTimeSpan_t lifxTimeSpan_Infinite();
 
 #ifdef __cplusplus
 }

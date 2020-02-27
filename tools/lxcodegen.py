@@ -392,12 +392,12 @@ class CodeGenerator:
       self.write("{\n")
       self.indent()
       self.write("lifxStatus_t status;\n")
-      self.write("int timeout_millis;\n")
       self.write("lifxPacket_t packet;\n")
+      self.write("lifxTimeSpan_t timeout;\n")
       self.write("%s%s_t request;\n" % (self.prefix, val["request"]))
       self.write("\n")
-      self.write("timeout_millis = 2000;\n")
-      self.write("status = lifxSession_SendRequest(lifx, deviceId, &request, kLifxPacketType%s, &packet, timeout_millis);\n" %
+      self.write("timeout = lifxTimeSpan_FromMilliseconds(2000);\n")
+      self.write("status = lifxSession_SendRequest(lifx, deviceId, &request, kLifxPacketType%s, &packet, timeout);\n" %
         (val["request"]))
       self.write("if (status == 0)\n")
       self.write("{\n")
@@ -417,10 +417,9 @@ class CodeGenerator:
       self.write("%s%s_t const* value)\n" % (self.prefix, key))
       self.write("{\n")
       self.indent()
-      self.write("int timeout_millis;\n")
       self.write("lifxPacket_t packet;\n")
-      self.write("timeout_millis = 2000;\n")
-      self.write("return lifxSession_SendRequest(lifx, deviceId, value, kLifxPacketType%s, &packet, timeout_millis);\n"
+      self.write("lifxTimeSpan_t timeout = lifxTimeSpan_FromMilliseconds(2000);\n")
+      self.write("return lifxSession_SendRequest(lifx, deviceId, value, kLifxPacketType%s, &packet, timeout);\n"
         % (key))
       self.outdent()
       self.write("}\n")
