@@ -17,6 +17,11 @@
 #define LIFX_PLATFORM_MACOSX_H
 #endif
 
+#include <errno.h>
+#include <pthread.h>
+#include <stdint.h>
+#include <sys/socket.h>
+
 #define LIFX_PRINTF_FORMAT(IDX, FIRST) __attribute__ ((format (printf, IDX, FIRST)))
 
 typedef int lifxAtomic_t;
