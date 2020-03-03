@@ -18,9 +18,12 @@
 #include <inttypes.h>
 #include <stdarg.h>
 #include <stdio.h>
-#include <sys/time.h>
 
-#ifdef __linux__
+#ifndef LIFX_PLATFORM_WINDOWS
+#include <sys/time.h>
+#endif
+
+#if defined(LIFX_PLATFORM_LINUX)
 #include <sys/syscall.h>
 #include <unistd.h>
 #endif
@@ -80,21 +83,26 @@ void lxLog_Printf(lifxSession_t* lifx, lifxLogLevel_t level, char const* format,
   else
   {
     struct timeval now;
-    static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 
+
+    lifxMutex_Lock(&lifx->LogMutex);
+
+    #if defined (LIFX_PLATFORM_LINUX) || defined (LIFX_PLATFORM_MACOSX)
     gettimeofday(&now, NULL);
-
-    pthread_mutex_lock(&lock);
     #ifdef LIFX_PLATFORM_MACOSX
     printf("%ld.%06d %5s -- Thread-%" LIFX_THREADID_FMT ": ", now.tv_sec, now.tv_usec,
         lifxLogLevelToString(level), lifxThreadGetCurrentId());
     #else
     printf("%ld.%06ld %5s -- Thread-%" LIFX_THREADID_FMT ": ", now.tv_sec, now.tv_usec,
         lifxLogLevelToString(level), lifxThreadGetCurrentId());
+    #else
+    #warning("Windows logging not really supported. Please implement me")
     #endif
+    #endif
+
     vprintf(format, argp);
     printf("\n");
-    pthread_mutex_unlock(&lock);
+    lifxMutex_Unlock(&lifx->LogMutex);
   }
 
   va_end(argp);

@@ -22,29 +22,46 @@
 extern "C" {
 #endif
 
-#ifdef __GNUC__
-#define LIFX_PRINTF_FORMAT(IDX, FIRST) __attribute__ ((format (printf, IDX, FIRST)))
-#define lifxInterlockedIncrement(X) __atomic_fetch_add((X), 1, __ATOMIC_SEQ_CST)
-#define lifxInterlockedDecrement(X) __atomic_fetch_sub((X), 1, __ATOMIC_SEQ_CST)
-#else
-#define LIFX_PRINTF_FORMAT(IDX, FIRST)
-#error "Not supported"
-#endif
+#include <assert.h>
+#define LIFX_ASSERT(X) assert((X))
 
 #if defined(LIFX_PLATFORM_LINUX) || defined(LIFX_PLATFORM_MACOSX)
-#include <assert.h>
+
 #include <errno.h>
 #include <netinet/in.h>
 #include <pthread.h>
 #include <sys/socket.h>
+
+#define LIFX_PRINTF_FORMAT(IDX, FIRST) __attribute__ ((format (printf, IDX, FIRST)))
+typedef int lifxAtomic_t;
+#define lifxInterlockedIncrement(n) __atomic_fetch_add(n, 1, __ATOMIC_SEQ_CST)
+#define lifxInterlockedDecrement(n) __atomic_fetch_sub(n, 1, __ATOMIC_SEQ_CST)
 // errno
 typedef int lifxSystemError_t; 
 typedef pthread_t lifxThread_t;
 typedef pthread_mutex_t lifxMutex_t;
 typedef pthread_cond_t lifxCond_t;
 typedef void* (lifxThreadFunc_t)(void*);
-#define LIFX_ASSERT(X) assert((X))
+
+#elif (LIFX_PLATFORM_WINDOWS)
+
+#include <Winsock2.h>
+#include <Windows.h>
+#include <ws2tcpip.h>
+// Can use _Printf_format_string_ for this
+#define LIFX_PRINTF_FORMAT(IDX, FIRST)
+typedef LONG lifxAtomic_t;
+#define lifxInterlockedIncrement(n) InterlockedIncrement(n)
+#define lifxInterlockedDecrement(n) InterlockedDecrement(n)
+typedef DWORD lifxSystemError_t;
+typedef CRITICAL_SECTION lifxMutex_t;
+typedef CONDITION_VARIABLE lifxCond_t;
+typedef HANDLE lifxThread_t;
+typedef PTHREAD_START_ROUTINE lifxThreadFunc_t;
+typedef int socklen_t;
+
 #else
+
 #error "Not implemented"
 #endif
 
@@ -64,6 +81,22 @@ typedef void* (lifxThreadFunc_t)(void*);
 #define lifxLittleToHostInt32(n) le32toh(n)
 #define lifxHostToLittleInt64(n) htole64(n)
 #define lifxLittleToHostInt64(n) le64toh(n)
+#elif LIFX_PLATFORM_WINDOWS
+#if BYTE_ORDER == BIG_ENDIAN
+#define lifxHostToLittleInt16(n) _byteswap_ushort(n)
+#define lifxLittleToHostInt16(n) _byteswap_ushort(n)
+#define lifxHostToLittleInt32(n) _byteswap_ulong(n)
+#define lifxLittleToHostInt32(n) _byteswap_ulong(n)
+#define lifxHostToLittleInt64(n) _byteswap_uint64(n)
+#define lifxLittleToHostInt64(n) _byteswap_uint64(n)
+#else
+#define lifxHostToLittleInt16(n)
+#define lifxLittleToHostInt16(n)
+#define lifxHostToLittleInt32(n)
+#define lifxLittleToHostInt32(n)
+#define lifxHostToLittleInt64(n)
+#define lifxLittleToHostInt64(n)
+#endif
 #else
 #error "Not implemented"
 #endif
@@ -141,7 +174,6 @@ struct lifxDevice
   struct sockaddr_storage Endpoint;
 };
 
-typedef uint8_t lifxSequence_t;
 typedef struct lifxDevice lifxDevice_t;
 
 struct lifxFuture
@@ -150,9 +182,9 @@ struct lifxFuture
   lifxCond_t              Cond;
   lifxPacket_t            Result;
   lifxStatus_t            Status;
-  int                     ReferenceCount;
+  lifxAtomic_t            ReferenceCount;
   bool                    Complete;
-  lifxSequence_t          SequenceNumber;
+  lifxAtomic_t            SequenceNumber;
 };
 
 typedef struct
@@ -162,9 +194,14 @@ typedef struct
 
 struct lifxSession
 {
+  #if defined(LIFX_PLATFORM_WINDOWS)
+  SOCKET                  Socket;
+  #else
   int                     Socket;
+  #endif
+
   uint32_t                SourceId;
-  uint8_t                 SequenceNumber;
+  lifxAtomic_t            SequenceNumber;
   lifxBuffer_t            ReadBuffer;
   lifxBuffer_t            WriteBuffer;
   lifxThread_t            BackgroundDispatchThread;
@@ -176,6 +213,7 @@ struct lifxSession
   lifxStatus_t            LastError;
   char                    LastErrorMessage[256];
   lifxProductInfoDB_t     ProductInfoDB;
+  lifxMutex_t             LogMutex;
 };
 
 /**
@@ -238,13 +276,13 @@ LIFX_PRIVATE lifxStatus_t lifxSession_SendToInternal(
   lifxDeviceId_t                  deviceId,
   void const*                     packet,
   lifxPacketType_t                packetType,
-  uint8_t                         seqno);
+  lifxAtomic_t                    seqno);
 
 /**
  *
  */
 LIFX_PRIVATE lifxFuture_t* lifxFuture_Create(
-  lifxSequence_t                  sequence_number);
+  lifxAtomic_t                    sequence_number);
 
 /**
  *

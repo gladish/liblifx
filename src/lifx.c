@@ -18,14 +18,17 @@
 #include "lifx_private.h"
 #include "lifx_version.h"
 
+#ifndef LIFX_PLATFORM_WINDOWS
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <sys/socket.h>
 #include <sys/time.h>
 #include <unistd.h>
+#endif
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 void lifxDumpBuffer(lifxSession_t* lifx, uint8_t* p, int n)
 {
@@ -64,7 +67,7 @@ char const* lifx_Version()
   return "v" LIFX_PROJECT_VER;
 }
 
-lifxFuture_t* lifxFuture_Create(lifxSequence_t sequence_number)
+lifxFuture_t* lifxFuture_Create(lifxAtomic_t sequence_number)
 {
   lifxFuture_t* f = malloc(sizeof(struct lifxFuture));
   lifxMutex_Init(&f->Mutex);
@@ -85,7 +88,7 @@ lifxStatus_t lifxFuture_Retain(struct lifxFuture* future)
 
 lifxStatus_t lifxFuture_Release(struct lifxFuture* future)
 {
-  int n = lifxInterlockedDecrement(&future->ReferenceCount);
+  lifxAtomic_t n = lifxInterlockedDecrement(&future->ReferenceCount);
   if (n == 1)
   {
     // TODO(jacobgladish@yahoo.com): signal any waiters
@@ -158,6 +161,12 @@ lifxTimeSpan_t lifxDateTime_Subtract(
   return time_span;
 }
 
+uint64_t lifxTimeSpan_ToMilliseconds(
+  lifxTimeSpan_t  time_span)
+{
+  return time_span._ticks / 1000;
+}
+
 uint64_t lifxTimeSpan_ToMicroseconds(
   lifxTimeSpan_t  time_span)
 {
@@ -168,7 +177,9 @@ int lifxTimeSpan_Compare(
   lifxTimeSpan_t time_span1,
   lifxTimeSpan_t time_span2)
 {
-  return time_span1._ticks - time_span2._ticks;
+  uint64_t result = time_span1._ticks - time_span2._ticks;
+  LIFX_ASSERT(result < INT32_MAX);
+  return (int) result;
 }
 
 lifxTimeSpan_t lifxTimeSpan_Zero()

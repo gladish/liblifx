@@ -16,14 +16,17 @@
 #include "lifx_private.h"
 #include "lifx_encoders.h"
 
+#ifndef LIFX_PLATFORM_WINDOWS
 #include <arpa/inet.h>
+#include <sys/time.h>
+#include <unistd.h>
+#endif
+
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/time.h>
 #include <sys/types.h>
-#include <unistd.h>
 
 static uint16_t const kLifxProtocolNumber = 0x400; // 1024
 
@@ -45,7 +48,11 @@ static void lifxSession_SetBroadcastDestination(
 }
 
 
+#if defined(LIFX_PLATFORM_WINDOWS)
+DWORD WINAPI lifxSession_Dispatcher(PVOID argp)
+#else
 static void* lifxSession_Dispatcher(void* argp)
+#endif
 {
   int ret;
   bool done;
@@ -63,8 +70,11 @@ static void* lifxSession_Dispatcher(void* argp)
       done = true;
     }
   }
-
+#if defined (LIFX_PLATFORM_WINDOWS)
+  return 0;
+#else
   return NULL;
+#endif
 }
 
 lifxDevice_t* lifxSession_FindDevice(lifxSession_t* lifx, lifxDeviceId_t device_id)
@@ -107,7 +117,7 @@ lifxDevice_t* lifxSession_CreateDevice(
       // XXX: always assumes ipv4
       {
         struct sockaddr_in* v4 = (struct sockaddr_in *) &new_device->Endpoint;
-        v4->sin_port = htons(message->Packet.DeviceStateService.Port);
+        v4->sin_port = htons((uint16_t)message->Packet.DeviceStateService.Port);
       }
 
       {
@@ -145,7 +155,6 @@ lifxSession_t* lifxSession_Open(lifxSessionConfig_t const* conf)
 
   memset(lifx, 0, sizeof(struct lifxSession));
 
-
   // set this as early as possible to avoid uninitialized reads
   lifx->Config.LogLevel = kLifxLogLevelInfo;
   if (conf)
@@ -155,6 +164,7 @@ lifxSession_t* lifxSession_Open(lifxSessionConfig_t const* conf)
   lxLog_Info(lifx, "liblifx %s", lifx_Version());
 
   lifxMutex_Init(&lifx->SessionLock);
+  lifxMutex_Init(&lifx->LogMutex);
   lifx->ProductInfoDB.LifxPrecompiledDB = __lifx_products;
   lifx->LastError = kLifxStatusOk;
   lifx->SourceId = getpid();
@@ -219,7 +229,13 @@ lifxStatus_t lifxSession_Close(lifxSession_t* lifx)
     return kLifxStatusInvalidArgument;
 
   if (lifx->Socket != -1)
+  {
+    #if defined (LIFX_PLATFORM_WINDOWS)
+    closesocket(lifx->Socket);
+    #else
     close(lifx->Socket);
+    #endif
+  }
 
   if (lifx->Config.BindInterface)
     free(lifx->Config.BindInterface);
@@ -380,7 +396,14 @@ lifxStatus_t lifxSession_SendTo(
   void*             packet,
   lifxPacketType_t  packetType)
 {
-  uint8_t seqno = lifxInterlockedIncrement(&lifx->SequenceNumber);
+  // TODO(jacobgladish@yahoo.com):not thread-safe
+  lifxAtomic_t seqno = lifxInterlockedIncrement(&lifx->SequenceNumber);
+  if (seqno == UINT8_MAX)
+  {
+    lifx->SequenceNumber = 1;
+    seqno = 1;
+  }
+
   return lifxSession_SendToInternal(lifx, deviceId, packet, packetType, seqno);
 }
 
@@ -389,7 +412,7 @@ lifxStatus_t lifxSession_SendToInternal(
   lifxDeviceId_t    device_id,
   void const*       packet,
   lifxPacketType_t  packet_type,
-  uint8_t           seqno)
+  lifxAtomic_t      seqno)
 {
   lifxProtocolHeader_t    header;
   struct sockaddr_storage dest;
@@ -412,7 +435,7 @@ lifxStatus_t lifxSession_SendToInternal(
   header.Source = lifx->SourceId;
   header.ResRequired = 0;
   header.AckRequired = 0;
-  header.Sequence = seqno;
+  header.Sequence = (uint8_t) seqno;
   header.Type = packet_type;
 
   if (lifxDeviceId_Compare(&device_id, &kLifxDeviceAll) == 0)
@@ -520,6 +543,8 @@ lifxStatus_t lifxSession_RecvFromInternal(
   lifxStatus_t    status;
   uint64_t        micros;
 
+  // TODO(jacobgladish@yahoo.com): wrap this up in function. There's a bunch of
+  // 64->32-bit conversions that create warnings on vc++. It's clearner anyway
   micros = lifxTimeSpan_ToMicroseconds(timeout);
   wait_time.tv_sec = (micros / 1000000);
   micros -= ((micros / 1000000) * 1000000);

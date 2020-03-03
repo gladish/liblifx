@@ -332,6 +332,9 @@ LIFX_PUBLIC lifxTimeSpan_t lifxDateTime_Subtract(
 LIFX_PUBLIC uint64_t lifxTimeSpan_ToMicroseconds(
   lifxTimeSpan_t time_span);
 
+LIFX_PUBLIC uint64_t lifxTimeSpan_ToMilliseconds(
+  lifxTimeSpan_t time_span);
+
 /**
  * @return 0 if equal > 0 if time_span1 > time_span2 < 0 if time_span1 < time_span2
  */

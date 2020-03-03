@@ -18,12 +18,13 @@
 
 #include <stdint.h>
 
-#if defined LIFX_PLATFORM_WINDOWS
+#if defined(LIFX_PLATFORM_WINDOWS)
 #ifdef LIFX_BUILDING_SHARED_LIBRARY
 #define LIFX_PUBLIC   __declspec(dllexport)
-#define LIFX_PRIVATE  __declspec(dllimport)
+#define LIFX_PRIVATE
 #else
 #define LIFX_PUBLIC   __declspec(dllimport)
+#define LIFX_PRIVATE "Error --"
 #endif
 #else
 #define LIFX_PUBLIC   __attribute__ ((visibility ("default")))
@@ -37,6 +38,8 @@
 #define kLifxErrorMessageMaxLength (256)
 #define kLifxRequestsMax (16)
 #define kLifxMaxDevices (256)
+// TODO(jacobgladish@yahoo.com): make this uint16_t -- we know the size and
+// that's the way it's represented in lifxProtocolHeader_t
 #define kLifxSizeofHeader (sizeof(lifxProtocolHeader_t))
 #define kLifxErrorMessageMax (256)
 #define kLifxDeviceDatabaseBucketCount (1)
