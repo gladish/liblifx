@@ -177,7 +177,7 @@ int lifxTimeSpan_Compare(
   lifxTimeSpan_t time_span1,
   lifxTimeSpan_t time_span2)
 {
-  uint64_t result = time_span1._ticks - time_span2._ticks;
+  int64_t result = time_span1._ticks - time_span2._ticks;
   LIFX_ASSERT(result < INT32_MAX);
   return (int) result;
 }

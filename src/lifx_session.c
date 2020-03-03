@@ -168,7 +168,7 @@ lifxSession_t* lifxSession_Open(lifxSessionConfig_t const* conf)
   lifx->ProductInfoDB.LifxPrecompiledDB = __lifx_products;
   lifx->LastError = kLifxStatusOk;
   lifx->SourceId = getpid();
-  lifx->SequenceNumber = 0;
+  lifx->SequenceNumber = 1;
 
   lifx->Socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
   if (lifx->Socket == -1)

@@ -84,7 +84,6 @@ void lxLog_Printf(lifxSession_t* lifx, lifxLogLevel_t level, char const* format,
   {
     struct timeval now;
 
-
     lifxMutex_Lock(&lifx->LogMutex);
 
     #if defined (LIFX_PLATFORM_LINUX) || defined (LIFX_PLATFORM_MACOSX)
@@ -95,9 +94,9 @@ void lxLog_Printf(lifxSession_t* lifx, lifxLogLevel_t level, char const* format,
     #else
     printf("%ld.%06ld %5s -- Thread-%" LIFX_THREADID_FMT ": ", now.tv_sec, now.tv_usec,
         lifxLogLevelToString(level), lifxThreadGetCurrentId());
+    #endif
     #else
     #warning("Windows logging not really supported. Please implement me")
-    #endif
     #endif
 
     vprintf(format, argp);
