@@ -329,9 +329,15 @@ LIFX_PUBLIC lifxTimeSpan_t lifxDateTime_Subtract(
   lifxDateTime_t now,
   lifxDateTime_t then);
 
+/**
+ *
+ */
 LIFX_PUBLIC uint64_t lifxTimeSpan_ToMicroseconds(
   lifxTimeSpan_t time_span);
 
+/**
+ *
+ */
 LIFX_PUBLIC uint64_t lifxTimeSpan_ToMilliseconds(
   lifxTimeSpan_t time_span);
 
