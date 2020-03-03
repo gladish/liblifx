@@ -1,5 +1,5 @@
 //
-// Copyright [2020] [name of copyright owner]
+// Copyright [2020] jacobgladish@yahoo.com,thomaslea@gmail.com
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,10 +17,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// JUST PROTOTYPING API 
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 // lifx.h -- lifx.c
 // won't need this
@@ -50,7 +46,6 @@ int main(int argc, char* argv[])
 
   lifxDeviceId_FromString(&device_id, "lifx_id://mac/d0:73:d5:40:4d:61");
 
-  // XXX: fails right now if we haven't first discovered this device
   status = lifxDevice_GetLabel(lifx, device_id, &label);
   if (status == kLifxStatusOk)
     printf("label:%s\n", label.Label);
