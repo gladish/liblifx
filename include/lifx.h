@@ -115,11 +115,17 @@ typedef void (*lifxLogHandler_t)(
   lifxLogLevel_t level,
   char const* message);
 
+/**
+ *
+ */
 typedef void (*lifxMessageHandler_t)(
   lifxSession_t const* lifx,
   lifxMessage_t const* const message,
   lifxDeviceId_t device);
 
+/**
+ *
+ */
 typedef void (*lifxDeviceDiscoveryHandler_t)(
   lifxSession_t const* lifx,
   lifxDeviceId_t deviceId);
