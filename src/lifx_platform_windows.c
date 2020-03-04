@@ -165,15 +165,16 @@ char const* lifxError_ToString(lifxSystemError_t system_error)
 lifxDateTime_t lifxDateTime_Now()
 {
   lifxDateTime_t now;
+  FILETIME file_time;
+  LARGE_INTEGER large_int;
 
-  now = 0;
-#if 0
-  struct timeval tv;
-  gettimeofday(&tv, NULL);
+  int64_t const kUnixStartTime = 116444736000000000;
+  int64_t const kTicksPerMicrosecond= 10;
 
-  now = (tv.tv_sec * 1000 * 1000);
-  now += tv.tv_usec;
-#endif
+  GetSystemTimeAsFileTime(&file_time);
+  large_int.LowPart = file_time.dwLowDateTime;
+  large_int.HighPart = file_time.dwHighDateTime;
+  now = (large_int.QuadPart - kUnixStartTime) / kTicksPerMicrosecond;
 
   return now;
 }
