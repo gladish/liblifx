@@ -16,7 +16,6 @@
 #include <lifx.h>
 #include <stdio.h>
 #include <string.h>
-#include <unistd.h>
 
 int main(int argc, char* argv[])
 {
@@ -25,11 +24,17 @@ int main(int argc, char* argv[])
   lifxDeviceId_t device_id;
   lifxLightSetPower_t set_power;
   lifxFuture_t* future;
+  lifxSessionConfig_t config;
 
   (void) argc;
   (void) argv;
 
-  lifx = lifxSession_Open(NULL);
+  lifxSessionConfig_InitWithDefaults(&config);
+  //config.LogLevel = kLifxLogLevelDebug;
+  //config.BindInterface = "10.0.0.252";
+  //lifxWSAStartup();
+
+  lifx = lifxSession_Open(&config);
 
   // not setting the duration causes random values
   // to be used, which has really confusing results
@@ -66,7 +71,7 @@ int main(int argc, char* argv[])
     else
     {
       printf("status:%d waiting one second\n", status);
-      sleep(1);
+      lifxSleep(1000);
     }
   }
 

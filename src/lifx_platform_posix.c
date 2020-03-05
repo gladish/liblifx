@@ -179,3 +179,8 @@ lifxDateTime_t lifxDateTime_Now()
 
   return now;
 }
+
+void lifxSleep(uint32_t milliseconds)
+{
+  usleep(milliseconds * 1000);
+}

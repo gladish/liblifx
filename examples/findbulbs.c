@@ -17,7 +17,6 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <unistd.h>
 
 void discovery_callback(lifxSession_t const* lifx, lifxDeviceId_t deviceId)
 {
@@ -43,7 +42,7 @@ int main(int argc, char* argv[])
 
   lifx = lifxSession_Open(&conf);
   lifxSession_StartDiscovery(lifx);
-  sleep(20);
+  lifxSleep(20000);
   lifxSession_StopDiscovery(lifx);
   lifxSession_Close(lifx);
 

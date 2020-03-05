@@ -364,6 +364,16 @@ LIFX_PUBLIC lifxTimeSpan_t lifxTimeSpan_Zero();
  */
 LIFX_PUBLIC lifxTimeSpan_t lifxTimeSpan_Infinite();
 
+/**
+ *
+ */
+LIFX_PUBLIC void lifxSleep(uint32_t milliseconds);
+
+#if defined(LIFX_PLATFORM_WINDOWS)
+LIFX_PUBLIC void lifxWSAStartup();
+LIFX_PUBLIC void lifxWSAShutdown();
+#endif
+
 #ifdef __cplusplus
 }
 #endif

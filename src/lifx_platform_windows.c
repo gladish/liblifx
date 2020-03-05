@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 #include "lifx_private.h"
+#include <stdio.h>
 
 // static pthread_once_t error_once = PTHREAD_ONCE_INIT;
 // static pthread_key_t  error_key;
@@ -177,4 +178,29 @@ lifxDateTime_t lifxDateTime_Now()
   now = (large_int.QuadPart - kUnixStartTime) / kTicksPerMicrosecond;
 
   return now;
+}
+
+void lifxSleep(uint32_t milliseconds)
+{
+  Sleep(milliseconds);
+}
+
+void lifxWSAStartup()
+{
+  WORD wVersionRequested;
+  WSADATA wsaData;
+  int err;
+
+  wVersionRequested = MAKEWORD(2, 2);
+  err = WSAStartup(wVersionRequested, &wsaData);
+  if (err != 0)
+  {
+    printf("WSAStartup failed with error:%d\n", err);
+    ExitProcess(1);
+  }
+}
+
+void lifsWSAShutdown()
+{
+  WSACleanup();
 }

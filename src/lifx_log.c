@@ -33,7 +33,7 @@ typedef uint64_t lifxThreadId_t;
 #define LIFX_THREADID_FMT PRIu64
 #elif defined WIN32
 typedef unsigned long lifxThreadId_t;
-#define LIFX_THREADID_FMT "l"
+#define LIFX_THREADID_FMT "lu"
 #else
 typedef int32_t lifxThreadId_t;
 #define LIFX_THREADID_FMT "d"
@@ -95,13 +95,14 @@ void lxLog_Printf(lifxSession_t* lifx, lifxLogLevel_t level, char const* format,
 
     #if defined (LIFX_PLATFORM_LINUX) || defined (LIFX_PLATFORM_MACOSX)
     gettimeofday(&now, NULL);
+    #endif
+
     #ifdef LIFX_PLATFORM_MACOSX
     printf("%ld.%06d %5s -- Thread-%" LIFX_THREADID_FMT ": ", now.tv_sec, now.tv_usec,
         lifxLogLevelToString(level), lifxThreadGetCurrentId());
     #else
     printf("%ld.%06ld %5s -- Thread-%" LIFX_THREADID_FMT ": ", now.tv_sec, now.tv_usec,
         lifxLogLevelToString(level), lifxThreadGetCurrentId());
-    #endif
     #endif
 
     vprintf(format, argp);

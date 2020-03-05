@@ -156,6 +156,7 @@ lifxSession_t* lifxSession_Open(lifxSessionConfig_t const* conf)
   memset(lifx, 0, sizeof(struct lifxSession));
 
   // set this as early as possible to avoid uninitialized reads
+  lifxMutex_Init(&lifx->LogMutex);
   lifx->Config.LogLevel = kLifxLogLevelInfo;
   if (conf)
     lifxSessionConfig_Copy(&lifx->Config, conf);
@@ -164,15 +165,19 @@ lifxSession_t* lifxSession_Open(lifxSessionConfig_t const* conf)
   lxLog_Info(lifx, "liblifx %s", lifx_Version());
 
   lifxMutex_Init(&lifx->SessionLock);
-  lifxMutex_Init(&lifx->LogMutex);
+
   lifx->ProductInfoDB.LifxPrecompiledDB = __lifx_products;
   lifx->LastError = kLifxStatusOk;
   lifx->SourceId = getpid();
   lifx->SequenceNumber = 1;
+  lifx->RunDiscovery = false;
 
   lifx->Socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
   if (lifx->Socket == -1)
   {
+    // TODO(jacobgladish@yahoo.com): When this fails, which happens on windows
+    // when you don't initialize winsock, there's no good way to communicate
+    // error back to user
     free(lifx);
     return NULL;
   }

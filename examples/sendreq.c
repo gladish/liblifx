@@ -16,7 +16,7 @@
 #include <lifx.h>
 #include <stdio.h>
 #include <string.h>
-#include <unistd.h>
+
 
 // lifx.h -- lifx.c
 // won't need this
@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
 
   lifx = lifxSession_Open(NULL);
   lifxSession_StartDiscovery(lifx);
-  sleep(3);
+  lifxSleep(3000);
 
   lifxDeviceId_FromString(&device_id, "lifx_id://mac/d0:73:d5:40:4d:61");
 
