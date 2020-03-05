@@ -89,7 +89,7 @@ lifxStatus_t lifxFuture_Retain(struct lifxFuture* future)
 lifxStatus_t lifxFuture_Release(struct lifxFuture* future)
 {
   lifxAtomic_t n = lifxInterlockedDecrement(&future->ReferenceCount);
-  if (n == 1)
+  if (n == 0)
   {
     // TODO(jacobgladish@yahoo.com): signal any waiters
     lifxMutex_Destroy(&future->Mutex);

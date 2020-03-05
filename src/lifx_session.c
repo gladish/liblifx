@@ -33,6 +33,21 @@ static uint16_t const kLifxProtocolNumber = 0x400; // 1024
 // the __lifx_products is in lifx_products_db (generated code)
 extern lifxProductInformation_t** __lifx_products;
 
+static lifxAtomic_t lifxSession_GetNextSequenceNumber(
+  lifxSession_t*            lifx)
+{
+  lifxAtomic_t seqno = 0;
+
+  lifxMutex_Lock(&lifx->SessionLock);
+  lifx->SequenceNumber++;
+  seqno = lifx->SequenceNumber;
+  if (seqno == UINT8_MAX)
+    lifx->SequenceNumber = 0;
+  lifxMutex_Unlock(&lifx->SessionLock);
+
+  return seqno;
+}
+
 
 static void lifxSession_SetBroadcastDestination(
   lifxSession_t const*      lifx,
@@ -171,7 +186,7 @@ lifxSession_t* lifxSession_Open(lifxSessionConfig_t const* conf)
 
   lifx->ProductInfoDB.LifxPrecompiledDB = __lifx_products;
   lifx->LastError = kLifxStatusOk;
-  lifx->SequenceNumber = 1;
+  lifx->SequenceNumber = 0;
   lifx->RunDiscovery = false;
 
   lifx->Socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
@@ -404,13 +419,7 @@ lifxStatus_t lifxSession_SendTo(
   lifxPacketType_t  packetType)
 {
   // TODO(jacobgladish@yahoo.com):not thread-safe
-  lifxAtomic_t seqno = lifxInterlockedIncrement(&lifx->SequenceNumber);
-  if (seqno == UINT8_MAX)
-  {
-    lifx->SequenceNumber = 1;
-    seqno = 1;
-  }
-
+  lifxAtomic_t seqno = lifxSession_GetNextSequenceNumber(lifx);
   return lifxSession_SendToInternal(lifx, deviceId, packet, packetType, seqno);
 }
 
@@ -736,8 +745,10 @@ lifxFuture_t* lifxSession_BeginSendRequest(
 {
   lifxStatus_t    status;
   lifxFuture_t*   future;
+  lifxAtomic_t    seqno;
 
-  future = lifxFuture_Create(lifxInterlockedIncrement(&lifx->SequenceNumber));
+  seqno = lifxSession_GetNextSequenceNumber(lifx);
+  future = lifxFuture_Create(seqno);
   status = lifxSession_RegisterRequest(lifx, future);
   if (status != kLifxStatusOk)
   {

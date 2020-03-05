@@ -26,8 +26,8 @@
 
 typedef int lifxAtomic_t;
 
-#define lifxInterlockedIncrement(n) __atomic_fetch_add(n, 1, __ATOMIC_SEQ_CST)
-#define lifxInterlockedDecrement(n) __atomic_fetch_sub(n, 1, __ATOMIC_SEQ_CST)
+#define lifxInterlockedIncrement(n) __atomic_add_fetch(n, 1, __ATOMIC_SEQ_CST)
+#define lifxInterlockedDecrement(n) __atomic_sub_fetch(n, 1, __ATOMIC_SEQ_CST)
 
 typedef int lifxSystemError_t; 
 typedef pthread_t lifxThread_t;
