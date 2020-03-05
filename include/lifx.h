@@ -143,6 +143,7 @@ typedef struct
   lifxDeviceDiscoveryHandler_t  DeviceDiscovered;
   bool                          ReportDuplicateDevices;
   bool                          AutoResolveDevices;
+  uint32_t                      SourceId;
 } lifxSessionConfig_t;
 
 /**

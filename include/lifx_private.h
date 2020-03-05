@@ -134,7 +134,6 @@ struct lifxSession
   int                     Socket;
   #endif
 
-  uint32_t                SourceId;
   lifxAtomic_t            SequenceNumber;
   lifxBuffer_t            ReadBuffer;
   lifxBuffer_t            WriteBuffer;

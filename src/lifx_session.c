@@ -164,11 +164,13 @@ lifxSession_t* lifxSession_Open(lifxSessionConfig_t const* conf)
     lifxSessionConfig_InitWithDefaults(&lifx->Config);
   lxLog_Info(lifx, "liblifx %s", lifx_Version());
 
+  if (lifx->Config.SourceId == 0)
+    lifx->Config.SourceId = getpid();
+
   lifxMutex_Init(&lifx->SessionLock);
 
   lifx->ProductInfoDB.LifxPrecompiledDB = __lifx_products;
   lifx->LastError = kLifxStatusOk;
-  lifx->SourceId = getpid();
   lifx->SequenceNumber = 1;
   lifx->RunDiscovery = false;
 
@@ -437,7 +439,7 @@ lifxStatus_t lifxSession_SendToInternal(
   header.Addressable = 1;
   header.Tagged = 1;
   header.Origin = 0;
-  header.Source = lifx->SourceId;
+  header.Source = lifx->Config.SourceId;
   header.ResRequired = 0;
   header.AckRequired = 0;
   header.Sequence = (uint8_t) seqno;
