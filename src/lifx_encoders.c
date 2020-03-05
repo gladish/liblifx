@@ -1,5 +1,5 @@
 //
-// DO NOT EDIT - AUTO-GENERATE:2020-02-26 20:13:15.008835
+// DO NOT EDIT - AUTO-GENERATE:2020-03-05 16:03:34.528410
 //
 #include "lifx_private.h"
 #include "lifx_encoders.h"
@@ -376,9 +376,9 @@ lifxStatus_t lifxEncoder_EncodePacket(lifxBuffer_t* buff, lifxPacketType_t type,
   return status;
 }
 
-int lifxEncoder_GetEncodedSize(lifxPacketType_t type)
+uint16_t lifxEncoder_GetEncodedSize(lifxPacketType_t type)
 {
-  int encoded_size = 0;
+  uint16_t encoded_size = 0;
   switch (type)
   {
     // {'pkt_type': 2, 'size_bytes': 0, 'fields': []}

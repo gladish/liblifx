@@ -435,7 +435,7 @@ class CodeGenerator:
     self.write("\n")
     self.write("lifxStatus_t lifxDecoder_DecodePacket(lifxBuffer_t* buff, lifxPacketType_t type, lifxPacket_t* pkt);\n")
     self.write("lifxStatus_t lifxEncoder_EncodePacket(lifxBuffer_t* buff, lifxPacketType_t type, lifxPacket_t const* pkt);\n")
-    self.write("int lifxEncoder_GetEncodedSize(lifxPacketType_t type);\n")
+    self.write("uint16_t lifxEncoder_GetEncodedSize(lifxPacketType_t type);\n")
     self.write("\n")
     for s in ["device", "light", "tile", "multi_zone"]:
       for key, val in pkts[s].items():
@@ -497,10 +497,10 @@ class CodeGenerator:
     self.write("\n")
 
     self.write("\n")
-    self.write("int lifxEncoder_GetEncodedSize(lifxPacketType_t type)\n")
+    self.write("uint16_t lifxEncoder_GetEncodedSize(lifxPacketType_t type)\n")
     self.write("{\n");
     self.indent()
-    self.write("int encoded_size = 0;\n")
+    self.write("uint16_t encoded_size = 0;\n")
     self.write("switch (type)\n")
     self.write("{\n")
     self.indent()
