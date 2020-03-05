@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/time.h>
+#include <unistd.h>
 
 static pthread_once_t error_once = PTHREAD_ONCE_INIT;
 static pthread_key_t  error_key;
