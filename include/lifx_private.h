@@ -395,6 +395,13 @@ LIFX_PRIVATE lifxStatus_t lifxBuffer_ReadBool(
 /**
  *
  */
+LIFX_PRIVATE bool lxLog_IsLevelEnabled(
+  lifxSession_t*                  lifx,
+  lifxLogLevel_t                  level);
+
+/**
+ *
+ */
 LIFX_PRIVATE void lxLog_Printf(
   lifxSession_t*                  lifx,
   lifxLogLevel_t                  level,

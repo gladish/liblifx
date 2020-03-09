@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
   (void) argv;
 
   lifxSessionConfig_InitWithDefaults(&config);
-  config.LogLevel = kLifxLogLevelDebug;
+  // config.LogLevel = kLifxLogLevelDebug;
   // config.SourceId = 0xdeadbeef;
   // config.BindInterface = "10.0.0.252";
 

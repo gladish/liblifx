@@ -43,6 +43,7 @@ static char const* lifxLogLevelToString(lifxLogLevel_t level)
 {
   switch (level)
   {
+    case kLifxLogLevelTrace: return "TRACE"; break;
     case kLifxLogLevelDebug: return "DEBUG"; break;
     case kLifxLogLevelInfo: return "INFO"; break;
     case kLifxLogLevelWarn: return "WARN"; break;
@@ -65,11 +66,19 @@ lifxThreadId_t lifxThreadGetCurrentId()
 #endif
 }
 
+bool lxLog_IsLevelEnabled(
+  lifxSession_t*                lifx,
+  lifxLogLevel_t                level)
+{
+  return level >= lifx->Config.LogLevel;
+}
+
+
 void lxLog_Printf(lifxSession_t* lifx, lifxLogLevel_t level, char const* format, ...)
 {
   va_list argp;
 
-  if (level < lifx->Config.LogLevel)
+  if (!lxLog_IsLevelEnabled(lifx, lifx->Config.LogLevel))
     return;
 
   va_start(argp, format);

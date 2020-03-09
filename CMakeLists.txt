@@ -157,6 +157,10 @@ add_executable(async examples/async.c)
 add_dependencies(async lifx)
 target_link_libraries(async lifx)
 
+add_executable(getalot examples/getalot.c)
+add_dependencies(getalot lifx)
+target_link_libraries(getalot lifx)
+
 if (ENABLE_UNIT_TESTS)
   add_subdirectory(tests)
 endif()

@@ -148,7 +148,7 @@ lifxDevice_t* lifxSession_CreateDevice(
         uint16_t port;
         char buff[256];
         lifxSockaddr_ToString(source_address, buff, sizeof(buff), &port);
-        lxLog_Info(lifx, "adding new device %s:%d [%02x:%02x:%02x:%02x:%02x:%02x] to database",
+        lxLog_Debug(lifx, "adding new device %s:%d [%02x:%02x:%02x:%02x:%02x:%02x] to database",
           buff,
           port,
           lifx->DeviceDatabase[i]->DeviceId.Octets[0],
@@ -260,7 +260,7 @@ lifxSession_t* lifxSession_Open(lifxSessionConfig_t const* conf)
     bind_addr.sin_family = AF_INET;
     // Bind to 56700 specifically it trying to be lifx protocol v1 compatible
     // leaving out for now. This should be configurable.
-    // bind_addr.sin_port = htons(56700);
+    bind_addr.sin_port = htons(56700);
 
     lxLog_Info(lifx, "binding to %s", lifx->Config.BindInterface);
     ret = bind(lifx->Socket, (struct sockaddr *) &bind_addr, bind_addr_length);
@@ -536,6 +536,13 @@ lifxStatus_t lifxSession_SendToInternal(
     }
   }
 
+  if (send_discovery_message)
+  {
+    lifxDeviceGetService_t get_service;
+    lxLog_Info(lifx, "sending auto-discovery for device");
+    lifxSession_SendTo(lifx, kLifxDeviceAll, &get_service, kLifxPacketTypeDeviceGetService);
+  }
+
   lifxBuffer_Seek(&lifx->WriteBuffer, 0, kLifxBufferWhenceSet);
   lifxEncoder_EncodeHeader(&lifx->WriteBuffer, &header);
   lifxEncoder_EncodePacket(&lifx->WriteBuffer, packet_type, packet);
@@ -544,9 +551,11 @@ lifxStatus_t lifxSession_SendToInternal(
     char addr[64];
     struct sockaddr_in* v4 = (struct sockaddr_in *) &dest;
     inet_ntop(AF_INET, &v4->sin_addr, addr, sizeof(addr));
-    lxLog_Info(lifx, ">>> message >>> (%s:%u) -- type:%d size:%d",
+    lxLog_Debug(lifx, ">>> message >>> (%s:%u) -- type:%d size:%d",
       addr, ntohs(v4->sin_port), header.Type, header.Size);
-    lifxDumpBuffer(lifx, lifx->WriteBuffer.Data, header.Size);
+
+    if (lxLog_IsLevelEnabled(lifx, kLifxLogLevelTrace))
+      lifxDumpBuffer(lifx, lifx->WriteBuffer.Data, header.Size);
   }
 
   // lxLog_Info(lifx, "header:%d write_buffer:%d", header.Size, lifx->WriteBuffer.Size);
@@ -561,15 +570,6 @@ lifxStatus_t lifxSession_SendToInternal(
     lifxSystemError_t sys_error = lifxError_GetSystemError();
     return lifxSession_SetLastError(lifx, kLifxStatusFailed, "sendto failed. %s",
       lifxError_ToString(sys_error));
-  }
-
-  // TODO(jacobgladish@yahoo.com): there are a few cases above where this message
-  // won't get sent because of an error and subsequent return. do we care?
-  if (send_discovery_message)
-  {
-    lifxDeviceGetService_t get_service;
-    lxLog_Info(lifx, "sending auto-discovery for device");
-    lifxSession_SendTo(lifx, kLifxDeviceAll, &get_service, kLifxPacketTypeDeviceGetService);
   }
 
   return kLifxStatusOk;
@@ -604,7 +604,6 @@ lifxStatus_t lifxSession_RecvFromInternal(
   wait_time.tv_usec = micros;
 
   memset(message, 0, sizeof(lifxMessage_t));
-  lifxBuffer_Seek(&lifx->ReadBuffer, 0, kLifxBufferWhenceSet);
   lifxSession_SetLastError(lifx, kLifxStatusOk, NULL);
   status = kLifxStatusOk;
 
@@ -653,9 +652,11 @@ lifxStatus_t lifxSession_RecvFromInternal(
       uint16_t port;
       char buff[256];
       lifxSockaddr_ToString(source, buff, sizeof(buff), &port);
-      lxLog_Info(lifx, "<<< message <<< (%s:%u) -- type:%d size:%d",
+      lxLog_Debug(lifx, "<<< message <<< (%s:%u) -- type:%d size:%d",
         buff, port, message->Header.Type, n);
-      lifxDumpBuffer(lifx, lifx->ReadBuffer.Data, n);
+
+      if (lxLog_IsLevelEnabled(lifx, kLifxLogLevelTrace))
+        lifxDumpBuffer(lifx, lifx->ReadBuffer.Data, n);
     }
   }
   else

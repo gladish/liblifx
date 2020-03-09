@@ -32,9 +32,6 @@
 
 void lifxDumpBuffer(lifxSession_t* lifx, uint8_t* p, int n)
 {
-  if (kLifxLogLevelDebug < lifx->Config.LogLevel)
-    return;
-
   int i;
   printf("\t");
   for (i = 0; i < n; ++i)
@@ -207,7 +204,6 @@ void lifxEncoder_EncodeHeader(
   lifxProtocolHeader_t const* header)
 {
   // https://lan.developer.lifx.com/v2.0/docs/header-description#frame
-#ifdef LIFX_PLATFORM_WINDOWS
   uint8_t  temp_u8;
   uint16_t temp_u16;
   uint8_t  zeros[16];
@@ -233,16 +229,12 @@ void lifxEncoder_EncodeHeader(
   lifxBuffer_Write(buff, zeros, 8);
   lifxBuffer_WriteUInt16(buff, header->Type);
   lifxBuffer_Write(buff, zeros, 2);
-#else
-  lifxBuffer_Write(buff, header, kLifxSizeofHeader);
-#endif
 }
 
 void lifxDecoder_DecodeHeader(
   lifxBuffer_t*               buff,
   lifxProtocolHeader_t*       header)
 {
-#ifdef LIFX_PLATFORM_WINDOWS
   uint8_t  temp_u8;
   uint16_t temp_u16;
   uint8_t  zeros[16];
@@ -266,7 +258,4 @@ void lifxDecoder_DecodeHeader(
   lifxBuffer_Read(buff, zeros, 8);
   lifxBuffer_ReadUInt16(buff, &header->Type);
   lifxBuffer_Read(buff, zeros, 2);
-#else
-  lifxBuffer_Read(buff, header, kLifxSizeofHeader);
-#endif
 }

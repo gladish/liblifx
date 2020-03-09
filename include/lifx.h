@@ -42,33 +42,6 @@ typedef struct
  */
 typedef uint64_t lifxDateTime_t;
 
-#if !defined(LIFX_PLATFORM_WINDOWS)
-#pragma pack(push, 1)
-typedef struct
-{
-  // frame
-  uint16_t  Size;
-  uint16_t  Protocol:12;
-  uint8_t   Addressable:1;
-  uint8_t   Tagged:1;
-  uint8_t   Origin:2;
-  uint32_t  Source;
-
-  // frame address
-  uint8_t   Target[8];
-  uint8_t   Reserved[6];
-  uint8_t   ResRequired:1;
-  uint8_t   AckRequired:1;
-  uint8_t   :6;
-  uint8_t   Sequence;
-
-  // protocol header
-  uint64_t  :64;
-  uint16_t  Type;
-  uint16_t  :16;
-} lifxProtocolHeader_t;
-#pragma pack(pop)
-#else
 typedef struct
 {
   uint16_t  Size;
@@ -85,7 +58,6 @@ typedef struct
 
   uint16_t  Type;
 } lifxProtocolHeader_t;
-#endif
 
 typedef struct
 {
@@ -109,11 +81,12 @@ typedef struct
  */
 typedef enum
 {
-  kLifxLogLevelDebug = 0,
-  kLifxLogLevelInfo = 1,
-  kLifxLogLevelWarn = 2,
-  kLifxLogLevelError = 3,
-  kLifxLogLevelFatal = 4
+  kLifxLogLevelTrace = 0,
+  kLifxLogLevelDebug = 1,
+  kLifxLogLevelInfo = 2,
+  kLifxLogLevelWarn = 3,
+  kLifxLogLevelError = 4,
+  kLifxLogLevelFatal = 5
 } LIFX_PUBLIC lifxLogLevel_t;
 
 /**
