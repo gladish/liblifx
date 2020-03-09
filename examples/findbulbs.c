@@ -30,17 +30,18 @@ void discovery_callback(lifxSession_t const* lifx, lifxDeviceId_t deviceId)
 int main(int argc, char* argv[])
 {
   lifxSession_t* lifx;
-  lifxSessionConfig_t conf;
+  lifxSessionConfig_t config;
 
-  (void) argc;
-  (void) argv;
+  (void)argc;
+  (void)argv;
 
-  memset(&conf, 0, sizeof(lifxSessionConfig_t));
-  conf.UseBackgroundDispatchThread = true;
-  conf.LogLevel = kLifxLogLevelInfo;
-  conf.DeviceDiscovered = discovery_callback;
+  lifxSessionConfig_InitWithDefaults(&config);
+  config.LogLevel = kLifxLogLevelDebug;
+  // config.SourceId = 0xdeadbeef;
+  // config.BindInterface = "10.0.0.252";
+  config.DeviceDiscovered = discovery_callback;
 
-  lifx = lifxSession_Open(&conf);
+  lifx = lifxSession_Open(&config);
   lifxSession_StartDiscovery(lifx);
   lifxSleep(20000);
   lifxSession_StopDiscovery(lifx);

@@ -30,9 +30,9 @@ int main(int argc, char* argv[])
   (void) argv;
 
   lifxSessionConfig_InitWithDefaults(&config);
-  //config.LogLevel = kLifxLogLevelDebug;
-  //config.BindInterface = "10.0.0.252";
-  //lifxWSAStartup();
+  config.LogLevel = kLifxLogLevelDebug;
+  // config.SourceId = 0xdeadbeef;
+  // config.BindInterface = "10.0.0.252";
 
   lifx = lifxSession_Open(&config);
 
@@ -44,6 +44,7 @@ int main(int argc, char* argv[])
   // not longer need to first discover the device. if the device endpoint
   // is not known, then a broadcast is sent along with a device discovery
   // once the device is discovered, the ip/port is used w/ unicast
+
   lifxDeviceId_FromString(&device_id, "lifx_id://mac/d0:73:d5:40:4d:61");
 
   while (true)

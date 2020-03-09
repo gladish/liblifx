@@ -42,7 +42,7 @@ typedef struct
  */
 typedef uint64_t lifxDateTime_t;
 
-
+#if !defined(LIFX_PLATFORM_WINDOWS)
 #pragma pack(push, 1)
 typedef struct
 {
@@ -68,6 +68,24 @@ typedef struct
   uint16_t  :16;
 } lifxProtocolHeader_t;
 #pragma pack(pop)
+#else
+typedef struct
+{
+  uint16_t  Size;
+  uint16_t  Protocol;
+  bool      Addressable;
+  bool      Tagged;
+  uint8_t   Origin;
+  uint32_t  Source;
+
+  uint8_t   Target[8];
+  bool      ResRequired;
+  bool      AckRequired;
+  uint8_t   Sequence;
+
+  uint16_t  Type;
+} lifxProtocolHeader_t;
+#endif
 
 typedef struct
 {
@@ -370,10 +388,15 @@ LIFX_PUBLIC lifxTimeSpan_t lifxTimeSpan_Infinite();
  */
 LIFX_PUBLIC void lifxSleep(uint32_t milliseconds);
 
-#if defined(LIFX_PLATFORM_WINDOWS)
-LIFX_PUBLIC void lifxWSAStartup();
-LIFX_PUBLIC void lifxWSAShutdown();
-#endif
+/**
+ *
+ */
+LIFX_PUBLIC void lifxEncoder_EncodeHeader(lifxBuffer_t* buff, lifxProtocolHeader_t const* header);
+
+/**
+ *
+ */
+LIFX_PUBLIC void lifxDecoder_DecodeHeader(lifxBuffer_t* buff, lifxProtocolHeader_t* header);
 
 #ifdef __cplusplus
 }

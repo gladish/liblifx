@@ -19,6 +19,7 @@
 #include <Winsock2.h>
 #include <Windows.h>
 #include <ws2tcpip.h>
+#include <netiodef.h>
 
 // Can use _Printf_format_string_ for this
 #define LIFX_PRINTF_FORMAT(IDX, FIRST)
@@ -39,20 +40,21 @@ typedef int                     socklen_t;
 #define lifxInterlockedIncrement(n) InterlockedIncrement(n)
 #define lifxInterlockedDecrement(n) InterlockedDecrement(n)
 
-#if BYTE_ORDER == BIG_ENDIAN
+
+#if BYTE_ORDER == _LITTLE_ENDIAN
+#define lifxHostToLittleInt16(n) (n)
+#define lifxLittleToHostInt16(n) (n)
+#define lifxHostToLittleInt32(n) (n)
+#define lifxLittleToHostInt32(n) (n)
+#define lifxHostToLittleInt64(n) (n)
+#define lifxLittleToHostInt64(n) (n)
+#else
 #define lifxHostToLittleInt16(n) _byteswap_ushort(n)
 #define lifxLittleToHostInt16(n) _byteswap_ushort(n)
 #define lifxHostToLittleInt32(n) _byteswap_ulong(n)
 #define lifxLittleToHostInt32(n) _byteswap_ulong(n)
 #define lifxHostToLittleInt64(n) _byteswap_uint64(n)
 #define lifxLittleToHostInt64(n) _byteswap_uint64(n)
-#else
-#define lifxHostToLittleInt16(n)
-#define lifxLittleToHostInt16(n)
-#define lifxHostToLittleInt32(n)
-#define lifxLittleToHostInt32(n)
-#define lifxHostToLittleInt64(n)
-#define lifxLittleToHostInt64(n)
 #endif
 
 #endif

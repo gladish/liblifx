@@ -70,6 +70,8 @@ char const* lifx_Version()
 lifxFuture_t* lifxFuture_Create(lifxAtomic_t sequence_number)
 {
   lifxFuture_t* f = malloc(sizeof(struct lifxFuture));
+  if (f == NULL)
+    return NULL;
   lifxMutex_Init(&f->Mutex);
   lifxCond_Init(&f->Cond);
   memset(&f->Result, 0, sizeof(lifxPacket_t));
@@ -178,8 +180,11 @@ int lifxTimeSpan_Compare(
   lifxTimeSpan_t time_span2)
 {
   int64_t result = time_span1._ticks - time_span2._ticks;
-  LIFX_ASSERT(result < INT32_MAX);
-  return (int) result;
+  if (result > 0)
+    return 1;
+  if (result < 0)
+    return -1;
+  return 0;
 }
 
 lifxTimeSpan_t lifxTimeSpan_Zero()
@@ -194,4 +199,74 @@ lifxTimeSpan_t lifxTimeSpan_Forever()
   lifxTimeSpan_t time_span;
   time_span._ticks = UINT64_MAX;
   return time_span;
+}
+
+
+void lifxEncoder_EncodeHeader(
+  lifxBuffer_t*               buff,
+  lifxProtocolHeader_t const* header)
+{
+  // https://lan.developer.lifx.com/v2.0/docs/header-description#frame
+#ifdef LIFX_PLATFORM_WINDOWS
+  uint8_t  temp_u8;
+  uint16_t temp_u16;
+  uint8_t  zeros[16];
+
+  memset(zeros, 0, sizeof(zeros));
+  lifxBuffer_WriteUInt16(buff, header->Size);
+  temp_u16 = header->Protocol;
+  if (header->Addressable)
+    temp_u16 |= (1 << 12);
+  if (header->Tagged)
+    temp_u16 |= (1 << 13);
+  lifxBuffer_WriteUInt16(buff, temp_u16);
+  lifxBuffer_WriteUInt32(buff, header->Source);
+  lifxBuffer_Write(buff, header->Target, 8);
+  lifxBuffer_Write(buff, zeros, 6);
+  temp_u8 = 0;
+  if (header->ResRequired)
+    temp_u8 |= 1;
+  if (header->AckRequired)
+    temp_u8 |= (1 << 1);
+  lifxBuffer_WriteUInt8(buff, temp_u8);
+  lifxBuffer_WriteUInt8(buff, header->Sequence);
+  lifxBuffer_Write(buff, zeros, 8);
+  lifxBuffer_WriteUInt16(buff, header->Type);
+  lifxBuffer_Write(buff, zeros, 2);
+#else
+  lifxBuffer_Write(buff, header, kLifxSizeofHeader);
+#endif
+}
+
+void lifxDecoder_DecodeHeader(
+  lifxBuffer_t*               buff,
+  lifxProtocolHeader_t*       header)
+{
+#ifdef LIFX_PLATFORM_WINDOWS
+  uint8_t  temp_u8;
+  uint16_t temp_u16;
+  uint8_t  zeros[16];
+
+  memset(header, 0, sizeof(lifxProtocolHeader_t));
+  memset(zeros, 0, sizeof(zeros));
+
+  lifxBuffer_ReadUInt16(buff, &header->Size);
+  lifxBuffer_ReadUInt16(buff, &temp_u16);
+  header->Protocol = temp_u16 & 0x0fff;
+  header->Addressable = temp_u16 & 0x1000;
+  header->Tagged = temp_u16 & 0x2000;
+  header->Origin = 0;
+  lifxBuffer_ReadUInt32(buff, &header->Source);
+  lifxBuffer_Read(buff, header->Target, 8);
+  lifxBuffer_Read(buff, zeros, 6);
+  lifxBuffer_ReadUInt8(buff, &temp_u8);
+  header->ResRequired = temp_u8 & 0x0001;
+  header->AckRequired = temp_u8 & 0x0002;
+  lifxBuffer_ReadUInt8(buff, &header->Sequence);
+  lifxBuffer_Read(buff, zeros, 8);
+  lifxBuffer_ReadUInt16(buff, &header->Type);
+  lifxBuffer_Read(buff, zeros, 2);
+#else
+  lifxBuffer_Read(buff, header, kLifxSizeofHeader);
+#endif
 }

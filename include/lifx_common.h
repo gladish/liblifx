@@ -38,9 +38,7 @@
 #define kLifxErrorMessageMaxLength (256)
 #define kLifxRequestsMax (16)
 #define kLifxMaxDevices (256)
-// TODO(jacobgladish@yahoo.com): make this uint16_t -- we know the size and
-// that's the way it's represented in lifxProtocolHeader_t
-#define kLifxSizeofHeader (sizeof(lifxProtocolHeader_t))
+#define kLifxSizeofHeader (36)
 #define kLifxErrorMessageMax (256)
 #define kLifxDeviceDatabaseBucketCount (1)
 

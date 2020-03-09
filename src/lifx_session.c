@@ -30,6 +30,11 @@
 
 static uint16_t const kLifxProtocolNumber = 0x400; // 1024
 
+#if defined(LIFX_PLATFORM_WINDOWS)
+void lifxWSAStartup();
+void lifxShutdown();
+#endif
+
 // the __lifx_products is in lifx_products_db (generated code)
 extern lifxProductInformation_t** __lifx_products;
 
@@ -56,10 +61,12 @@ static void lifxSession_SetBroadcastDestination(
   (void) lifx;
 
   struct sockaddr_in* v4 = (struct sockaddr_in *) dest;
+
   memset(dest, 0, sizeof(struct sockaddr_storage));
+
+  v4->sin_addr.s_addr = htonl(INADDR_BROADCAST);
   v4->sin_family = AF_INET;
   v4->sin_port = htons(kLifxDefaultBroadcastPort);
-  v4->sin_addr.s_addr = htonl(INADDR_BROADCAST);
 }
 
 
@@ -125,6 +132,8 @@ lifxDevice_t* lifxSession_CreateDevice(
     if (lifx->DeviceDatabase[i] == NULL)
     {
       new_device = malloc(sizeof(lifxDevice_t));
+      if (new_device == NULL)
+        return NULL;
       memcpy(new_device->DeviceId.Octets, message->Header.Target, 6);
       memcpy(&new_device->Endpoint, source_address, sizeof(struct sockaddr_storage));
       lifx->DeviceDatabase[i] = new_device;
@@ -161,12 +170,26 @@ lifxSession_t* lifxSession_Open(lifxSessionConfig_t const* conf)
 {
   int                 n;
   int                 ret;
-  int                 flag;
   struct lifxSession* lifx;
+
+  #if defined (LIFX_PLATFORM_WINDOWS)
+  BOOL                flag;
+  #else
+  int                 flag;
+  #endif
 
   lifx = malloc(sizeof(struct lifxSession));
   if (!lifx)
     return NULL;
+
+  #if defined (LIFX_PLATFORM_WIDOWS)
+  static bool winsock_initialize = false;
+  if (!winsock_initialized)
+  {
+    lifxWSAStartup();
+    winsock_initialized = true;
+  }
+  #endif
 
   memset(lifx, 0, sizeof(struct lifxSession));
 
@@ -180,7 +203,13 @@ lifxSession_t* lifxSession_Open(lifxSessionConfig_t const* conf)
   lxLog_Info(lifx, "liblifx %s", lifx_Version());
 
   if (lifx->Config.SourceId == 0)
+  {
+    #ifdef LIFX_PLATFORM_WINDOWS
+    lifx->Config.SourceId = GetCurrentProcessId();
+    #else
     lifx->Config.SourceId = getpid();
+    #endif
+  }
 
   lifxMutex_Init(&lifx->SessionLock);
 
@@ -222,10 +251,18 @@ lifxSession_t* lifxSession_Open(lifxSessionConfig_t const* conf)
 
     bind_addr_length = sizeof(struct sockaddr_in);
     memset(&bind_addr, 0, sizeof(struct sockaddr_in));
-    inet_pton(AF_INET, lifx->Config.BindInterface, &bind_addr);
+    inet_pton(AF_INET, lifx->Config.BindInterface, &bind_addr.sin_addr);
+
+    // If you want to induce an erorr on windows, just comment out the following
+    // two lines. Right now, the lifxError_GetSystemError() isn't specific enough
+    // it needs to include fetching winsock errors or system errors depening on the
+    // context.
+    bind_addr.sin_family = AF_INET;
+    // Bind to 56700 specifically it trying to be lifx protocol v1 compatible
+    // leaving out for now. This should be configurable.
+    // bind_addr.sin_port = htons(56700);
 
     lxLog_Info(lifx, "binding to %s", lifx->Config.BindInterface);
-
     ret = bind(lifx->Socket, (struct sockaddr *) &bind_addr, bind_addr_length);
     if (ret != 0)
     {
@@ -252,7 +289,7 @@ lifxStatus_t lifxSession_Close(lifxSession_t* lifx)
 
   if (lifx->Socket != -1)
   {
-    #if defined (LIFX_PLATFORM_WINDOWS)
+    #ifdef LIFX_PLATFORM_WINDOWS
     closesocket(lifx->Socket);
     #else
     close(lifx->Socket);
@@ -418,7 +455,6 @@ lifxStatus_t lifxSession_SendTo(
   void*             packet,
   lifxPacketType_t  packetType)
 {
-  // TODO(jacobgladish@yahoo.com):not thread-safe
   lifxAtomic_t seqno = lifxSession_GetNextSequenceNumber(lifx);
   return lifxSession_SendToInternal(lifx, deviceId, packet, packetType, seqno);
 }
@@ -435,7 +471,7 @@ lifxStatus_t lifxSession_SendToInternal(
   int                     n;
   bool                    send_discovery_message;
 
-  memset(&header, 0, kLifxSizeofHeader);
+  memset(&header, 0, sizeof(lifxProtocolHeader_t));
   memset(&dest, 0, sizeof(struct sockaddr_storage));
   send_discovery_message = false;
 
@@ -501,7 +537,7 @@ lifxStatus_t lifxSession_SendToInternal(
   }
 
   lifxBuffer_Seek(&lifx->WriteBuffer, 0, kLifxBufferWhenceSet);
-  lifxBuffer_Write(&lifx->WriteBuffer, &header, kLifxSizeofHeader);
+  lifxEncoder_EncodeHeader(&lifx->WriteBuffer, &header);
   lifxEncoder_EncodePacket(&lifx->WriteBuffer, packet_type, packet);
 
   {
@@ -521,6 +557,7 @@ lifxStatus_t lifxSession_SendToInternal(
 
   if (n == -1)
   {
+    LIFX_ASSERT(false);
     lifxSystemError_t sys_error = lifxError_GetSystemError();
     return lifxSession_SetLastError(lifx, kLifxStatusFailed, "sendto failed. %s",
       lifxError_ToString(sys_error));
@@ -574,7 +611,11 @@ lifxStatus_t lifxSession_RecvFromInternal(
   FD_ZERO(&fds);
   FD_SET(lifx->Socket, &fds);
 
+#if defined (LIFX_PLATFORM_WINDOWS)
+  n = select(0 /* ignored on windows */, &fds, NULL, NULL, &wait_time);
+#else
   n = select(lifx->Socket  + 1, &fds, NULL, NULL, &wait_time);
+#endif
   if (n == -1)
   {
     lifxSystemError_t sys_error = lifxError_GetSystemError();
@@ -604,8 +645,8 @@ lifxStatus_t lifxSession_RecvFromInternal(
       return status;
     }
 
-    memcpy(&message->Header, lifx->ReadBuffer.Data, sizeof(lifxProtocolHeader_t));
-    lifxBuffer_Seek(&lifx->ReadBuffer, sizeof(lifxProtocolHeader_t), kLifxBufferWhenceCurrent);
+    lifxBuffer_Seek(&lifx->ReadBuffer, 0, kLifxBufferWhenceSet);
+    lifxDecoder_DecodeHeader(&lifx->ReadBuffer, &message->Header);
     lifxDecoder_DecodePacket(&lifx->ReadBuffer, message->Header.Type, &message->Packet);
 
     {
@@ -825,8 +866,8 @@ lifxStatus_t lifxSession_GetLastError(
     if (buff)
     {
       size_t len = strlen(lifx->LastErrorMessage);
-      if (len > (size_t) (n - 1))
-        len = (n - 1);
+      if (len > ((size_t)n - 1))
+        len = ((size_t)n - 1);
       memset(buff, 0, n);
       strncpy(buff, lifx->LastErrorMessage, len);
     }
