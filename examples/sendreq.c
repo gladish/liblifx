@@ -46,14 +46,14 @@ int main(int argc, char* argv[])
 
   lifxDeviceId_FromString(&device_id, "lifx_id://mac/d0:73:d5:40:4d:61");
 
-  status = lifxDevice_GetLabel(lifx, device_id, &label);
+  status = lifxDevice_GetLabel(lifx, device_id, &label, NULL);
   if (status == kLifxStatusOk)
     printf("label:%s\n", label.Label);
 
   if (status == kLifxStatusOk)
   {
     lifxLightState_t light_state;
-    status = lifxLight_Get(lifx, device_id, &light_state);
+    status = lifxLight_Get(lifx, device_id, &light_state, NULL);
     if (status == kLifxStatusOk)
     {
       printf("Light State\n");
@@ -70,7 +70,7 @@ int main(int argc, char* argv[])
   {
     lifxLightSetPower_t set_power;
     set_power.Level = 65535;
-    status = lifxLight_SetPower(lifx, device_id, &set_power);
+    status = lifxLight_SetPower(lifx, device_id, &set_power, NULL);
   }
 
   lifxSession_Close(lifx);

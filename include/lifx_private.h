@@ -206,10 +206,24 @@ LIFX_PRIVATE lifxStatus_t lifxSession_RecvFromInternal(
  */
 LIFX_PRIVATE lifxStatus_t lifxSession_SendToInternal(
   lifxSession_t*                  lifx,
-  lifxDeviceId_t                  deviceId,
+  lifxDeviceId_t                  device_id,
   void const*                     packet,
-  lifxPacketType_t                packetType,
+  lifxPacketType_t                packet_type,
   lifxAtomic_t                    seqno);
+
+/**
+ *
+ */
+LIFX_PRIVATE lifxStatus_t lifxSession_SendWithOptions(
+  lifxSession_t*                lifx,
+  lifxDeviceId_t                device_id,
+  void const*                   request,
+  lifxPacketType_t              request_type,
+  void*                         response,
+  size_t                        response_size,
+  lifxPacket_t*                 response_packet,
+  void const*                   response_packet_field,
+  lifxRequestOptions_t const*   opts);
 
 /**
  *

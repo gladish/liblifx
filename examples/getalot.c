@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
   // GetHostInfo
   {
     lifxDeviceStateHostInfo_t res;
-    status = lifxDevice_GetHostInfo(lifx, device_id, &res);
+    status = lifxDevice_GetHostInfo(lifx, device_id, &res, NULL);
     if (status == kLifxStatusOk)
     {
       printf("\"DeviceStateHostInfo\": {");
@@ -43,18 +43,30 @@ int main(int argc, char* argv[])
     }
   }
 
-  lifxSleep(250);
+  lifxSleep(500);
 
   // GetHostFirmware
   {
     lifxDeviceStateHostFirmware_t res;
-    status = lifxDevice_GetHostFirmware(lifx, device_id, &res);
+    status = lifxDevice_GetHostFirmware(lifx, device_id, &res, NULL);
     if (status == kLifxStatusOk)
     {
       printf("\"DeviceStateHostFirmware\": {");
       printf("\"Build\":%lu", res.Build);
       printf(" \"VersionMajor\":%u", res.VersionMajor);
       printf(" \"VersionMinor\":%u", res.VersionMinor);
+      printf("}\n");
+    }
+  }
+
+  // GetLabel
+  {
+    lifxDeviceStateLabel_t res;
+    status = lifxDevice_GetLabel(lifx, device_id, &res, NULL);
+    if (status == kLifxStatusOk)
+    {
+      printf("\"DeviceStateLabel\": {");
+      printf("\"Label\":%s", res.Label);
       printf("}\n");
     }
   }

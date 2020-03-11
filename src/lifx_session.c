@@ -451,12 +451,12 @@ lifxStatus_t lifxSession_Dispatch(
 
 lifxStatus_t lifxSession_SendTo(
   lifxSession_t*    lifx,
-  lifxDeviceId_t    deviceId,
+  lifxDeviceId_t    device_id,
   void*             packet,
-  lifxPacketType_t  packetType)
+  lifxPacketType_t  packet_type)
 {
   lifxAtomic_t seqno = lifxSession_GetNextSequenceNumber(lifx);
-  return lifxSession_SendToInternal(lifx, deviceId, packet, packetType, seqno);
+  return lifxSession_SendToInternal(lifx, device_id, packet, packet_type, seqno);
 }
 
 lifxStatus_t lifxSession_SendToInternal(
@@ -515,7 +515,7 @@ lifxStatus_t lifxSession_SendToInternal(
       header.Target[6] = 0;
       header.Target[7] = 0;
 
-      lxLog_Info(lifx, "targeting device [%02x:%02x:%02x:%02x:%02x:%02x]",
+      lxLog_Debug(lifx, "targeting device [%02x:%02x:%02x:%02x:%02x:%02x]",
         header.Target[0], header.Target[1], header.Target[2],
         header.Target[3], header.Target[4], header.Target[5]);
 
@@ -547,6 +547,7 @@ lifxStatus_t lifxSession_SendToInternal(
   lifxEncoder_EncodeHeader(&lifx->WriteBuffer, &header);
   lifxEncoder_EncodePacket(&lifx->WriteBuffer, packet_type, packet);
 
+  if (lxLog_IsLevelEnabled(lifx, kLifxLogLevelDebug))
   {
     char addr[64];
     struct sockaddr_in* v4 = (struct sockaddr_in *) &dest;
@@ -648,6 +649,7 @@ lifxStatus_t lifxSession_RecvFromInternal(
     lifxDecoder_DecodeHeader(&lifx->ReadBuffer, &message->Header);
     lifxDecoder_DecodePacket(&lifx->ReadBuffer, message->Header.Type, &message->Packet);
 
+    if (lxLog_IsLevelEnabled(lifx, kLifxLogLevelDebug))
     {
       uint16_t port;
       char buff[256];
@@ -752,6 +754,8 @@ lifxStatus_t lifxSessionConfig_InitWithDefaults(
   conf->UseBackgroundDispatchThread = true;
   conf->LogLevel = kLifxLogLevelInfo;
   conf->AutoResolveDevices = true;
+  conf->DefaultRequestOptions.Timeout = lifxTimeSpan_FromMilliseconds(333);
+  conf->DefaultRequestOptions.RetryCount = 3;
   return kLifxStatusOk;
 }
 
@@ -761,7 +765,7 @@ lifxStatus_t lifxSession_RegisterRequest(
 {
   int i;
 
-  lxLog_Info(lifx, "registering:%d", future->SequenceNumber);
+  lxLog_Debug(lifx, "registering:%d", future->SequenceNumber);
 
   lifxMutex_Lock(&lifx->SessionLock);
   for (i = 0; i < kLifxRequestsMax; ++i)
@@ -780,10 +784,10 @@ lifxStatus_t lifxSession_RegisterRequest(
 }
 
 lifxFuture_t* lifxSession_BeginSendRequest(
-  lifxSession_t*    lifx,
-  lifxDeviceId_t    deviceId,
-  void const*       packet,
-  lifxPacketType_t  packetType)
+  lifxSession_t*      lifx,
+  lifxDeviceId_t      device_id,
+  void const*         packet,
+  lifxPacketType_t    packet_type)
 {
   lifxStatus_t    status;
   lifxFuture_t*   future;
@@ -794,10 +798,10 @@ lifxFuture_t* lifxSession_BeginSendRequest(
   status = lifxSession_RegisterRequest(lifx, future);
   if (status != kLifxStatusOk)
   {
-    lxLog_Warn(lifx, "failed to register future:%d", status);
+    lxLog_Error(lifx, "failed to register future:%d", status);
   }
 
-  status = lifxSession_SendToInternal(lifx, deviceId, packet, packetType, future->SequenceNumber);
+  status = lifxSession_SendToInternal(lifx, device_id, packet, packet_type, future->SequenceNumber);
   if (status != kLifxStatusOk)
   {
     lxLog_Warn(lifx, "failed to send message:%d", status);
@@ -809,21 +813,19 @@ lifxFuture_t* lifxSession_BeginSendRequest(
 
 lifxStatus_t lifxSession_SendRequest(
   lifxSession_t*    lifx,
-  lifxDeviceId_t    deviceId,
+  lifxDeviceId_t    device_id,
   void const*       request,
-  lifxPacketType_t  packetType,
-  lifxPacket_t*     response,
+  lifxPacketType_t  request_type,
+  lifxPacket_t*     response_packet,
   lifxTimeSpan_t    timeout)
 {
   lifxStatus_t status = kLifxStatusOk;
-  lifxFuture_t* future = lifxSession_BeginSendRequest(lifx, deviceId, request, packetType);
+  lifxFuture_t* future = lifxSession_BeginSendRequest(lifx, device_id, request, request_type);
   lifxSession_SetLastError(lifx, kLifxStatusOk, NULL);
-
   status = lifxFuture_Wait(future, timeout);
   if (status == kLifxStatusOk)
-    status = lifxFuture_Get(future, response, lifxTimeSpan_FromMilliseconds(2000));
+    status = lifxFuture_Get(future, response_packet, lifxTimeSpan_FromMilliseconds(0));
   lifxFuture_Release(future);
-
   return status;
 }
 
@@ -876,3 +878,37 @@ lifxStatus_t lifxSession_GetLastError(
   return status;
 }
 
+lifxStatus_t lifxSession_SendWithOptions(
+  lifxSession_t*                lifx,
+  lifxDeviceId_t                device_id,
+  void const*                   request,
+  lifxPacketType_t              request_type,
+  void*                         response,
+  size_t                        response_size,
+  lifxPacket_t*                 response_packet,
+  void const*                   response_packet_field,
+  lifxRequestOptions_t const*   opts)
+{
+  int n;
+  lifxStatus_t status;
+  lifxTimeSpan_t timeout;
+
+  if (opts != NULL)
+    timeout = opts->Timeout;
+  else
+    timeout = lifx->Config.DefaultRequestOptions.Timeout;
+
+  n = 0;
+
+  do
+  {
+    status = lifxSession_SendRequest(lifx, device_id, request, request_type,
+      response_packet, timeout);
+  }
+  while ((status == kLifxStatusOperationTimedout) && (n++ < lifx->Config.DefaultRequestOptions.RetryCount));
+
+  if ((status == kLifxStatusOk) && (response != NULL) && (response_packet_field != NULL))
+    memcpy(response,  response_packet_field, response_size);
+
+  return status;
+}

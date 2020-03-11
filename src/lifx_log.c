@@ -78,7 +78,7 @@ void lxLog_Printf(lifxSession_t* lifx, lifxLogLevel_t level, char const* format,
 {
   va_list argp;
 
-  if (!lxLog_IsLevelEnabled(lifx, lifx->Config.LogLevel))
+  if (!lxLog_IsLevelEnabled(lifx, level))
     return;
 
   va_start(argp, format);

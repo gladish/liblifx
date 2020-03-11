@@ -29,19 +29,6 @@ extern "C" {
 static lifxDeviceId_t const kLifxDeviceAll = kLifxDeviceAllInitializer;
 static lifxDeviceId_t const kLifxDeviceInvalid = kLifxDeviceInvalidInitializer;
 
-/**
- * Relative time in microseconds
- */
-typedef struct
-{
-  uint64_t _ticks;
-} lifxTimeSpan_t;
-
-/**
- * Time since epoch in microseconds
- */
-typedef uint64_t lifxDateTime_t;
-
 typedef struct
 {
   uint16_t  Size;
@@ -135,6 +122,7 @@ typedef struct
   bool                          ReportDuplicateDevices;
   bool                          AutoResolveDevices;
   uint32_t                      SourceId;
+  lifxRequestOptions_t          DefaultRequestOptions;
 } lifxSessionConfig_t;
 
 /**
@@ -219,18 +207,18 @@ LIFX_PUBLIC lifxStatus_t lifxSession_RecvFrom(
  */
 LIFX_PUBLIC lifxFuture_t* lifxSession_BeginSendRequest(
   lifxSession_t*        lifx,
-  lifxDeviceId_t        deviceId,
+  lifxDeviceId_t        device_id,
   void const*           packet,
-  lifxPacketType_t      packetType);
+  lifxPacketType_t      packet_type);
 
 /**
  *
  */
 LIFX_PUBLIC lifxStatus_t lifxSession_SendRequest(
   lifxSession_t*        lifx,
-  lifxDeviceId_t        deviceId,
+  lifxDeviceId_t        device_id,
   void const*           request,
-  lifxPacketType_t      packetType,
+  lifxPacketType_t      packet_type,
   lifxPacket_t*         response,
   lifxTimeSpan_t        timeout);
 

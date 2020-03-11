@@ -355,7 +355,7 @@ class CodeGenerator:
 #        continue
       self.write("LIFX_PUBLIC lifxStatus_t %s%s(lifxSession_t* lifx, lifxDeviceId_t deviceId, "
         % (self.prefix, method_name))
-      self.write("%s%s_t* response);\n" % (self.prefix, val["response"]))
+      self.write("%s%s_t* response, lifxRequestOptions_t const* opts);\n" % (self.prefix, val["response"]))
     self.write("// ---END GETTERS---\n")
     self.write("\n")
 
@@ -373,7 +373,7 @@ class CodeGenerator:
       method_name = self.get_method_name(key)
       self.write("LIFX_PUBLIC lifxStatus_t %s%s(lifxSession_t* lifx, lifxDeviceId_t deviceId, "
         % (self.prefix, method_name))
-      self.write("%s%s_t const* value);\n" % (self.prefix, key))
+      self.write("%s%s_t const* value, lifxRequestOptions_t const* opts);\n" % (self.prefix, key))
     self.write("\n")
 
     self.emit_guard_suffix()
@@ -381,46 +381,39 @@ class CodeGenerator:
 
     self.open_file("lifx_requests.c")
     self.write("#include \"lifx.h\"\n")
+    self.write("#include \"lifx_private.h\"\n")
     self.write("\n")
     for key, val in requests.items():
       method_name = self.get_method_name(key)
 #      if method_name == "Light_Get":
 #        continue
-      self.write("lifxStatus_t %s%s(lifxSession_t* lifx, lifxDeviceId_t deviceId, "
+      self.write("lifxStatus_t %s%s(lifxSession_t* lifx, lifxDeviceId_t device_id, "
         % (self.prefix, method_name))
-      self.write("%s%s_t* response)\n" % (self.prefix, val["response"]))
+      self.write("%s%s_t* response, lifxRequestOptions_t const* opts)\n" % (self.prefix, val["response"]))
       self.write("{\n")
       self.indent()
-      self.write("lifxStatus_t status;\n")
       self.write("lifxPacket_t packet;\n")
-      self.write("lifxTimeSpan_t timeout;\n")
       self.write("%s%s_t request;\n" % (self.prefix, val["request"]))
-      self.write("\n")
-      self.write("timeout = lifxTimeSpan_FromMilliseconds(2000);\n")
-      self.write("status = lifxSession_SendRequest(lifx, deviceId, &request, kLifxPacketType%s, &packet, timeout);\n" %
-        (val["request"]))
-      self.write("if (status == 0)\n")
-      self.write("{\n")
+      self.write("return lifxSession_SendWithOptions(lifx, device_id, &request, kLifxPacketType%s, response,\n" % (val["request"]))
       self.indent()
-      self.write("*response = packet.%s;\n" % (val["response"]))
+      self.write("sizeof(%s%s_t), &packet, &packet.%s, opts);\n" % (self.prefix, val["response"], val["response"]))
       self.outdent()
-      self.write("}\n")
-      self.write("return status;\n")
       self.outdent()
       self.write("}\n")
       self.write("\n")
 
     for key, val in getters.items():
       method_name = self.get_method_name(key)
-      self.write("lifxStatus_t %s%s(lifxSession_t* lifx, lifxDeviceId_t deviceId, "
+      self.write("lifxStatus_t %s%s(lifxSession_t* lifx, lifxDeviceId_t device_id, "
         % (self.prefix, method_name))
-      self.write("%s%s_t const* value)\n" % (self.prefix, key))
+      self.write("%s%s_t const* value, lifxRequestOptions_t const* opts)\n" % (self.prefix, key))
       self.write("{\n")
       self.indent()
       self.write("lifxPacket_t packet;\n")
-      self.write("lifxTimeSpan_t timeout = lifxTimeSpan_FromMilliseconds(2000);\n")
-      self.write("return lifxSession_SendRequest(lifx, deviceId, value, kLifxPacketType%s, &packet, timeout);\n"
-        % (key))
+      self.write("return lifxSession_SendWithOptions(lifx, device_id, value, kLifxPacketType%s,\n" % (key))
+      self.indent()
+      self.write("NULL, 0, &packet, NULL, opts);\n")
+      self.outdent()
       self.outdent()
       self.write("}\n")
       self.write("\n")

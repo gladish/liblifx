@@ -59,6 +59,31 @@ typedef struct
   uint8_t Octets[kLifxDeviceIdSize];
 } lifxDeviceId_t;
 
+/**
+ * Relative time in microseconds
+ */
+typedef struct
+{
+  uint64_t _ticks;
+} lifxTimeSpan_t;
+
+/**
+ * Time since epoch in microseconds
+ */
+typedef uint64_t lifxDateTime_t;
+
+/**
+ *
+ */
+typedef struct
+{
+  lifxTimeSpan_t  Timeout;
+  int             RetryCount;
+} lifxRequestOptions_t;
+
+/**
+ *
+ */
 typedef enum
 {
   kLifxStatusOk = 0,
