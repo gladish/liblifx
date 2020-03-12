@@ -25,8 +25,9 @@
 static pthread_once_t error_once = PTHREAD_ONCE_INIT;
 static pthread_key_t  error_key;
 
-lifxSystemError_t lifxError_GetSystemError()
+lifxSystemError_t lifxError_GetSystemError(lifxSubSystem_t sub_system)
 {
+  (void) sub_system;
   return errno;
 }
 

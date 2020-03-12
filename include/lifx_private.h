@@ -35,10 +35,16 @@ extern "C" {
 #error "Platform not supported"
 #endif
 
+  typedef enum
+  {
+    kLifxSubSystemSocket,
+    kLifxSubSystemSystem
+  } lifxSubSystem_t;
+
 /**
  *
  */
-LIFX_PRIVATE lifxSystemError_t lifxError_GetSystemError();
+LIFX_PRIVATE lifxSystemError_t lifxError_GetSystemError(lifxSubSystem_t sub_system);
 
 /**
  *

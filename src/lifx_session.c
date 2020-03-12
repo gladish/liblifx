@@ -32,7 +32,7 @@ static uint16_t const kLifxProtocolNumber = 0x400; // 1024
 
 #if defined(LIFX_PLATFORM_WINDOWS)
 void lifxWSAStartup();
-void lifxShutdown();
+//void lifxShutdown();
 #endif
 
 // the __lifx_products is in lifx_products_db (generated code)
@@ -182,8 +182,8 @@ lifxSession_t* lifxSession_Open(lifxSessionConfig_t const* conf)
   if (!lifx)
     return NULL;
 
-  #if defined (LIFX_PLATFORM_WIDOWS)
-  static bool winsock_initialize = false;
+  #if defined (LIFX_PLATFORM_WINDOWS)
+  static bool winsock_initialized = false;
   if (!winsock_initialized)
   {
     lifxWSAStartup();
@@ -221,6 +221,9 @@ lifxSession_t* lifxSession_Open(lifxSessionConfig_t const* conf)
   lifx->Socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
   if (lifx->Socket == -1)
   {
+    lifxSystemError_t sys_error = lifxError_GetSystemError(kLifxSubSystemSocket);
+    lxLog_Warn(lifx, "Failed to create socket:%s", lifxError_ToString(sys_error));
+
     // TODO(jacobgladish@yahoo.com): When this fails, which happens on windows
     // when you don't initialize winsock, there's no good way to communicate
     // error back to user
@@ -266,7 +269,7 @@ lifxSession_t* lifxSession_Open(lifxSessionConfig_t const* conf)
     ret = bind(lifx->Socket, (struct sockaddr *) &bind_addr, bind_addr_length);
     if (ret != 0)
     {
-      lifxSystemError_t sys_error = lifxError_GetSystemError();
+      lifxSystemError_t sys_error = lifxError_GetSystemError(kLifxSubSystemSocket);
       lxLog_Warn(lifx, "bind:%s", lifxError_ToString(sys_error));
     }
   }
@@ -568,7 +571,7 @@ lifxStatus_t lifxSession_SendToInternal(
   if (n == -1)
   {
     LIFX_ASSERT(false);
-    lifxSystemError_t sys_error = lifxError_GetSystemError();
+    lifxSystemError_t sys_error = lifxError_GetSystemError(kLifxSubSystemSocket);
     return lifxSession_SetLastError(lifx, kLifxStatusFailed, "sendto failed. %s",
       lifxError_ToString(sys_error));
   }
@@ -618,7 +621,7 @@ lifxStatus_t lifxSession_RecvFromInternal(
 #endif
   if (n == -1)
   {
-    lifxSystemError_t sys_error = lifxError_GetSystemError();
+    lifxSystemError_t sys_error = lifxError_GetSystemError(kLifxSubSystemSocket);
     return lifxSession_SetLastError(lifx, kLifxStatusFailed, 
       "select failed. %s", lifxError_ToString(sys_error));
   }
@@ -639,7 +642,7 @@ lifxStatus_t lifxSession_RecvFromInternal(
 
     if (n == -1)
     {
-      lifxSystemError_t sys_error = lifxError_GetSystemError();
+      lifxSystemError_t sys_error = lifxError_GetSystemError(kLifxSubSystemSocket);
       status = lifxSession_SetLastError(lifx, kLifxStatusFailed,
         "recvfrom failed. %s", lifxError_ToString(sys_error));
       return status;

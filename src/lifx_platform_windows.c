@@ -19,9 +19,18 @@
 // static pthread_once_t error_once = PTHREAD_ONCE_INIT;
 // static pthread_key_t  error_key;
 
-lifxSystemError_t lifxError_GetSystemError()
+lifxSystemError_t lifxError_GetSystemError(lifxSubSystem_t sub_system)
 {
-  return 0;
+  DWORD dwError = 0;
+  if (sub_system == kLifxSubSystemSystem)
+  {
+    dwError = GetLastError();
+  }
+  else if (sub_system == kLifxSubSystemSocket)
+  {
+    dwError = WSAGetLastError();
+  }
+  return dwError;
 }
 
 void lifxMutex_Init(lifxMutex_t* mutex)
@@ -64,15 +73,13 @@ lifxStatus_t lifxCond_TimedWait(
   lifxMutex_t*            mutex,
   lifxTimeSpan_t          timeout)
 {
-  BOOL b;
-  DWORD dwMilliseconds;
   DWORD dwError;
   lifxStatus_t status;
 
-  b = FALSE;
-  dwMilliseconds = lifxTimeSpan_ToMilliseconds(timeout);
+  uint64_t millis = lifxTimeSpan_ToMilliseconds(timeout);
+  LIFX_ASSERT(millis <= UINT32_MAX);
 
-  b = SleepConditionVariableCS(cond, mutex, dwMilliseconds);
+  BOOL b = SleepConditionVariableCS(cond, mutex, (DWORD) millis);
   if (!b)
   {
     dwError = GetLastError();
@@ -139,6 +146,23 @@ lifxError_GetThreadSpecific()
 
 char const* lifxError_ToString(lifxSystemError_t system_error)
 {
+  // not thread safe
+  // TODO: put this buffer in thread-local
+  static char buff[256];
+
+  memset(buff, 0, sizeof(buff));
+
+  DWORD ret = FormatMessageA(
+    FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+    NULL,
+    system_error,
+    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+    (LPSTR)buff,
+    sizeof(buff),
+    NULL);
+
+  return buff;
+
 #if 0
   char const* buff;
   lifxErrorThreadSpecific_t* specific;
