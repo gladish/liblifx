@@ -35,11 +35,14 @@ extern "C" {
 #error "Platform not supported"
 #endif
 
-  typedef enum
-  {
-    kLifxSubSystemSocket,
-    kLifxSubSystemSystem
-  } lifxSubSystem_t;
+/**
+ *
+ */
+typedef enum
+{
+  kLifxSubSystemSocket,
+  kLifxSubSystemSystem
+} lifxSubSystem_t;
 
 /**
  *

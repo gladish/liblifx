@@ -3,10 +3,10 @@ cmake_minimum_required(VERSION 2.8)
 
 if (CMAKE_VERSION VERSION_LESS "3.0")
   project(liblifx C)
-  set(PROJECT_VERSION 0.3.0)
+  set(PROJECT_VERSION 0.4.0)
 else ()
   cmake_policy(SET CMP0048 NEW)
-  project(liblifx VERSION 0.3.0)
+  project(liblifx VERSION 0.4.0)
 endif()
 
 include(ExternalProject)
