@@ -259,3 +259,80 @@ void lifxDecoder_DecodeHeader(
   lifxBuffer_ReadUInt16(buff, &header->Type);
   lifxBuffer_Read(buff, zeros, 2);
 }
+
+static uint8_t lifxColor_Max(uint8_t r, uint8_t g, uint8_t b)
+{
+  uint8_t max = r;
+  if (g > max)
+    max = g;
+  if (b > max)
+    max = b;
+  return max;
+}
+
+static uint8_t lifxColor_Min(uint8_t r, uint8_t g, uint8_t b)
+{
+  uint8_t min = r;
+  if (g < min)
+    min = g;
+  if (b < min)
+    min = b;
+  return min;
+}
+
+lifxLightHsbk_t lifxColor_FromRGB(uint8_t red, uint8_t green, uint8_t blue)
+{
+  lifxLightHsbk_t color;
+
+  uint8_t min = lifxColor_Min(red, green, blue);
+  uint8_t max = lifxColor_Max(red, green, blue);
+
+  float hue = 0.0f;
+  float saturation = 0.0f;
+  float brightness = max / 255.0f;
+
+  if (max == 0)
+    saturation = 0;
+  else
+    saturation = ((float) (max - min) / (float) max);
+
+  if (saturation == 0)
+  {
+    hue = 0;
+  }
+  else
+  {
+    float delta = (float) (max - min) * 6;
+    if (red == max)
+      hue = (green - blue) / delta;
+    else if (green == max)
+      hue = 1.0f  / 3.0f + (blue - red) / delta;
+    else
+      hue = 2.0f  / 3.0f + (red - green) / delta;
+
+    // hue *= 60;
+    if (hue < 0)
+      hue += 1;
+  }
+
+  color.Hue = (uint16_t) (hue * 65535);
+  color.Saturation = (uint16_t) (saturation * 65535);
+  color.Brightness = (uint16_t) (brightness * 65535);
+  color.Kelvin = 0;
+
+  return color;
+}
+
+lifxLightHsbk_t lifxColor_FromKelvin(uint16_t kelvin)
+{
+  lifxLightHsbk_t color;
+  if (kelvin < 2500)
+    kelvin = 2500;
+  if (kelvin > 9000)
+    kelvin = 9000;
+  color.Hue = 0;
+  color.Saturation = 0;
+  color.Brightness = 65535;
+  color.Kelvin = kelvin;
+  return color;
+}

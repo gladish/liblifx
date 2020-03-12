@@ -161,6 +161,10 @@ add_executable(getalot examples/getalot.c)
 add_dependencies(getalot lifx)
 target_link_libraries(getalot lifx)
 
+add_executable(setcolor examples/setcolor.c)
+add_dependencies(setcolor lifx)
+target_link_libraries(setcolor lifx)
+
 if (ENABLE_UNIT_TESTS)
   add_subdirectory(tests)
 endif()

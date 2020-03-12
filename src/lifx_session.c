@@ -539,7 +539,7 @@ lifxStatus_t lifxSession_SendToInternal(
   if (send_discovery_message)
   {
     lifxDeviceGetService_t get_service;
-    lxLog_Info(lifx, "sending auto-discovery for device");
+    lxLog_Debug(lifx, "sending auto-discovery for device");
     lifxSession_SendTo(lifx, kLifxDeviceAll, &get_service, kLifxPacketTypeDeviceGetService);
   }
 

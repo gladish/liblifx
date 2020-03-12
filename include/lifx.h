@@ -359,6 +359,16 @@ LIFX_PUBLIC void lifxEncoder_EncodeHeader(lifxBuffer_t* buff, lifxProtocolHeader
  */
 LIFX_PUBLIC void lifxDecoder_DecodeHeader(lifxBuffer_t* buff, lifxProtocolHeader_t* header);
 
+/**
+ *
+ */
+LIFX_PUBLIC lifxLightHsbk_t lifxColor_FromRGB(uint8_t red, uint8_t green, uint8_t blue);
+
+/**
+ *
+ */
+LIFX_PUBLIC lifxLightHsbk_t lifxColor_FromKelvin(uint16_t kelvin);
+
 #ifdef __cplusplus
 }
 #endif
