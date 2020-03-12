@@ -287,8 +287,7 @@ lifxStatus_t lifxSession_Close(lifxSession_t* lifx)
 {
   int i;
 
-  if (!lifx)
-    return kLifxStatusInvalidArgument;
+  LIFX_ARGCHECK(lifx);
 
   if (lifx->Socket != -1)
   {
@@ -680,55 +679,49 @@ int lifxDeviceId_Compare(
 }
 
 lifxStatus_t lifxDeviceId_ToString(
-  lifxDeviceId_t const* deviceId,
+  lifxDeviceId_t const* device_id,
   char*                 buff,
   int                   n)
 {
-  if (!deviceId)
-    return kLifxStatusInvalidArgument;
-  if (!buff)
-    return kLifxStatusInvalidArgument;
+  LIFX_ARGCHECK(device_id);
+  LIFX_ARGCHECK(buff);
   if (n < 30)
     return kLifxStatusNotEnoughMemory;
 
   memset(buff, 0, n);
   snprintf(buff, n, "lifx_id://mac/%02hhx:%02hhx:%02hhx:%02hhx:%02hhx:%02hhx", 
-    deviceId->Octets[0],
-    deviceId->Octets[1],
-    deviceId->Octets[2],
-    deviceId->Octets[3],
-    deviceId->Octets[4],
-    deviceId->Octets[5]);
+    device_id->Octets[0],
+    device_id->Octets[1],
+    device_id->Octets[2],
+    device_id->Octets[3],
+    device_id->Octets[4],
+    device_id->Octets[5]);
 
   return kLifxStatusOk;
 }
 
 lifxStatus_t lifxDeviceId_FromString(
-  lifxDeviceId_t*       deviceId,
+  lifxDeviceId_t*       device_id,
   char const*           buff)
 {
-  if (!deviceId)
-    return kLifxStatusInvalidArgument;
-  if (!buff)
-    return kLifxStatusInvalidArgument;
+  LIFX_ARGCHECK(device_id);
+  LIFX_ARGCHECK(buff);
 
   sscanf(buff, "lifx_id://mac/%02hhx:%02hhx:%02hhx:%02hhx:%02hhx:%02hhx",
-    &deviceId->Octets[0],
-    &deviceId->Octets[1],
-    &deviceId->Octets[2],
-    &deviceId->Octets[3],
-    &deviceId->Octets[4],
-    &deviceId->Octets[5]);
+    &device_id->Octets[0],
+    &device_id->Octets[1],
+    &device_id->Octets[2],
+    &device_id->Octets[3],
+    &device_id->Octets[4],
+    &device_id->Octets[5]);
 
   return kLifxStatusOk;
 }
 
-int lifxSessionConfig_Copy(lifxSessionConfig_t* dest, lifxSessionConfig_t const* src)
+lifxStatus_t lifxSessionConfig_Copy(lifxSessionConfig_t* dest, lifxSessionConfig_t const* src)
 {
-  if (!dest)
-    return EINVAL;
-  if (!src)
-    return EINVAL;
+  LIFX_ARGCHECK(dest);
+  LIFX_ARGCHECK(src);
 
   memcpy(dest, src, sizeof(lifxSessionConfig_t));
 
@@ -742,8 +735,7 @@ int lifxSessionConfig_Copy(lifxSessionConfig_t* dest, lifxSessionConfig_t const*
 
 lifxStatus_t lifxSessionConfig_Init(lifxSessionConfig_t* conf)
 {
-  if (!conf)
-    return kLifxStatusInvalidArgument;
+  LIFX_ARGCHECK(conf);
   memset(conf, 0, sizeof(lifxSessionConfig_t));
   return kLifxStatusOk;
 }
@@ -751,8 +743,7 @@ lifxStatus_t lifxSessionConfig_Init(lifxSessionConfig_t* conf)
 lifxStatus_t lifxSessionConfig_InitWithDefaults(
   lifxSessionConfig_t*    conf)
 {
-  if (!conf)
-    return kLifxStatusInvalidArgument;
+  LIFX_ARGCHECK(conf);
   memset(conf, 0, sizeof(lifxSessionConfig_t));
   conf->UseBackgroundDispatchThread = true;
   conf->LogLevel = kLifxLogLevelInfo;

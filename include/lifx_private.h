@@ -24,6 +24,7 @@ extern "C" {
 
 #include <assert.h>
 #define LIFX_ASSERT(X) assert((X))
+#define LIFX_ARGCHECK(X) if (!(X)) return kLifxStatusInvalidArgument;
 
 #if defined(LIFX_PLATFORM_LINUX)
 #include "platform/platform_linux.h"
@@ -161,7 +162,7 @@ struct lifxSession
 /**
  *
  */
-LIFX_PRIVATE int lifxSessionConfig_Copy(
+LIFX_PRIVATE lifxStatus_t lifxSessionConfig_Copy(
   lifxSessionConfig_t* dest,
   lifxSessionConfig_t const* src);
 
