@@ -1,5 +1,4 @@
-#cmake_minimum_required(VERSION 3.4)
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.4)
 
 if (CMAKE_VERSION VERSION_LESS "3.0")
   project(liblifx C)
@@ -54,6 +53,7 @@ add_custom_command(
 ExternalProject_Add(
   lifx_yaml_file
   GIT_REPOSITORY https://github.com/LIFX/public-protocol.git
+  GIT_TAG main
   INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}
   INSTALL_COMMAND ""
   CONFIGURE_COMMAND ""
